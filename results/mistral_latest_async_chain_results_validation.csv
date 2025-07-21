@@ -1,0 +1,219 @@
+RowID,ErrorOccurred,ExecutionOutput,HasTimedOut,ExecutionError,ExecutionTime,ExpectedOutput,ActualOutput,CorrectOutput,FirstOutput
+511,True,,False,Error detected. Halting further processing. 'int' object is not iterable,2.2619989400000122,,,False,1.5132362450001438
+511,False,"3
+",False,,2.2585107529998822,2,3,False,1.4993086689999018
+512,False,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}
+",False,,2.0514684689999285,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,0.5908209649999208
+512,False,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}
+",False,,2.5010469380001723,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,0.5949712110000291
+513,True,,False,Error detected. Halting further processing. unsupported operand type(s) for +: 'int' and 'str',1.5707451979999405,,,False,1.3098682169998028
+513,False,,False,,2.7174562289999358,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",,False,0.8853174989999388
+514,False,"21
+",False,,1.9496405669999604,21,21,True,1.0892093429999932
+514,False,,False,,1.9272460540000793,95,,False,0.603241965000052
+515,False,"False
+",False,,2.54299987100012,False,False,True,1.4179118209999615
+515,False,"True
+",False,,2.283372809999946,False,True,False,1.1829792389999056
+516,False,,False,,3.7034161700000823,"[2, 3, 7, 8, 9, 11]",,False,0.491545761999987
+516,False,,False,,8.250166026999977,"[12, 24, 26, 29, 36]",,False,0.4698594129999947
+517,False,,False,,1.9401567530001103,6,,False,0.47438667800020085
+517,False,,False,,1.9120454300000347,1,,False,0.445859437000081
+520,False,"24
+",False,,2.4163083599999027,24,24,True,0.8815069409999978
+520,False,"40
+",False,,1.8086183809998602,120,40,False,0.790193982999881
+522,False,"4
+",False,,5.25592522099987,6,4,False,2.8345810149999124
+522,True,,False,Error detected. Halting further processing. list index out of range,3.580770143000109,,,False,1.1311581320001096
+524,True,,False,Error detected. Halting further processing. list index out of range,2.701416621999897,,,False,2.09568778799985
+524,False,"12
+",False,,3.3906976969999505,10,12,False,1.4537445089999892
+525,False,,False,,3.695485309000105,False,,False,1.308957325000165
+525,False,"True
+",False,,1.7880735349999668,True,True,True,0.5831202379999922
+526,False,,False,,2.1132795680000527,BigdatA,,False,0.4870989759999702
+526,False,,False,,2.6925495670000146,HadooP,,False,0.49268655700007
+527,False,,False,,3.2650195889998486,2,,False,0.4621971999999914
+527,False,"0
+",False,,1.62923664799996,6,0,False,0.6139192839998486
+529,False,"1
+",False,,4.961249038999995,5,1,False,2.052243178000026
+529,False,,False,,2.1427202669999588,17,,False,1.044546715000024
+532,False,"False
+",False,,2.7839299330000813,False,False,True,1.0966955419999067
+532,False,,False,,1.715413867000052,True,,False,0.5937856640000518
+533,False,"(7, 8, 9)
+",False,,1.3618806140000288,"[7, 8, 9]","(7, 8, 9)",False,0.5764153669999814
+533,False,,False,,2.254095280999991,"[7, 2]",,False,0.5604250290000437
+537,False,"None
+",False,,2.0037544750000507,,None,False,0.6181411489999391
+537,False,"ca
+No repeated word found
+",False,,2.0618061430000125,ca,"ca
+No repeated word found",False,1.0027487620000102
+538,False,"('bigdata',)
+",False,,1.6549610469999152,"('b', 'i', 'g', 'd', 'a', 't', 'a')","('bigdata',)",False,0.9699701049999021
+538,False,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+",False,,1.68261765200009,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,1.1838910839999244
+540,False,"3
+",False,,2.076124286999857,3,3,True,0.7541370679998636
+540,False,,False,,3.158247463999942,0,,False,0.6001907239999582
+541,True,,False,"Syntax error detected. Halting further processing. Unexpected token Token('IF', 'if') at line 8, column 2.
+Expected one of: 
+	* _INDENT
+Previous tokens: [Token('_NEWLINE', '\n ')]
+",1.5141349650000393,,,False,1.2940020389999063
+541,False,"True
+",False,,1.963495827000088,True,True,True,1.025563128000158
+542,False,,False,,4.606578026000079,Stereo:Sound:Sweatproof,,False,0.5288884399999461
+542,False,"Probass:Curve:Audio
+",False,,1.754223482000043,Probass:Curve:Audio,Probass:Curve:Audio,True,0.5542112160001125
+544,False,"2 3 4 6 9 3 2 2 11
+",False,,1.5934252259999084,2 3 4 6 9 3 2 2 11,2 3 4 6 9 3 2 2 11,True,0.689801523999904
+544,False,"14 21 9 24 19 12 29 23 17
+",False,,1.9849699060000603,14 21 9 24 19 12 29 23 17,14 21 9 24 19 12 29 23 17,True,0.7620149340000353
+545,False,"140737488420879
+",False,,2.7049834930000998,6,140737488420879,False,1.0175865060000433
+545,False,"5
+",False,,1.9458753320000142,5,5,True,0.5704083600001013
+547,False,"3
+",False,,3.199084868,3,3,True,1.4898023980001653
+547,False,,False,,1.9709316510000008,8,,False,0.7945715129999371
+548,False,,False,,2.6570687569999336,3,,False,0.49361695600009625
+548,False,,False,,3.323022734999995,4,,False,0.5725654479999776
+549,False,,False,,3.1363721420000275,244,,False,0.5328814929998771
+549,False,,False,,2.6271003370000017,3369,,False,0.654887207999991
+550,False,"3
+",False,,2.598351481000009,5,3,False,1.3793487759999152
+550,False,"3
+",False,,2.350631069999963,3,3,True,1.4533732459999555
+552,False,"Linear Sequence
+",False,,2.4605779319999783,Linear Sequence,Linear Sequence,True,1.1019241830001647
+552,False,"Not a Linear Sequence
+Linear Sequence
+",False,,2.0340649199999916,Non Linear Sequence,"Not a Linear Sequence
+Linear Sequence",False,1.1666000139998687
+553,False,"263.0
+",False,,1.5108939459998965,7.256,263.0,False,0.6910380009999244
+553,False,"131.0
+",False,,1.6283323200000268,8.123,131.0,False,0.6769777100000738
+554,False,,False,,2.146232813999859,"[11, 13]",,False,0.49459199499983697
+554,False,,False,,1.8996787640001003,"[7, 9, 1]",,False,0.4706162730001324
+555,False,"210
+",False,,2.2289550699999836,210,210,True,1.312407660999952
+555,False,"6
+",False,,2.2253193630001533,6,6,True,1.2982380410001042
+556,False,,False,,1.7590949630000523,12,,False,0.589456281999901
+556,False,,False,,1.6846723399999064,2,,False,0.4899962769998183
+558,False,"6
+",False,,2.1023363379999864,6,6,True,0.7732416930000454
+558,True,,False,"Syntax error detected. Halting further processing. Unexpected token Token('NAME', 'sum_diffs') at line 8, column 1.
+Expected one of: 
+	* LESSTHAN
+	* FOR
+	* CIRCUMFLEX
+	* PERCENT
+	* COMMA
+	* NOT
+	* ""<=""
+	* STAR
+	* IN
+	* ASYNC
+	* IS
+	* DOT
+	* RSQB
+	* SLASH
+	* ""==""
+	* AT
+	* ""//""
+	* MINUS
+	* ""!=""
+	* VBAR
+	* "">>""
+	* LPAR
+	* OR
+	* IF
+	* "">=""
+	* MORETHAN
+	* AND
+	* ""<<""
+	* ""**""
+	* LSQB
+	* AMPERSAND
+	* PLUS
+	* ""<>""
+Previous tokens: [Token('_NEWLINE', '\n\n# Sum up all the differences\n')]
+",2.191607422000061,,,False,1.0799560049999855
+559,False,,False,,3.627609567000036,8,,False,0.9823460729999169
+559,False,,False,,4.411700547999999,10,,False,0.6649415169999884
+560,False,,False,,2.3566278779999266,"(1, 2, 3, 4, 5, 6)",,False,0.5341711989999567
+560,False,,False,,1.3422383269999045,"(11, 12, 13, 14, 15, 16, 17)",,False,0.5829700560000219
+561,False,"{6: [4], 9: [4, 4], 3: [8], 4: [9]}
+",False,,4.019428387999824,"{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}","{6: [4], 9: [4, 4], 3: [8], 4: [9]}",False,1.5431874609998886
+561,False,,False,,3.276022527000123,"{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",,False,0.9927922970000509
+562,False,"3
+",False,,1.9505058770000687,3,3,True,0.6490520239999569
+562,False,"5
+",False,,1.871714484999984,5,5,True,0.6859422560000894
+564,False,,False,,1.5913796669999556,0,,False,0.4143234929999835
+564,False,,False,,2.466156706999982,10,,False,0.43374165399995945
+565,False,"['N', 'a', 'm', 'e']
+",False,,1.2861457189999328,"['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,0.9048606029998609
+565,False,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+",False,,1.1403264409998428,"['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,0.7522691659999055
+571,False,,False,,2.375561349999998,25,,False,0.4905854430001
+571,False,,False,,4.77733398700002,21,,False,0.5691851189999397
+572,False,,False,,1.6610042859999794,"[1, 3, 4, 5]",,False,0.6386483740000131
+572,False,"[1, 2, 3, 4, 5]
+",False,,1.531112640000174,"[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,1.2260364139999638
+573,False,,False,,2.027520328000037,6,,False,0.41743945500002155
+573,False,,False,,1.8299126240001442,0,,False,0.6040325310000298
+575,True,,False,Error detected. Halting further processing. list index out of range,1.3150810109998474,,,False,0.709107523999819
+575,False,"10
+",False,,2.0054679600000327,16,10,False,1.315080971000043
+576,False,"True
+",False,,3.9192380970000613,True,True,True,2.1230286170000454
+577,False,,False,,2.1535798289999093,0,,False,0.7941381799998908
+577,False,"0
+",False,,1.7378613509999923,0,0,True,0.6951216420000037
+579,False,,False,,2.601396951999959,"(1, 4, 7, 9)",,False,0.5525258559998747
+579,False,"[25, 11]
+",False,,1.6533021770001142,"(34, 36, 11, 25)","[25, 11]",False,0.592062339999984
+580,True,,False,"Error detected. Halting further processing. isinstance() arg 2 must be a type, a tuple of types, or a union",2.73101074300007,,,False,2.031712754999944
+580,True,,False,"Syntax error detected. Halting further processing. Unexpected token Token('IF', 'if') at line 7, column 2.
+Expected one of: 
+	* _INDENT
+Previous tokens: [Token('_NEWLINE', '\n ')]
+",3.0562463150001804,,,False,3.0562463150001804
+581,False,"43
+",False,,1.965294300999858,56,43,False,1.5289574690000336
+581,False,"3.83
+",False,,2.1954513949999637,5,3.83,False,1.4000435469999957
+584,False,,False,,3.916486748000125,28-36: carefuly,,False,0.5614851270001964
+584,False,,False,,5.206505845000038,18-25: quickly,,False,0.5341745670000364
+586,False,,False,,2.406761331000098,"[2, 3, 4, 1]",,False,0.5564790070000072
+586,False,"[0, 2, 4, 3, 4, 5, 6, 7]
+",False,,2.739059564000172,"[3, 4, 5, 6, 7, 0, 1, 2]","[0, 2, 4, 3, 4, 5, 6, 7]",False,0.9848662140000215
+588,False,,False,,1.7264999239998815,8,,False,0.5247754679999161
+588,False,,False,,2.865095743999973,7,,False,0.4066487400000369
+591,False,,False,,2.6766267040000002,"[3, 2, 1]",,False,0.5041342960000748
+591,False,,False,,2.632530405999887,"[6, 5, 4]",,False,0.5037278409999999
+592,False,"0
+",False,,2.497756284000161,56,0,False,1.2097195579999607
+592,False,"2
+",False,,2.6349134320000758,1,2,False,0.8919591540000056
+595,False,,False,,2.505259808000119,Not Possible,,False,0.4377540130001307
+595,False,"1
+",False,,2.3603057210000316,Not Possible,1,False,0.7879794160000984
+596,False,"6
+",False,,1.5703396380001777,88,6,False,1.0704151320001074
+596,False,"4
+",False,,1.5779331769999771,72,4,False,1.014907606999941
+597,False,"113
+",False,,2.4752923920000285,256,113,False,0.8369132150000951
+597,False,,False,,3.303463893000071,8,,False,0.8662023100000624
+600,False,"False
+",False,,2.219060243000058,True,False,False,1.2501710639999146
+600,False,"False
+",False,,1.8464384359999713,False,False,True,1.1380587149999428
