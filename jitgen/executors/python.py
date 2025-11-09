@@ -2,16 +2,16 @@ import asyncio
 import io
 import sys
 from types import CodeType
-from typing import Any
+from typing import Any  # noqa: ANN401
 
 from pydantic import BaseModel, PrivateAttr
 from jitgen.core.base import ExecutionResult, SourceCode
 
 
 class InProcPythonExecutor(BaseModel):
-    _last_exception: Exception | None = PrivateAttr(default=None)
+    _last_exception: BaseException | None = PrivateAttr(default=None)
 
-    _locals: dict[str, Any] = PrivateAttr(
+    _locals: dict[str, Any] = PrivateAttr(  # noqa: ANN401
         default_factory=lambda: {"__name__": "__console__", "__doc__": None}
     )
 
@@ -20,7 +20,7 @@ class InProcPythonExecutor(BaseModel):
             exec(compiled_code, self._locals)
         except SystemExit:
             raise
-        except:
+        except BaseException:
             self._last_exception = sys.exc_info()[1]
             raise
 

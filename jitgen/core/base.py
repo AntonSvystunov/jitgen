@@ -17,7 +17,7 @@ class ExecutionResult(BaseModel):
     has_timed_out: bool = Field(
         default=False, description="Indicates if the execution timed out"
     )
-    timeout_value: int | None = Field(
+    timeout_value: float | None = Field(
         default=None, description="The timeout value in seconds, if applicable"
     )
 
