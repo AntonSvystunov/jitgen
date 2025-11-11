@@ -48,7 +48,7 @@ class JITGenParser(BaseTransformOutputParser[str]):
             # Get text content from BaseMessage or use string directly
             chunk_text: str
             if isinstance(chunk, BaseMessage):
-                chunk_text = chunk.text()
+                chunk_text = chunk.text
             else:
                 chunk_text = chunk
             
@@ -97,7 +97,7 @@ class JITGenParser(BaseTransformOutputParser[str]):
             # Get text content from BaseMessage or use string directly
             chunk_text: str
             if isinstance(chunk, BaseMessage):
-                chunk_text = chunk.text()
+                chunk_text = chunk.text
             else:
                 chunk_text = chunk
             
