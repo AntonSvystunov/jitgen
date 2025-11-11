@@ -1,4 +1,4 @@
-from typing import AsyncIterator, Iterator, Type
+from collections.abc import AsyncIterator, Iterator
 from lark import (
     Lark,
     Token,
@@ -14,7 +14,7 @@ from jitgen.core.base import BaseExecutor
 
 
 class JITGen(BaseModel):
-    model_config = ConfigDict(
+    model_config = ConfigDict(  # type: ignore[assignment]
         arbitrary_types_allowed=True,
     )
     
@@ -22,7 +22,7 @@ class JITGen(BaseModel):
         description="The Lark parser instance used for parsing the input code."
     )
 
-    interpreter_type: Type[BaseExecutor] = Field(
+    interpreter_type: type[BaseExecutor] = Field(
         description="The interpreter instance that executes the parsed statements."
     )
 
@@ -32,40 +32,46 @@ class JITGen(BaseModel):
     )
 
     async def _aexecute_statement(
-        self, buffer: str, statement: Branch[Token], interpreter: BaseExecutor
+        self, buffer: str, statement: Branch[Token], interpreter: BaseExecutor, timeout: float = 5.0
     ) -> str:
         """
         Execute a single statement from the buffer using the interpreter.
         """
-        start = statement.meta.start_pos
-        end = statement.meta.end_pos
+        meta = getattr(statement, 'meta', None)  # type: ignore[arg-type]
+        if meta is None:
+            return ""
+        start = getattr(meta, 'start_pos', 0)  # type: ignore[arg-type]
+        end = getattr(meta, 'end_pos', 0)  # type: ignore[arg-type]
         stmt = buffer[start:end]
 
         if stmt.strip():
-            execution_result = await interpreter.aexecute(stmt)
+            execution_result = await interpreter.aexecute(stmt, timeout=timeout)
             if not execution_result.success:
                 raise ValueError(
                     f"Error detected. Halting further processing. {execution_result.error}"
                 )
-            return execution_result.output
+            return execution_result.output or ""
         return ""
     
     def _execute_statement(
-        self, buffer: str, statement: Branch[Token], interpreter: BaseExecutor
+        self, buffer: str, statement: Branch[Token], interpreter: BaseExecutor, timeout: float = 5.0
     ) -> str:
         """ Execute a single statement from the buffer using the interpreter.
         """
-        start = statement.meta.start_pos
-        end = statement.meta.end_pos
+        meta = getattr(statement, 'meta', None)  # type: ignore[arg-type]
+        if meta is None:
+            return ""
+        start = getattr(meta, 'start_pos', 0)  # type: ignore[arg-type]
+        end = getattr(meta, 'end_pos', 0)  # type: ignore[arg-type]
         stmt = buffer[start:end]
 
         if stmt.strip():
-            execution_result = interpreter.execute(stmt)
+            execution_result = interpreter.execute(stmt, timeout=timeout)
             if not execution_result.success:
                 raise ValueError(
                     f"Error detected. Halting further processing. {execution_result.error}"
                 )
-            return execution_result.output
+            return execution_result.output or ""
         return ""
 
     async def arun_from_stream(
@@ -87,7 +93,8 @@ class JITGen(BaseModel):
                     f"Syntax error detected. Halting further processing. {str(e)}"
                 )
             except UnexpectedToken as e:
-                if e.token.type in self.indentation_tokens:
+                token_type = getattr(e.token, 'type', None)
+                if token_type in self.indentation_tokens:
                     # Incomplete input; wait for more fragments.
                     continue
                 # A genuine syntax error: halt further processing.
@@ -103,7 +110,9 @@ class JITGen(BaseModel):
                     yield await self._aexecute_statement(
                         code_buffer, statement, interpreter
                     )
-                    executed_upto = statement.meta.end_pos
+                    meta = getattr(statement, 'meta', None)  # type: ignore[arg-type]
+                    if meta is not None:
+                        executed_upto = getattr(meta, 'end_pos', 0)  # type: ignore[arg-type]
                 # The code corresponding to the last node remains in the buffer.
                 code_buffer = code_buffer[executed_upto:]
 
@@ -139,7 +148,8 @@ class JITGen(BaseModel):
                     f"Syntax error detected. Halting further processing. {str(e)}"
                 )
             except UnexpectedToken as e:
-                if e.token.type in self.indentation_tokens:
+                token_type = getattr(e.token, 'type', None)  # type: ignore[arg-type]
+                if token_type in self.indentation_tokens:
                     # Incomplete input; wait for more fragments.
                     continue
                 # A genuine syntax error: halt further processing.
@@ -155,7 +165,9 @@ class JITGen(BaseModel):
                     yield self._execute_statement(
                         code_buffer, statement, interpreter
                     )
-                    executed_upto = statement.meta.end_pos
+                    meta = getattr(statement, 'meta', None)  # type: ignore[arg-type]
+                    if meta is not None:
+                        executed_upto = getattr(meta, 'end_pos', 0)  # type: ignore[arg-type]
                 # The code corresponding to the last node remains in the buffer.
                 code_buffer = code_buffer[executed_upto:]
 

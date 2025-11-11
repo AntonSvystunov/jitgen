@@ -1,0 +1,191 @@
+# JitGen: Grammar-Guided Incremental Code Execution
+
+JitGen is a **grammar-guided, incremental code execution strategy** that improves how large language models (LLMs) generate and run code. Instead of waiting for complete programs, JitGen parses and executes code incrementally as it's generated, detecting errors early and producing outputs as soon as possible.
+
+## Key Features
+
+- ⚡ **Incremental Execution**: Run code as it's being generated, not after completion
+- 🔍 **Early Error Detection**: Catch syntax and runtime errors before full code generation
+- 📊 **Reduced Latency**: Produce outputs incrementally, improving time-to-first-output
+- 🎯 **Grammar-Guided**: Uses context-free grammars (Python 3) to detect complete statements
+- 🔄 **REPL-Style**: Maintains execution state across statements like a REPL environment
+- 🔌 **LangChain Integration**: Ready-to-use LangChain output parser for LLM chains
+
+## How It Works
+
+1. **Streaming Code Generation**: As an LLM generates code fragments, they're accumulated in a buffer
+2. **Incremental Parsing**: After each fragment, the buffer is parsed using a grammar parser (Lark)
+3. **Complete Statement Detection**: When complete top-level statements are detected, they're executed immediately
+4. **Early Output**: Execution results are yielded as soon as statements complete
+5. **Error Handling**: Syntax or runtime errors halt generation immediately
+
+### Example Flow
+
+```python
+# LLM generates code incrementally:
+Fragment 1: "print('Hello')\n"
+Fragment 2: "print('World')\n"
+
+# JitGen processes:
+1. Receives fragment 1 → Parses → Detects complete statement → Executes → Yields "Hello\n"
+2. Receives fragment 2 → Parses → Detects complete statement → Executes → Yields "World\n"
+
+# Result: User sees output immediately, not after full generation
+```
+
+## Installation
+
+```bash
+# Using uv (recommended)
+uv sync
+
+# Or using pip
+pip install -e .
+```
+
+## Quick Start
+
+### Basic Usage
+
+```python
+from jitgen.prebuilt.python import create_python_jitgen
+
+jitgen = create_python_jitgen()
+
+async def code_stream():
+    # Simulate LLM generating code fragments
+    yield "x = 10\n"
+    yield "y = 20\n"
+    yield "print(x + y)\n"
+
+async for output in jitgen.arun_from_stream(code_stream()):
+    print(output)  # Prints: "30\n"
+```
+
+### LangChain Integration
+
+```python
+from langchain_ollama import ChatOllama
+from jitgen.langchain.python import create_python_jitgen_parser
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOllama(model="llama3.2")
+parser = create_python_jitgen_parser()
+
+chain = prompt | llm | parser | StrOutputParser()
+
+# Stream execution results incrementally
+async for output in chain.astream({"task": "Print numbers 1 to 5"}):
+    print(output)  # Outputs appear as code executes
+```
+
+## Architecture
+
+### Core Components
+
+- **`JITGen`** (`jitgen/core/jit.py`): Main algorithm implementation
+  - `run_from_stream()`: Synchronous streaming execution
+  - `arun_from_stream()`: Asynchronous streaming execution
+
+- **`BaseExecutor`** (`jitgen/core/base.py`): Protocol for code executors
+  - `execute()`: Synchronous execution
+  - `aexecute()`: Asynchronous execution
+
+- **`InProcPythonExecutor`** (`jitgen/executors/python.py`): Python REPL-style executor
+  - Maintains persistent state across executions
+  - Captures stdout/stderr separately
+  - Supports timeouts
+
+- **`JITGenParser`** (`jitgen/langchain/parser.py`): LangChain output parser
+  - Extracts code blocks from LLM streams
+  - Integrates with JitGen for incremental execution
+
+## Evaluation
+
+The repository includes evaluation tools comparing JitGen (async) vs. traditional synchronous execution:
+
+```bash
+# Run evaluation
+python evaluation/run.py
+
+# Or using Docker
+docker-compose up
+```
+
+### Evaluation Metrics
+
+- **First Output Time**: Time until first execution result (JitGen advantage)
+- **Total Execution Time**: Complete end-to-end time
+- **Success Rate**: Percentage of successful executions
+- **Correctness**: Output matches expected results
+
+Results are saved to `results/` directory as CSV files.
+
+## Project Structure
+
+```
+jitgen/
+├── jitgen/              # Core library
+│   ├── core/           # JitGen algorithm implementation
+│   ├── executors/      # Code execution backends
+│   ├── langchain/      # LangChain integration
+│   └── prebuilt/       # Pre-configured instances
+├── evaluation/         # Evaluation and benchmarking
+├── tests/              # Unit tests
+└── notebooks/          # Analysis notebooks
+```
+
+## Development
+
+### Running Tests
+
+```bash
+# Install test dependencies
+uv sync --group test
+
+# Run tests with coverage
+uv run pytest
+
+# Or run tests without coverage
+uv run pytest --no-cov
+```
+
+### Adding New Language Support
+
+1. Create an executor implementing `BaseExecutor` protocol
+2. Set up a grammar parser for the language
+3. Create a factory function in `jitgen/prebuilt/`
+4. Add LangChain integration if needed
+
+See `.cursorrules` for detailed development guidelines.
+
+## Requirements
+
+- Python 3.13+
+- Dependencies listed in `pyproject.toml`
+- For evaluation: Ollama or compatible LLM API
+
+## Research
+
+JitGen demonstrates significant improvements over traditional code generation approaches:
+
+- **Faster Time-to-First-Output**: Results appear incrementally
+- **Better Error Detection**: Errors caught before full generation
+- **Similar Correctness**: Maintains or improves correctness vs. baseline
+
+## License
+
+[Add your license here]
+
+## Citation
+
+If you use JitGen in your research, please cite:
+
+```bibtex
+[Add citation information]
+```
+
+## Contributing
+
+Contributions welcome! Please see `.cursorrules` for development guidelines and code style requirements.
+
