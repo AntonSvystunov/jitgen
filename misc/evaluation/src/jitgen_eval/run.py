@@ -2,6 +2,7 @@ from langchain_ollama import ChatOllama
 from datasets import load_dataset
 from .chains import create_jitgen_chain, create_sync_executor_chain
 from .utils import run_test_cases
+from random import randint
 
 from .config import config
 
@@ -10,8 +11,9 @@ MODE = "async"
 DATASET = "validation"
 OUTPUT_FILE = f"./results/{MODEL_NAME.replace(':', '_').replace('.', '_')}_{MODE}_chain_results_{DATASET}.csv"
 
-
 async def run_evaluation():
+    session_id = randint(0, 1000000)
+    
     dataset_full = load_dataset(
         config.dataset_name, cache_dir="./data", download_mode="reuse_dataset_if_exists"
     )
@@ -20,6 +22,9 @@ async def run_evaluation():
             model=model_name,
             temperature=0,
             base_url=config.ollama_url,
+            seed=session_id,
+            keep_alive=0,
+            cache=False,
         )
 
         jitgen_chain = create_jitgen_chain(llm)
