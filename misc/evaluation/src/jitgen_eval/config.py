@@ -7,6 +7,7 @@ class EvaluationConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     # Timeout for test case execution in seconds
@@ -30,6 +31,6 @@ class EvaluationConfig(BaseSettings):
     dataset: str = "validation"
     
     hf_token: str | None = None
-    
+
 
 config = EvaluationConfig()

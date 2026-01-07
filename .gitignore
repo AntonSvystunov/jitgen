@@ -12,6 +12,7 @@ wheels/
 
 # Data files
 data
+results
 
 .env
 dataset
