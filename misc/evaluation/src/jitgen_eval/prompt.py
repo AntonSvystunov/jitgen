@@ -27,6 +27,8 @@ Non-negotiable constraints:
 3. Main logic to solve the task
 4. Final print statement with the answer
 
+Separate your code into logical section with comments to match the above structure.
+
 Internal self-check (do this silently before finalizing):
 - [ ] All required values are defined as local variables from the test input
 - [ ] No input() usage
