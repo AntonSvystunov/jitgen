@@ -488,6 +488,7 @@ dependencies = [
     { name = "langchain-ollama" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
+    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -501,6 +502,7 @@ requires-dist = [
     { name = "langchain-ollama", specifier = ">=1.0.0" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "tqdm", specifier = ">=4.67.1" },
 ]
 
 [[package]]

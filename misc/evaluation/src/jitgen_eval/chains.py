@@ -23,7 +23,9 @@ def create_jitgen_chain(llm: BaseChatModel) -> RunnableSerializable[TaskInput, s
     return task_prompt | llm | create_python_jitgen_parser() | StrOutputParser()
 
 
-def create_sync_executor_chain(llm: BaseChatModel) -> RunnableSerializable[TaskInput, str]:
+def create_sync_executor_chain(
+    llm: BaseChatModel,
+) -> RunnableSerializable[TaskInput, str]:
     """
     Create a synchronous executor chain that processes input through a task prompt,
     a language model, and executes Python code.

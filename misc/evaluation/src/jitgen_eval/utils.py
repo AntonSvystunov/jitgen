@@ -2,6 +2,8 @@ import asyncio
 import time
 import pandas as pd
 from pydantic import BaseModel
+import logging
+import sys
 
 from langchain_core.runnables import RunnableSerializable
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -13,22 +15,69 @@ import builtins
 from datasets import Dataset
 
 
-async def timeout_async_iterator(aiter, timeout):
+class TqdmLoggingHandler(logging.Handler):
+    """Custom logging handler that uses tqdm.write() to avoid interfering with progress bars."""
+
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            tqdm.write(msg, file=sys.stderr)
+        except Exception:
+            self.handleError(record)
+
+
+logger = logging.getLogger(__name__)
+
+
+async def timeout_async_iterator(aiter, timeout, task_id=None):
     """
     Wraps an asynchronous iterator 'aiter' so that each next item is awaited with a timeout.
     If a timeout occurs, the iteration is terminated.
     """
-    while True:
-        try:
-            # Wait for the next item with the specified timeout.
-            item = await asyncio.wait_for(aiter.__anext__(), timeout)
-            yield item
-        except asyncio.TimeoutError:
-            print("Timeout reached while waiting for the next item.")
-            break
-        except StopAsyncIteration:
-            # The underlying async iterator is exhausted.
-            break
+    task = None
+    item_count = 0
+    try:
+        while True:
+            try:
+                # Create a task for the next item
+                task = asyncio.create_task(aiter.__anext__())
+                # Wait for the task with the specified timeout
+                item = await asyncio.wait_for(task, timeout)
+                task = None  # Task completed successfully
+                item_count += 1
+                yield item
+            except asyncio.TimeoutError:
+                tqdm.write(
+                    f"⚠️  Timeout reached for task {task_id} after {item_count} items",
+                    file=sys.stderr,
+                )
+                if task and not task.done():
+                    task.cancel()
+                    try:
+                        await task
+                    except asyncio.CancelledError:
+                        pass
+                    except Exception as e:
+                        tqdm.write(
+                            f"❌ Error cancelling task for {task_id}: {e}",
+                            file=sys.stderr,
+                        )
+                break
+            except StopAsyncIteration:
+                # The underlying async iterator is exhausted.
+                break
+    finally:
+        # Ensure any pending task is cancelled on generator cleanup
+        if task and not task.done():
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+            except Exception as e:
+                tqdm.write(
+                    f"❌ Error in finally cleanup for {task_id}: {e}", file=sys.stderr
+                )
 
 
 class TestCaseExecutionResult(BaseModel):
@@ -60,6 +109,7 @@ async def execute_test_case_with_timeout(
     case_input: TaskInput,
     lcel_chain: RunnableSerializable[TaskInput, str],
     timeout: float = 30.0,
+    task_id: str = "unknown",
 ) -> TestCaseExecutionResult:
     """
     Executes a test case with a timeout, capturing the output and timing information.
@@ -68,6 +118,7 @@ async def execute_test_case_with_timeout(
         case_input (TaskInput): The input for the test case.
         lcel_chain (RunnableSerializable[dict, str]): The chain to execute.
         timeout (float): The maximum time to wait for the first output.
+        task_id (str): Identifier for the task being executed.
 
     Returns:
         TestCaseExecutionResult: The result of the test case execution.
@@ -79,7 +130,7 @@ async def execute_test_case_with_timeout(
 
     try:
         async for text in timeout_async_iterator(
-            lcel_chain.astream(case_input), timeout
+            lcel_chain.astream(case_input), timeout, task_id=task_id
         ):
             if first_output_time is None:
                 first_output_time = time.perf_counter()
@@ -107,6 +158,9 @@ async def execute_test_case_with_timeout(
         )
     except Exception as e:
         total_time = time.perf_counter() - start_time
+        tqdm.write(
+            f"❌ Exception in task {task_id}: {type(e).__name__}: {e}", file=sys.stderr
+        )
         return TestCaseExecutionResult(
             success=False,
             has_timed_out="Timeout" in str(e),
@@ -164,26 +218,34 @@ async def run_test_cases(
     old_input = builtins.input
     builtins.input = disabled_input
 
+    tqdm.write("🔥 Warming up the model...", file=sys.stderr)
     await llm.ainvoke("")  # Warm up the model
+    tqdm.write(
+        f"✅ Model ready. Starting evaluation of {len(dataset)} test cases\n",
+        file=sys.stderr,
+    )
 
     results = []
-    for case in tqdm(dataset):
+    for idx, case in enumerate(tqdm(dataset, desc="Evaluating", unit="test")):
+        task_id = case.get("task_id", f"case_{idx}")
+
         case_input: TaskInput = {
-            "task": case["text"],
+            "task": case["text"].replace("function", "Python code"),
             "example_test_input": case.get("example_test_input", ""),
             "example_test_output": case.get("example_test_output", ""),
             "test_input": case.get("test_input", ""),
-            "test_output": case.get("test_output", ""),            
+            "test_output": case.get("test_output", ""),
         }
 
         # result = await execute_test_case(case_input, lcel_chain)
         result = await execute_test_case_with_timeout(
-            case_input, lcel_chain, timeout=30
+            case_input, lcel_chain, timeout=30, task_id=task_id
         )
 
-        results.append((case["task_id"], result))
+        results.append((task_id, result))
 
     builtins.input = old_input
+    tqdm.write(f"\n✅ All {len(dataset)} test cases completed", file=sys.stderr)
 
     df = pd.DataFrame(results, columns=["RowID", "ExecutionInfo"])
     df["ErrorOccurred"] = df["ExecutionInfo"].apply(lambda x: not x.success)
@@ -196,9 +258,9 @@ async def run_test_cases(
         lambda x: x.actual_output.strip() if x.actual_output else None
     )
     df["CorrectOutput"] = df["ExecutionInfo"].apply(
-        lambda x: x.expected_output == x.actual_output.strip()
-        if x.actual_output
-        else False
+        lambda x: (
+            x.expected_output == x.actual_output.strip() if x.actual_output else False
+        )
     )
     df["FirstOutput"] = df["ExecutionInfo"].apply(lambda x: x.first_output_time)
     df.drop(columns=["ExecutionInfo"], inplace=True)

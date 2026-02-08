@@ -8,12 +8,14 @@
             "name": "Debug evaluation script",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/evaluation/run.py",
+            "module": "src.jitgen_eval",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/misc/evaluation/",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}/misc/evaluation/"
             },
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/misc/evaluation/.env",
+            "justMyCode": false
         }
     ]
 }

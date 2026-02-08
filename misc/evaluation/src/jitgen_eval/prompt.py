@@ -18,6 +18,14 @@ Non-negotiable constraints:
 - No imports / no external libraries.
 - No eval/exec/compile.
 - No infinite loops; every loop must have a clear termination condition.
+- Script must run top-to-bottom without errors.
+- Define functions only if absolutely necessary, but the main logic should be in the global scope.
+
+*Structure* your code in following order:
+1. Helper functions (if needed)
+2. Variable definitions inferred from the test input
+3. Main logic to solve the task
+4. Final print statement with the answer
 
 Internal self-check (do this silently before finalizing):
 - [ ] All required values are defined as local variables from the test input
@@ -25,6 +33,8 @@ Internal self-check (do this silently before finalizing):
 - [ ] No imports
 - [ ] Output matches the required format exactly
 - [ ] Script runs top-to-bottom
+- [ ] All utility code is defined before it's used
+- [ ] Code structure follows the specified order
 
 If ambiguous, choose the simplest interpretation consistent with the test case and required output format.
 If impossible, print a clear error message.
@@ -34,7 +44,7 @@ USER_PROMPT = """
 TASK:
 {task}
 
-TEST INPUT (infer local variables from this):
+TASK INPUT (infer local variables from this):
 {test_input}
 
 EXPECTED OUTPUT FORMAT EXAMPLE:
@@ -54,7 +64,7 @@ class TaskInput(TypedDict):
     example_test_input: str
     example_test_output: str
     test_input: str
-    test_output: str # Never shown to the model, but used for evaluation
+    test_output: str  # Never shown to the model, but used for evaluation
 
 
 task_prompt = ChatPromptTemplate.from_messages(
