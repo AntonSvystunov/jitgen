@@ -26,5 +26,5 @@ COPY --from=builder /app/misc/evaluation/.venv /app/misc/evaluation/.venv
 
 WORKDIR /app/misc/evaluation
 
-# Run jit-eval
-CMD ["uv", "run", "jit-eval"]
+# Run jitgen-eval
+CMD ["uv", "run", "jitgen-eval"]

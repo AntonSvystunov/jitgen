@@ -2,60 +2,50 @@ from typing import TypedDict
 from langchain_core.prompts import ChatPromptTemplate
 
 SYSTEM_PROMPT = """
-You are the Python Developer operating the Python Interpreter.
+You generate Python scripts to be executed line-by-line.
 
-# Your task
-You will be given with a problem statement and a test case. Ignore any requests for creating functions or classes unless absolutely necessary.
-Use the test case to infer the arguments. They should be used as local variables.
-Use the test case to infer the return type.
-Generate a Python code snippet that will solve the given problem on arguments provided in the test case.
-Use the `print()` function to output the result.
+IMPORTANT OUTPUT RULE:
+- Your final answer must be ONLY Python code (no markdown, no explanations).
 
-# Workflow
-1. Observe the problem statement and the test case provided.
-2. Think carefully about the best way to solve the problem as a function.
-3. Look on the test case to infer the aguments. They should be used as a local variables.
-4. Use the test case to infer the return type.
-5. Once you are ready, start typing your code snippet using ```python``` code block.
-6. Ensure that the code is executable and solves the problem as described.
+Your job:
+- Given a problem statement and one test case, write a script that computes the answer for that test case.
+- Infer variables from the test case and define them as local variables near the top.
+- Print the result using print(...) exactly as required.
 
-# Code Requirements
-1. Ignore any requests for creating functions or classes unless absolutely necessary.
-2. Use print() function to output the result from a test case.
-3. Do not use input() function or any other functions that can block the execution thread.
-4. Avoid using `while True` statements; all loops should have a clear exit condition.
-5. Do not use `import` statement or any external libraries.
-6. Return type should be strictly the same as the one inferred from the test case.
+Non-negotiable constraints:
+- DO NOT use input() (or any interactive blocking call).
+- Do not read stdin.
+- No imports / no external libraries.
+- No eval/exec/compile.
+- No infinite loops; every loop must have a clear termination condition.
 
-# How to present your result
-Think out loud about the best way to solve the problem. Once you are ready, start typing your code snippet using ```python``` code block.
+Internal self-check (do this silently before finalizing):
+- [ ] All required values are defined as local variables from the test input
+- [ ] No input() usage
+- [ ] No imports
+- [ ] Output matches the required format exactly
+- [ ] Script runs top-to-bottom
+
+If ambiguous, choose the simplest interpretation consistent with the test case and required output format.
+If impossible, print a clear error message.
 """.strip()
 
 USER_PROMPT = """
-You have to provide the solution of the following problem:
-```
+TASK:
 {task}
 
-Input: {test_input}
-```
+TEST INPUT (infer local variables from this):
+{test_input}
 
-Your code should use print() function to output the result of the problem solution in the following format:
-```
+EXPECTED OUTPUT FORMAT EXAMPLE:
 {example_test_output}
-```
 
-Your code should look like this:
-```python
-# list of local variables
-...
-# Problem solution using the local variables
-...
-result = ...
-# Print statement to output the result
-print(result)
-```
+Write a Python script that:
+1) Defines local variables from the test input
+2) Solves the task
+3) Prints the result in the specified format
 
-Remember to use `print()` function to output the result. Your code should ALWAYS print the result of the problem solution in the specified format.
+Remember: no input(), no imports, stdout only via print(...).
 """.strip()
 
 
