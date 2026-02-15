@@ -1,3 +1,5 @@
+from langchain_ollama import ChatOllama
+from langchain_openrouter import ChatOpenRouter
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -37,5 +39,27 @@ class EvaluationConfig(BaseSettings):
 
     hf_token: str | None = None
 
+    openrouter_api_key: str | None = None
+
 
 config = EvaluationConfig()
+
+def get_model(model_name: str, session_id: str) -> ChatOpenRouter:
+    if "/" in model_name:
+        return ChatOpenRouter(
+            model_name=model_name,
+            temperature=0,
+            seed=session_id,
+            cache=False,
+            api_key=config.openrouter_api_key,
+        )
+
+    return ChatOllama(
+        model=model_name,
+        temperature=0,
+        base_url=config.ollama_url,
+        seed=session_id,
+        keep_alive=0,
+        cache=False,
+    )
+

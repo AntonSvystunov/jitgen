@@ -5,7 +5,8 @@ SYSTEM_PROMPT = """
 You generate Python scripts to be executed line-by-line.
 
 IMPORTANT OUTPUT RULE:
-- Your final answer must be ONLY Python code (no markdown, no explanations).
+- Your final answer must be ONLY Python code wrapped in a ```python code block.
+- Format: ```python\n<code>\n```
 
 Your job:
 - Given a problem statement and one test case, write a script that computes the answer for that test case.
@@ -58,6 +59,8 @@ Write a Python script that:
 3) Prints the result in the specified format
 
 Remember: no input(), no imports, stdout only via print(...).
+
+CRITICAL: Wrap your entire code in a ```python code block.
 """.strip()
 
 

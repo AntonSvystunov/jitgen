@@ -219,7 +219,7 @@ async def run_test_cases(
     builtins.input = disabled_input
 
     tqdm.write("🔥 Warming up the model...", file=sys.stderr)
-    await llm.ainvoke("")  # Warm up the model
+    await llm.ainvoke("hi")  # Warm up the model
     tqdm.write(
         f"✅ Model ready. Starting evaluation of {len(dataset)} test cases\n",
         file=sys.stderr,
@@ -266,3 +266,8 @@ async def run_test_cases(
     df.drop(columns=["ExecutionInfo"], inplace=True)
 
     return df
+
+
+def get_results_file_name(results_directory: str, model_name: str, dataset_name: str, chain_type: str) -> str:
+    safe_model_name = model_name.replace("/", "__").replace(":", "_").replace(".", "_")
+    return f"{results_directory}/{safe_model_name}_{chain_type}_results_{dataset_name}.csv"
