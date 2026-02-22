@@ -1,0 +1,220 @@
+RowID,ErrorOccurred,ExecutionOutput,HasTimedOut,ExecutionError,ExecutionTime,ExpectedOutput,ActualOutput,CorrectOutput,FirstOutput
+511,False,"192
+",False,,1.9688059000181966,15,192,False,1.8484541000216268
+511,True,,False,Error detected. Halting further processing. The input() function has been disabled.,2.0873478000285104,,,False,1.9792607999988832
+512,False,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}
+",False,,9.031028600002173,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,8.708528799994383
+512,False,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}
+",False,,2.12691900000209,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,1.8080270999926142
+513,False,"['7PF', '8PF', '9PF', '10PF']
+",False,,1.8344068999867886,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","['7PF', '8PF', '9PF', '10PF']",False,1.689595499949064
+513,True,,False,Error detected. Halting further processing. 'str' object is not callable,5.601081700006034,,,False,5.425545800011605
+514,False,"21
+",False,,1.8677665999857709,21,21,True,1.809259600006044
+514,False,"95
+",False,,1.7828781999996863,95,95,True,1.7154276999644935
+515,True,,False,Error detected. Halting further processing. 'bool' object is not iterable,1.9853373999940231,,,False,1.8451529000303708
+515,True,,False,Error detected. Halting further processing. 'bool' object is not iterable,2.0048407000140287,,,False,1.8821057000313886
+516,True,,False,Error detected. Halting further processing. pop from empty list,2.4553196000051685,,,False,1.7841051999712363
+516,False,"[12, 29, 26, 24, 36]
+",False,,2.6997505000326782,"[12, 24, 26, 29, 36]","[12, 29, 26, 24, 36]",False,1.7980796999763697
+517,False,"6
+",False,,1.7878481000079773,6,6,True,1.6704800999723375
+517,False,"1
+",False,,1.64093110000249,1,1,True,1.590049899998121
+520,False,"The final answer is 24
+",False,,1.9890764000010677,24,The final answer is 24,False,1.6817716000368819
+520,False,"The final answer is 120
+",False,,1.9784719999879599,120,The final answer is 120,False,1.6659052000031807
+522,False,"4
+",False,,2.5106549999909475,6,4,False,2.4013968000072055
+522,False,"5
+",False,,2.510478399985004,5,5,True,2.400477499992121
+524,False,"16
+",False,,2.34389459999511,22,16,False,2.144598299986683
+524,False,"106
+",False,,2.3056584000005387,10,106,False,2.1640723000164144
+525,False,"True
+",False,,2.3475289999623783,False,True,False,1.844320299976971
+525,True,,False,Error detected. Halting further processing. 'int' object is not subscriptable,2.361610899970401,,,False,1.8490843999898061
+526,False,"PythoN
+",False,,1.8820544999907725,BigdatA,PythoN,False,1.6111611999804154
+526,False,"PythoN
+",False,,1.9277144000516273,HadooP,PythoN,False,1.720943000051193
+527,False,"1
+",False,,2.378452599979937,2,1,False,2.287351100007072
+527,False,"0
+",False,,2.4114546999917366,6,0,False,2.2769162000040524
+529,True,,False,Error detected. Halting further processing. The input() function has been disabled.,1.8608051000046544,,,False,1.8087179000140168
+529,True,,False,Error detected. Halting further processing. The input() function has been disabled.,2.1166264000348747,,,False,2.027524600038305
+532,False,"False
+",False,,1.8817084999755025,False,False,True,1.6770944999880157
+532,False,"True
+",False,,1.769195500004571,True,True,True,1.5694581000134349
+533,False,"[-0.1, -0.2, -0.1]
+",False,,2.1268070000223815,"[7, 8, 9]","[-0.1, -0.2, -0.1]",False,1.6417016999912448
+533,False,"[7, 2]
+",False,,1.8782333999988623,"[7, 2]","[7, 2]",True,1.6754284999915399
+537,False,"None
+",False,,2.010718999954406,,None,False,1.598429599951487
+537,False,"ab
+",False,,2.223805200017523,ca,ab,False,1.6182455999660306
+538,False,"python3.0
+",False,,1.9313363999826834,"('b', 'i', 'g', 'd', 'a', 't', 'a')",python3.0,False,1.62867909995839
+538,False,"p y t h o n 8 . l
+",False,,1.7982883999939077,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",p y t h o n 8 . l,False,1.5735173000139184
+540,False,"3
+",False,,2.304092100006528,3,3,True,1.806730600015726
+540,False,"0
+",False,,2.19770050002262,0,0,True,1.5657462000381202
+541,False,"True
+",False,,1.7752745999605395,False,True,False,1.658583699958399
+541,False,"True
+",False,,1.7786042000516318,True,True,True,1.662118200038094
+542,False,"S:Curve:Sound:Sweatproof
+",False,,1.8200914000044577,Stereo:Sound:Sweatproof,S:Curve:Sound:Sweatproof,False,1.6624908999656327
+542,False,"P:robass:Curve:Audio
+",False,,1.7993944000336342,Probass:Curve:Audio,P:robass:Curve:Audio,False,1.6351519000018016
+544,False,"2 2 2 3 3 4 6 9 11
+",False,,1.912383500020951,2 3 4 6 9 3 2 2 11,2 2 2 3 3 4 6 9 11,False,1.7106435000314377
+544,False,"1 4 2 1 9 2 4 1 9 1 2 2 9 2 3 1 7
+",False,,1.8874031000304967,14 21 9 24 19 12 29 23 17,1 4 2 1 9 2 4 1 9 1 2 2 9 2 3 1 7,False,1.732315400033258
+545,False,"12
+",False,,1.7865083999931812,6,12,False,1.7351523999823257
+545,False,"17
+",False,,1.7758417999721132,5,17,False,1.5791231999755837
+547,False,"1
+",False,,2.0143201999599114,3,1,False,1.556728399998974
+547,False,"17
+",False,,2.0181014999980107,8,17,False,1.56850559997838
+548,False,"3
+",False,,2.1120728999958374,3,3,True,1.659618199977558
+548,False,"4
+",False,,2.1485734000452794,4,4,True,1.6958175000036135
+549,True,,False,Error detected. Halting further processing. The input() function has been disabled.,1.7227015999960713,,,False,1.5994545999565162
+549,True,,False,Error detected. Halting further processing. The input() function has been disabled.,1.9473740000394173,,,False,1.8240237000281923
+550,False,"5
+",False,,2.554694999998901,5,5,True,1.8258230999927036
+550,False,"1
+",False,,2.1861832000431605,3,1,False,1.5157563000102527
+552,False,"Linear Sequence
+",False,,2.092886400001589,Linear Sequence,Linear Sequence,True,1.9898052000207826
+552,False,"Linear Sequence
+",False,,2.028141900023911,Non Linear Sequence,Linear Sequence,False,1.5830251000006683
+553,True,,False,"Error detected. Halting further processing. float() argument must be a string or a real number, not 'tuple'",1.8398511999985203,,,False,1.5971378000103869
+553,False,"0.07
+",False,,1.7417535000131465,8.123,0.07,False,1.5999127000104636
+554,False,"[11, 13]
+",False,,1.8235125999781303,"[11, 13]","[11, 13]",True,1.6452429000055417
+554,False,"['7', '9', '1']
+",False,,1.7856539000058547,"[7, 9, 1]","['7', '9', '1']",False,1.6370088999974541
+555,False,"210
+",False,,1.7756218999857083,210,210,True,1.6159014999866486
+555,False,"6
+",False,,2.0547785000526346,6,6,True,1.7903519000392407
+556,False,"2
+",False,,2.0619868999929167,12,2,False,1.6421142000472173
+556,False,"1
+",False,,2.0328517999732867,2,1,False,1.622966599999927
+558,False,"6
+",False,,1.8046762000303715,6,6,True,1.6780278999940492
+558,False,"7
+",False,,1.7784905000007711,7,7,True,1.6520383000024594
+559,False,"8
+",False,,2.087216100015212,8,8,True,1.594961000024341
+559,False,"10
+",False,,2.0935974999447353,10,10,True,1.6133843999705277
+560,False,"(1, 2, 3, 4, 5, 6)
+",False,,1.868036600004416,"(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,1.613240999984555
+560,False,"(11, 12, 13, 14, 15, 16, 17)
+",False,,1.869442800001707,"(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,1.6334295999840833
+561,True,,False,Error detected. Halting further processing. 5,2.585693800006993,,,False,1.712991200038232
+561,False,"2: []
+3: []
+4: [9]
+6: [8]
+7: []
+9: []
+",False,,2.605097899970133,"{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}","2: []
+3: []
+4: [9]
+6: [8]
+7: []
+9: []",False,1.8089657999807969
+562,False,"3
+",False,,2.081607099971734,3,3,True,1.9476169999688864
+562,False,"5
+",False,,1.886291800008621,5,5,True,1.6327789999777451
+564,False,"0
+",False,,1.9419833000283688,0,0,True,1.5469883000478148
+564,False,"4
+",False,,1.9841368999914266,10,4,False,1.8612174000008963
+565,False,"[N, a, m, e]
+",False,,1.633247499994468,"['N', 'a', 'm', 'e']","[N, a, m, e]",False,1.5496918000280857
+565,False,"[p, r, o, g, r, a, m]
+",False,,1.7370156000251882,"['p', 'r', 'o', 'g', 'r', 'a', 'm']","[p, r, o, g, r, a, m]",False,1.579547300003469
+571,False,"330
+",False,,2.2920097000314854,25,330,False,1.6394509000238031
+571,False,"The final answer is 75
+",False,,2.091054200020153,21,The final answer is 75,False,1.641548599989619
+572,False,"[[1, 1, 1, 1]]
+",False,,1.8011056000250392,"[1, 3, 4, 5]","[[1, 1, 1, 1]]",False,1.5697890000301413
+572,False,"1 2 3 4 5 1 2 3 4 5
+",False,,1.820679199998267,"[1, 2, 3, 4, 5]",1 2 3 4 5 1 2 3 4 5,False,1.5849312000209466
+573,False,"     4,320)
+",False,,2.118231799977366,6,"4,320)",False,1.7348991999751888
+573,False,"0
+",False,,1.8465029999497347,0,0,True,1.636026599968318
+575,False,"6
+",False,,2.0396954999887384,11,6,False,1.6188395000062883
+575,False,"1
+",False,,1.8738452999969013,16,1,False,1.6016592000378296
+576,False,"False
+",False,,2.3839637000346556,True,False,False,1.5537143999827094
+577,False,"4
+",False,,1.826510499988217,0,4,False,1.677972299978137
+577,False,"4
+",False,,1.7912115000071935,0,4,False,1.642323000007309
+579,False,"(1, 4, 7, 9)
+",False,,1.9016728000133298,"(1, 4, 7, 9)","(1, 4, 7, 9)",True,1.6562732000020333
+579,False,"(34, 36, 11, 25)
+",False,,1.8799591000424698,"(34, 36, 11, 25)","(34, 36, 11, 25)",True,1.634271000046283
+580,False,"(8, 4, 8)
+",False,,2.062637099996209,"(6, (8, (4, 8)))","(8, 4, 8)",False,1.5007089999853633
+580,False,"[6, [8, [4, 6]], 8, 10]
+",False,,2.1602527999784797,"(6, (8, (4, 6)), 8, 10)","[6, [8, [4, 6]], 8, 10]",False,2.0189219000167213
+581,False,"115.22499389946279
+",False,,1.867221900029108,56,115.22499389946279,False,1.5523880000109784
+581,False,"5.0
+",False,,1.8062110000173561,5,5.0,False,1.5735017000115477
+584,True,,False,Error detected. Halting further processing. name 're' is not defined,1.9570074999937788,,,False,1.649509799957741
+584,True,,False,Error detected. Halting further processing. name 're' is not defined,2.077396899985615,,,False,1.7639078000211157
+586,False,"1 4 9 16 14
+",False,,2.0391343000228517,"[2, 3, 4, 1]",1 4 9 16 14,False,1.7667169000487775
+586,False,"3, 4, 5, 6, 7, 2, 1, 0 ",False,,1.9845976999495178,"[3, 4, 5, 6, 7, 0, 1, 2]","3, 4, 5, 6, 7, 2, 1, 0",False,1.6098571000038646
+588,False,"8
+",False,,1.7500145000522025,8,8,True,1.5653149000136182
+588,False,"7
+",False,,1.75023579999106,7,7,True,1.598186400020495
+591,True,,False,Error detected. Halting further processing. list index out of range,1.9138363999663852,,,False,1.6136962999589741
+591,False,"[24, 25, 20, 30]
+",False,,1.971580300014466,"[6, 5, 4]","[24, 25, 20, 30]",False,1.6999891000450589
+592,False,"16
+",False,,1.917003599985037,56,16,False,1.7314056999748573
+592,False,"2
+",False,,1.9320259000523947,1,2,False,1.7333129000035115
+595,False,"6
+",False,,1.9877294999896549,Not Possible,6,False,1.5352332000038587
+595,False,"0
+",False,,2.13278139999602,Not Possible,0,False,1.9681984999915585
+596,False,"6
+",False,,1.660716800019145,88,6,False,1.6060904000187293
+596,False,"8
+",False,,1.813320900022518,72,8,False,1.6578463000478223
+597,False,"892
+",False,,2.6858000999782234,256,892,False,2.4599664999987
+597,True,,False,Error detected. Halting further processing. name 'result' is not defined,2.483184300013818,,,False,2.081309500033967
+600,False,"False
+",False,,1.7034341000253335,True,False,False,1.652152800001204
+600,False,"False
+",False,,1.6832245999830775,False,False,True,1.632320599979721

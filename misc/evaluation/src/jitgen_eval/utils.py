@@ -9,6 +9,8 @@ from langchain_core.runnables import RunnableSerializable
 from langchain_core.language_models.chat_models import BaseChatModel
 from tqdm import tqdm
 
+from .config import config
+
 from .prompt import TaskInput
 
 import builtins
@@ -239,7 +241,7 @@ async def run_test_cases(
 
         # result = await execute_test_case(case_input, lcel_chain)
         result = await execute_test_case_with_timeout(
-            case_input, lcel_chain, timeout=30, task_id=task_id
+            case_input, lcel_chain, timeout=config.test_case_timeout, task_id=task_id
         )
 
         results.append((task_id, result))
@@ -268,6 +270,10 @@ async def run_test_cases(
     return df
 
 
-def get_results_file_name(results_directory: str, model_name: str, dataset_name: str, chain_type: str) -> str:
+def get_results_file_name(
+    results_directory: str, model_name: str, dataset_name: str, chain_type: str
+) -> str:
     safe_model_name = model_name.replace("/", "__").replace(":", "_").replace(".", "_")
-    return f"{results_directory}/{safe_model_name}_{chain_type}_results_{dataset_name}.csv"
+    return (
+        f"{results_directory}/{safe_model_name}_{chain_type}_results_{dataset_name}.csv"
+    )
