@@ -1,4 +1,6 @@
 ModelLabel,Algorithm,Disabled input(),IndexError,Other Error,Success,TypeError
+CodeAct-Mistral,Async,0.0,0.0,14.0,98.0,1.0
+CodeAct-Mistral,Sync,0.0,0.0,14.0,98.0,1.0
 GPT-OSS 20B,Async,0.0,0.0,0.0,113.0,0.0
 GPT-OSS 20B,Sync,0.0,0.0,0.0,113.0,0.0
 Gemma 3,Async,0.0,0.0,2.0,111.0,0.0

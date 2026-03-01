@@ -1,4 +1,6 @@
 ModelLabel,Algorithm,Count,ExecTime_Mean,ExecTime_Median,ExecTime_Std,FirstOutput_Mean,FirstOutput_Median,FirstOutput_Std
+CodeAct-Mistral,Async,113,2.926,2.802,0.719,2.163,2.117,0.286
+CodeAct-Mistral,Sync,113,10.49,10.074,4.084,10.466,10.027,4.085
 GPT-OSS 20B,Async,113,20.523,8.295,32.635,20.179,7.958,32.73
 GPT-OSS 20B,Sync,113,20.464,8.301,32.636,20.464,8.3,32.636
 Gemma 3,Async,113,2.516,2.442,0.444,2.081,2.055,0.273

@@ -1,4 +1,6 @@
 ModelLabel,Algorithm,Count,PassRate,CorrectnessRate,TimeoutRate
+CodeAct-Mistral,Async,113,86.73,41.59,0.0
+CodeAct-Mistral,Sync,113,86.73,41.59,0.0
 GPT-OSS 20B,Async,113,100.0,58.41,0.0
 GPT-OSS 20B,Sync,113,100.0,58.41,0.0
 Gemma 3,Async,113,98.23,54.87,0.0
