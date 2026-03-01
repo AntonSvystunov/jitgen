@@ -1,10 +1,9 @@
 {
     "python.testing.pytestArgs": [
-        "tests"
+        "tests/*"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.typeCheckingMode": "basic",
     "jupyter.debugJustMyCode": false,
     "debugpy.debugJustMyCode": false,
     "cursorpyright.analysis.typeCheckingMode": "recommended",

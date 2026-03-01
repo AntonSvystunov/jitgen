@@ -1,0 +1,11 @@
+ModelLabel,Algorithm,Count,ExecTime_Mean,ExecTime_Median,ExecTime_Std,FirstOutput_Mean,FirstOutput_Median,FirstOutput_Std
+GPT-OSS 20B,Async,113,20.523,8.295,32.635,20.179,7.958,32.73
+GPT-OSS 20B,Sync,113,20.464,8.301,32.636,20.464,8.3,32.636
+Gemma 3,Async,113,2.516,2.442,0.444,2.081,2.055,0.273
+Gemma 3,Sync,113,2.565,2.486,0.327,2.565,2.485,0.327
+Llama 3.2,Async,113,2.101,1.969,0.778,1.821,1.659,0.765
+Llama 3.2,Sync,113,1.992,1.93,0.231,1.992,1.93,0.231
+Phi 4,Async,113,3.969,3.864,0.983,3.395,3.263,0.823
+Phi 4,Sync,113,3.886,3.884,0.805,3.886,3.884,0.805
+Qwen3-Coder 30B,Async,113,6.232,4.696,4.852,5.232,4.027,2.967
+Qwen3-Coder 30B,Sync,113,6.1,4.642,4.019,6.1,4.642,4.019

@@ -26,7 +26,7 @@ from langgraph.graph import END, StateGraph
 from langgraph.graph.message import MessagesState
 from dotenv import load_dotenv
 
-from jitgen.langchain.python import create_python_jitgen_parser
+from jitgen_langchain.python import create_python_jitgen_parser
 
 _ = load_dotenv()
 
