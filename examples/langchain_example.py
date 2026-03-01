@@ -14,7 +14,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from jitgen.langchain.python import create_python_jitgen_parser
+from jitgen_langchain.python import create_python_jitgen_parser
 
 
 async def main():
