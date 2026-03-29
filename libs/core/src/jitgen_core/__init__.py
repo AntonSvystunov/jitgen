@@ -1,7 +1,7 @@
 from .jit import JITGen
 from .base import BaseExecutor, ExecutionResult, SourceCode
 from .v2 import JITGenV2, JITGenSession
-from .aio import AsyncJITGenSession
+from .v2.aio import AsyncJITGenSession
 
 __all__ = [
 	"JITGen",

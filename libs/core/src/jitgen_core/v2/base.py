@@ -12,6 +12,7 @@ from lark import (
     UnexpectedInput,
     UnexpectedToken,
 )
+from lark.indenter import DedentError
 from lark.tree import Branch
 
 type Statement = str
@@ -83,6 +84,13 @@ class BaseStatefulAlgorithm(ABC):
 
         try:
             tree = self.parser.parse(self._code_buffer)
+        except DedentError:
+            if flush:
+                raise ValueError(
+                    "Syntax error detected. Halting further processing. "
+                    "Unexpected dedent during flush."
+                )
+            return []
         except UnexpectedEOF:
             if flush:
                 raise ValueError(

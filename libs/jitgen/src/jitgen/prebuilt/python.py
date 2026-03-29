@@ -1,7 +1,7 @@
 from lark import Lark
 from lark.indenter import PythonIndenter
 from jitgen_core import JITGen
-from jitgen_core.aio import AsyncJITGenSession
+from jitgen_core.v2.aio import AsyncJITGenSession
 from jitgen_core.v2 import JITGenV2
 from jitgen_core.v2 import JITGenSession
 

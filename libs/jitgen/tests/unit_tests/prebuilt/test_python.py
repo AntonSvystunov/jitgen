@@ -5,7 +5,7 @@ from jitgen.prebuilt.python import (
     create_python_jitgen,
     create_python_jitgen_session,
 )
-from jitgen_core.aio import AsyncJITGenSession
+from jitgen_core.v2.aio import AsyncJITGenSession
 from jitgen_core.jit import JITGen
 from jitgen_core.v2 import JITGenSession
 from jitgen.executors.python import InProcPythonExecutor
