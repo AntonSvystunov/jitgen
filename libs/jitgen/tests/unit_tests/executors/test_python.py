@@ -221,6 +221,76 @@ async def test_locals_persistence(python_executor: InProcPythonExecutor):
 
 
 @pytest.mark.asyncio
+async def test_tools_are_available_from_constructor():
+    def add(left: int, right: int) -> int:
+        return left + right
+
+    python_executor = InProcPythonExecutor(tools={"add": add})
+
+    result = await python_executor.aexecute("print(add(2, 3))")
+
+    assert result.success
+    assert result.output == "5\n"
+    assert result.error is None
+
+
+@pytest.mark.asyncio
+async def test_register_tool_adds_runtime_local(python_executor: InProcPythonExecutor):
+    def multiply(left: int, right: int) -> int:
+        return left * right
+
+    python_executor.register_tool("multiply", multiply)
+    result = await python_executor.aexecute("print(multiply(4, 5))")
+
+    assert result.success
+    assert result.output == "20\n"
+    assert result.error is None
+
+
+@pytest.mark.asyncio
+async def test_registered_tools_persist_across_executions():
+    def add(left: int, right: int) -> int:
+        return left + right
+
+    python_executor = InProcPythonExecutor(tools={"add": add})
+
+    first_result = await python_executor.aexecute("total = add(2, 3)")
+    second_result = await python_executor.aexecute("print(add(total, 4))")
+
+    assert first_result.success
+    assert second_result.success
+    assert second_result.output == "9\n"
+
+
+@pytest.mark.asyncio
+async def test_registered_tool_exception_is_captured():
+    def fail_tool() -> None:
+        raise RuntimeError("tool exploded")
+
+    python_executor = InProcPythonExecutor(tools={"fail_tool": fail_tool})
+
+    result = await python_executor.aexecute("fail_tool()")
+
+    assert not result.success
+    assert result.error is not None
+    assert "tool exploded" in result.error
+
+
+@pytest.mark.asyncio
+async def test_registered_tools_are_isolated_between_executors():
+    first_executor = InProcPythonExecutor(tools={"answer": lambda: 41})
+    second_executor = InProcPythonExecutor()
+
+    first_result = await first_executor.aexecute("print(answer())")
+    second_result = await second_executor.aexecute("print('answer' in globals())")
+
+    assert first_result.success
+    assert first_result.output == "41\n"
+    assert second_result.success
+    assert second_result.output == "False\n"
+
+
+@pytest.mark.asyncio
 async def test_default_timeout(python_executor: InProcPythonExecutor):
     """Test that default timeout is used when not specified."""
     source_code = "print('Hello')"

@@ -31,6 +31,11 @@ class JITGenSession(BaseModel):
         description="The interpreter class that executes parsed statements."
     )
 
+    interpreter_kwargs: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Keyword arguments passed when instantiating the interpreter.",
+    )
+
     indentation_tokens: set[str] = Field(
         default_factory=set,
         description="Set of tokens that signal incomplete indentation in the parser.",
@@ -56,7 +61,7 @@ class JITGenSession(BaseModel):
     _statement_handlers: list[StatementHandler] = PrivateAttr(default_factory=list)
 
     def model_post_init(self, __context: object) -> None:
-        self._interpreter = self.interpreter_type()
+        self._interpreter = self.interpreter_type(**self.interpreter_kwargs)
         self._algorithm = MarkerStatefulAlgorithm(
             parser=self.parser,
             indentation_tokens=self.indentation_tokens,

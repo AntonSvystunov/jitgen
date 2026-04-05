@@ -30,6 +30,19 @@ class MockFailingExecutor(BaseExecutor):
         return ExecutionResult(success=False, error="Execution failed", output="")
 
 
+class MockExecutorWithPrefix(BaseExecutor):
+    def __init__(self, *, prefix: str):
+        self.prefix = prefix
+
+    def execute(self, source_code: str, *, timeout: float = 5.0) -> ExecutionResult:
+        return ExecutionResult(success=True, output=f"{self.prefix}:{source_code.strip()}")
+
+    async def aexecute(
+        self, source_code: str, *, timeout: float = 5.0
+    ) -> ExecutionResult:
+        return ExecutionResult(success=True, output=f"{self.prefix}:{source_code.strip()}")
+
+
 def create_mock_statement(start_pos: int, end_pos: int) -> Branch:
     statement = Mock(spec=Branch)
     meta = Mock()
@@ -142,6 +155,21 @@ def test_sync_session_calls_error_handlers(mock_parser: Mock):
     assert len(errors) == 1
 
 
+def test_sync_session_forwards_interpreter_kwargs(mock_parser: Mock):
+    session = JITGenSession(
+        parser=mock_parser,
+        interpreter_type=MockExecutorWithPrefix,
+        interpreter_kwargs={"prefix": "tool"},
+        indentation_tokens={"_DEDENT", "_NEWLINE"},
+        start_marker="<execute>",
+        end_marker="</execute>",
+    )
+
+    output = session.push("<execute>x=1\n</execute>")
+
+    assert output == "tool:x=1"
+
+
 @pytest.mark.asyncio
 async def test_async_session_autoflushes_on_context_exit(mock_parser: Mock):
     stdout_events: list[str] = []
@@ -161,3 +189,26 @@ async def test_async_session_autoflushes_on_context_exit(mock_parser: Mock):
         await session.apush("<execute>print('hello')\n")
 
     assert stdout_events == ["output:print('hello')"]
+
+
+@pytest.mark.asyncio
+async def test_async_session_forwards_interpreter_kwargs(mock_parser: Mock):
+    stdout_events: list[str] = []
+
+    async with AsyncJITGenSession(
+        parser=mock_parser,
+        interpreter_type=MockExecutorWithPrefix,
+        interpreter_kwargs={"prefix": "tool"},
+        indentation_tokens={"_DEDENT", "_NEWLINE"},
+        start_marker="<execute>",
+        end_marker="</execute>",
+    ) as session:
+
+        @session.on_stdout
+        async def capture_stdout(output: str) -> None:
+            stdout_events.append(output)
+
+        await session.apush("<execute>x=1\n</execute>")
+        await session.aflush()
+
+    assert stdout_events == ["tool:x=1"]

@@ -1,19 +1,32 @@
 import asyncio
 import io
 import sys
+from collections.abc import Mapping
 from types import CodeType
 from typing import Any  # noqa: ANN401
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr
 from jitgen_core import ExecutionResult, SourceCode
 
 
 class InProcPythonExecutor(BaseModel):
+    tools: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
+
     _last_exception: BaseException | None = PrivateAttr(default=None)
 
     _locals: dict[str, Any] = PrivateAttr(  # noqa: ANN401
         default_factory=lambda: {"__name__": "__console__", "__doc__": None}
     )
+
+    def model_post_init(self, __context: Any) -> None:
+        self.register_tools(self.tools)
+
+    def register_tool(self, name: str, tool: Any) -> None:  # noqa: ANN401
+        self._locals[name] = tool
+
+    def register_tools(self, tools: Mapping[str, Any]) -> None:
+        for name, tool in tools.items():
+            self.register_tool(name, tool)
 
     def _execute_code(self, compiled_code: CodeType) -> None:
         try:
