@@ -16,6 +16,19 @@
             },
             "envFile": "${workspaceFolder}/misc/evaluation/.env",
             "justMyCode": false
+        },
+        {
+            "name": "Debug agentic script",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "run_agent",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/misc/agentic/",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/misc/agentic/"
+            },
+            "envFile": "${workspaceFolder}/misc/agentic/.env",
+            "justMyCode": false
         }
     ]
 }

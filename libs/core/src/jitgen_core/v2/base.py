@@ -83,7 +83,7 @@ class BaseStatefulAlgorithm(ABC):
             return []
 
         try:
-            tree = self.parser.parse(self._code_buffer)
+            tree = self.parser.parse(self._code_buffer + "\n")
         except DedentError:
             if flush:
                 raise ValueError(
@@ -99,6 +99,9 @@ class BaseStatefulAlgorithm(ABC):
                 )
             return []
         except UnexpectedCharacters as e:
+            unclosed_string = e.char == '"' or e.char == "'"
+            if not flush and unclosed_string:
+                return []
             raise ValueError(
                 f"Syntax error detected. Halting further processing. {str(e)}"
             )

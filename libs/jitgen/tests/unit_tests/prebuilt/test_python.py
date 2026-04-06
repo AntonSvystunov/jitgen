@@ -55,6 +55,22 @@ def test_create_python_jitgen_session_with_tools():
     assert output == "5\n"
 
 
+def test_create_python_jitgen_session_with_open_tool(tmp_path):
+    file_path = tmp_path / "sample.txt"
+    file_path.write_text("jitgen tool", encoding="utf-8")
+
+    session = create_python_jitgen_session(tools={"open_file": open})
+
+    output = session.push(
+        "```python\n"
+        f"with open_file({str(file_path)!r}, encoding='utf-8') as handle:\n"
+        "    print(handle.read())\n"
+        "```"
+    )
+
+    assert output == "jitgen tool\n"
+
+
 @pytest.mark.asyncio
 async def test_create_python_async_jitgen_session_with_tools():
     def add(left: int, right: int) -> int:

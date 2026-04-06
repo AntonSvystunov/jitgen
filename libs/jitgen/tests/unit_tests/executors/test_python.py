@@ -248,6 +248,26 @@ async def test_register_tool_adds_runtime_local(python_executor: InProcPythonExe
 
 
 @pytest.mark.asyncio
+async def test_register_tools_adds_multiple_runtime_locals(
+    python_executor: InProcPythonExecutor,
+):
+    def add(left: int, right: int) -> int:
+        return left + right
+
+    def multiply(left: int, right: int) -> int:
+        return left * right
+
+    python_executor.register_tools({"add": add, "multiply": multiply})
+    result = await python_executor.aexecute(
+        "print(add(2, 3))\nprint(multiply(4, 5))"
+    )
+
+    assert result.success
+    assert result.output == "5\n20\n"
+    assert result.error is None
+
+
+@pytest.mark.asyncio
 async def test_registered_tools_persist_across_executions():
     def add(left: int, right: int) -> int:
         return left + right
@@ -274,6 +294,23 @@ async def test_registered_tool_exception_is_captured():
     assert not result.success
     assert result.error is not None
     assert "tool exploded" in result.error
+
+
+@pytest.mark.asyncio
+async def test_constructor_tool_can_alias_open(tmp_path):
+    file_path = tmp_path / "sample.txt"
+    file_path.write_text("alpha,beta,gamma", encoding="utf-8")
+
+    python_executor = InProcPythonExecutor(tools={"open_file": open})
+
+    result = await python_executor.aexecute(
+        "with open_file(" + repr(str(file_path)) + ", encoding='utf-8') as handle:\n"
+        "    print(handle.read())"
+    )
+
+    assert result.success
+    assert result.output == "alpha,beta,gamma\n"
+    assert result.error is None
 
 
 @pytest.mark.asyncio
@@ -330,6 +367,21 @@ async def test_import_statements(python_executor: InProcPythonExecutor):
     assert result.output is not None
     assert "3.14159" in result.output
     assert result.error is None
+
+
+@pytest.mark.asyncio
+async def test_third_party_imports_persist_across_executions(
+    python_executor: InProcPythonExecutor,
+):
+    pytest.importorskip("numpy")
+
+    first_result = await python_executor.aexecute("import numpy as np")
+    second_result = await python_executor.aexecute("print(int(np.arange(4).sum()))")
+
+    assert first_result.success
+    assert second_result.success
+    assert second_result.output == "6\n"
+    assert python_executor._locals["np"].__name__ == "numpy"  # noqa: SLF001
 
 
 @pytest.mark.asyncio
