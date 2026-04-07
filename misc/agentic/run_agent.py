@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import random
 import re
 
+from agentic.agents import IncrementalAgentSession, IncrementalAgentSession, SequentialAgentSession
 from dotenv import load_dotenv
 from huggingface_hub import hf_hub_download
 from jitgen.executors.python import InProcPythonExecutor
@@ -53,211 +54,11 @@ def load_dataset_files() -> list[dict[str, str]]:
     return dataset["dev"]
 
 
-SYSTEM_PROMPT = """
-You are a helpful assistant assigned with the task of problem-solving. To achieve this, \
-you will be using an interactive coding environment equipped with a variety of tool \
-functions to assist you throughout the process.
-
-After that, you have two options:
-1) Interact with a Python programming environment and receive the corresponding output.
-Your code should be enclosed using "<execute>" tag, for example: <execute> print("Hello World!") </execute>.
-Note that your environment persists across interactions, so you can define variables and functions that can be used in subsequent code executions.
-2) Directly provide a solution that adheres to the required format for the given task.
-Your solution should be enclosed using "<solution>" tag, for example: The answer is <solution> A </solution>.
-
-## Exploring the environment:
-Use Python to read "*.md" files to understand the data and then read "*.csv" and "*.json" files to explore the data.
-Use <execute> block to read .md file and print the content. On next observation, you will be provided with stdout of code block execution.
-
-For example, to read contents of a .md file, you can write:
-<execute>
-with open("<path-to-md-file>", "r") as f:
-    content = f.read()
-print(content)
-</execute>
-
-IMPORTANT! Do not print content of .csv or .json files directly as it can be very large. Instead, use Python to explore the data and print only relevant information.
-## Available files:
-You have these files available:
-{context_files}
-
-Note: *.md files contain documentation about the data, while *.csv and *.json files contain the actual data.
-""".strip()
-
-HUMAN_PROMPT = """
-Here is the question you need to answer:
-{question}
-
-Here are the guidelines you must follow when answering the question above:
-{guidelines}
-"""
-question = "What are the unique set of merchants in the payments data?"
-guidelines = "Answer with a comma separated list"
-
-
-@traceable
-async def execute_incremental_agent(model: BaseChatModel, system_prompt: str, question: str, guidelines: str) -> str | None:
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": HUMAN_PROMPT.format(
-            question=question,
-            guidelines=guidelines,
-        )},
-    ]
-    
-    steps_left = 5
-    
-    start_time = perf_counter()
-    async with create_python_async_jitgen_session(
-        start_marker="<execute>", end_marker="</execute>", tools={"open": open}
-    ) as session:
-        observation = "Observation:\n"
-        execute_called = False
-        
-        @session.on_stdout
-        def on_stdout(stdout: str):
-            nonlocal observation
-            nonlocal execute_called
-            execute_called = True
-            observation += stdout
-        
-        @session.on_error
-        def on_error(stderr: str):
-            nonlocal observation
-            nonlocal execute_called
-            execute_called = True
-            observation += stderr
-    
-        while steps_left > 0:
-            observation = ""
-            execute_called = False
-            response = ""
-
-            async for chunk in model.astream(messages):
-                chunk_text = chunk.content
-                response += chunk_text
-                await session.apush(chunk_text)
-
-            await session.aflush()
-            # print("Response:")
-            # print(response)
-            
-            # print("Observation:")
-            # print(observation)
-            
-            if "<solution>" in response:
-                # print("Solution proposed, stopping interaction.")
-                break
-            
-            messages.append({"role": "assistant", "content": response})
-            messages.append({"role": "user", "content": "Observation:\n" + observation})
-            steps_left -= 1
-    
-    end_time = perf_counter()
-
-    solution_blocks = re.findall(r"<solution>(.*?)</solution>", response, re.DOTALL)
-    
-    final_response = solution_blocks[0].strip() if solution_blocks else None
-    
-    return ExecutionResult(
-        success=bool(final_response),
-        output=final_response,
-        total_time=end_time - start_time,
-        steps_executed=5 - steps_left,
-    )
-
-# async def _execute_python_code(text: str) -> str:
-#     code_block = re.search(r"<execute>(.+)", text, re.DOTALL)
-#     if not code_block:
-#         return ""
-
-#     source_code = code_block.group(1)
-
-#     executor = InProcPythonExecutor()
-#     result = await executor.aexecute(source_code)
-
-#     if result.success:
-#         return result.output
-#     else:
-#         raise ValueError(f"Error detected. Halting further processing. {result.error}")
-
-
-@dataclass
-class ExecutionResult:
-    success: bool
-    output: str | None
-    total_time: float
-    steps_executed: int
-
-
-@traceable
-async def execute_sequential_agent(model: BaseChatModel, system_prompt: str, question: str, guidelines: str) -> ExecutionResult:
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": HUMAN_PROMPT.format(
-            question=question,
-            guidelines=guidelines,
-        )},
-    ]
-    
-    steps_left = 5
-    
-    executor = InProcPythonExecutor()
-    start_time = perf_counter()
-    while steps_left > 0:
-        response = ""
-        async for chunk in model.astream(messages):
-            chunk_text = chunk.content
-            response += chunk_text
-        
-            # print("Response:")
-            # print(response)
-        
-        if "<solution>" in response:
-            # print("Solution proposed, stopping interaction.")
-            break
-        
-        if "<execute>" in response:
-            code_block = re.search(r"<execute>(.+)</execute>", response, re.DOTALL)
-            if code_block:
-                source_code = code_block.group(1)
-                # print("Executing code block:")
-                # print(source_code)
-                result = await executor.aexecute(source_code)
-
-                if result.success:
-                    observation = result.output or ""
-                    # print("Execution output:")
-                    # print(observation)
-                else:
-                    observation = result.error or "Error during code execution."
-                    # print("Execution error:")
-                    # print(observation)
-
-                messages.append({"role": "assistant", "content": response})
-                messages.append({"role": "user", "content": "Observation:\n" + observation})
-        
-        steps_left -= 1
-    
-    end_time = perf_counter()
-
-    solution_blocks = re.findall(r"<solution>(.*?)</solution>", response, re.DOTALL)
-    
-    final_response = solution_blocks[0].strip() if solution_blocks else None
-    
-    return ExecutionResult(
-        success=bool(final_response),
-        output=final_response,
-        total_time=end_time - start_time,
-        steps_executed=5 - steps_left,
-    )
-
-
 async def main():
     session_id = random.randint(100000, 999999)
     
     model = ChatOllama(
-        model="gemma4:latest",
+        model="qwen3-coder:30b",
         temperature=0,
         seed=session_id,
         reasoning=False,
@@ -266,24 +67,44 @@ async def main():
     context_file_names = load_context_files()
     dataset = load_dataset_files()
     
-    test_case = dataset[9]
+    test_case = dataset[1]
     
-    system_prompt = SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))
     
-    sequential_result = await execute_sequential_agent(model, system_prompt, test_case["question"], test_case["guidelines"])
-    if sequential_result.success:
-        print("Final result:", sequential_result.output)
-        print("Expected: ", test_case["answer"])
-        print("Sequential agent total time:", sequential_result.total_time)
+    sequestial_session = SequentialAgentSession(
+        model=model,
+        context_files=context_file_names,
+        question=test_case["question"],
+        guidelines=test_case["guidelines"],
+        max_steps=5,
+    )
+    
+    
+    sequential_result = await sequestial_session.run()
+    print("Sequential agent success:", sequential_result.success)
+    print("Final result:", sequential_result.output)
+    print("Expected: ", test_case["answer"])
+    print("Sequential agent total time:", sequential_result.total_time)
+    print("Sequential agent steps executed:", sequential_result.steps_executed)
+    print("Sequential agent steps duration:", ", ".join(f"{d:.2f}s" for d in sequential_result.steps_duration))
 
     print("\n\n====================\n\n")
     
-    incremental_result = await execute_incremental_agent(model, system_prompt, test_case["question"], test_case["guidelines"])
-    if incremental_result.success:
-        print("Final result:", incremental_result.output)
-        print("Expected: ", test_case["answer"])
-        print("Incremental agent total time:", incremental_result.total_time)
-
+    incremental_agent = IncrementalAgentSession(
+        model=model,
+        context_files=context_file_names,
+        question=test_case["question"],
+        guidelines=test_case["guidelines"],
+        max_steps=5,
+    )
+    
+    incremental_result = await incremental_agent.run()
+    
+    print("Incremental agent success:", incremental_result.success)
+    print("Final result:", incremental_result.output)
+    print("Expected: ", test_case["answer"])
+    print("Incremental agent total time:", incremental_result.total_time)
+    print("Incremental agent steps executed:", incremental_result.steps_executed)
+    print("Incremental agent steps duration:", ", ".join(f"{d:.2f}s" for d in incremental_result.steps_duration))
 
 if __name__ == "__main__":
     asyncio.run(main())
