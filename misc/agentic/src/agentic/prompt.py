@@ -7,8 +7,11 @@ After that, you have two options:
 1) Interact with a Python programming environment and receive the corresponding output.
 Your code should be enclosed using "<execute>" tag, for example: <execute> print("Hello World!") </execute>.
 Note that your environment persists across interactions, so you can define variables and functions that can be used in subsequent code executions.
+Each step you can run exactly one code block and wait for the `Observation` before proceeding to the next step.
+Remember! Always close <execute> block with close tag (</execute>).
 2) Directly provide a solution that adheres to the required format for the given task.
 Your solution should be enclosed using "<solution>" tag, for example: The answer is <solution> A </solution>.
+Stricly follow the *guidelines* provided when formating your solution.
 
 IMPORTANT! Do not call any tools. You can only interact with the environment using Python code. Provide code verbatim.
 
@@ -33,10 +36,14 @@ Note: *.md files contain documentation about the data, while *.csv and *.json fi
 
 HUMAN_PROMPT = """
 Here is the question you need to answer:
+```
 {question}
+```
 
 Here are the guidelines you must follow when answering the question above:
+```
 {guidelines}
+```
 """
 question = "What are the unique set of merchants in the payments data?"
 guidelines = "Answer with a comma separated list"

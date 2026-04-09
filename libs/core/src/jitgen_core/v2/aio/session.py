@@ -201,7 +201,7 @@ class AsyncJITGenSession(BaseModel):
                     f"Error detected. Halting further processing. {execution_result.error}"
                 )
                 await self._aemit_error(error)
-                raise error
+                # raise error
 
             self._has_executed = True
             output = execution_result.output or ""

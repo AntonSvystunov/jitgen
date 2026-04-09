@@ -49,6 +49,8 @@ class AgentSession:
         self._steps_left = max_steps
         self._last_response: str | None = None
         self._last_observation: str | None = None
+        
+        self._should_continue_streaming: bool = True
 
     async def _get_solution(self) -> str | None:
         if self._last_response is None:
@@ -75,19 +77,27 @@ class AgentSession:
         while self._steps_left > 0:
             self._last_response = ""
             self._last_observation = ""
+            self._should_continue_streaming = True
+            
+            reasoning_block = ""
 
             async for chunk in self.model.astream(self._messages):
+                reasoning = chunk.additional_kwargs.get("reasoning_content", "")
+                if reasoning:
+                    reasoning_block += reasoning
+                if not self._should_continue_streaming:
+                    break
                 chunk_text = chunk.content
                 await self.on_chunk(chunk_text)
-
+            
             await self.on_after_step()
 
             self._steps_left -= 1
             steps_duration.append(perf_counter() - start_time)
             if self.has_solution():
                 break
-
-            self._messages.append({"role": "assistant", "content": self._last_response})
+            
+            self._messages.append({"role": "assistant", "content": self._last_response or reasoning_block})
             self._messages.append(
                 {"role": "user", "content": "Observation:\n" + self._last_observation}
             )
@@ -125,20 +135,27 @@ class IncrementalAgentSession(AgentSession):
             self._last_observation += stdout
         
         @self._session.on_error
-        def on_error(stderr: str):
-            self._last_observation += stderr
+        def on_error(stderr: Exception):
+            if self._should_continue_streaming:
+                self._last_observation += str(stderr)
+            self._should_continue_streaming = False # Stop streaming further chunks if there's an error during code execution
 
-    @traceable(name="IncrementalAgentSession.on_chunk", run_type="tool")
+    # @traceable(name="IncrementalAgentSession.on_chunk", run_type="tool")
     async def on_chunk(self, chunk: str) -> None:
         self._last_response += chunk
         await self._session.apush(chunk)
 
     @traceable(name="IncrementalAgentSession.on_after_step", run_type="tool")
     async def on_after_step(self) -> None:
-        await self._session.aflush()
+        if self._should_continue_streaming:
+            await self._session.aflush()
+        else:
+            self._session._algorithm._code_buffer = "" # Clear any buffered code in the session to prevent it from being executed in the next step
+            self._session._algorithm._raw_buffer = "" # Clear any raw buffered input as well
         
         self._session._algorithm._inside_markers = False # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
-
+        
+        
     def has_solution(self) -> bool:
         return self._last_response is not None and "<solution>" in self._last_response
     
@@ -152,14 +169,14 @@ class SequentialAgentSession(AgentSession):
         
         self._executor = InProcPythonExecutor()
     
-    @traceable(name="SequentialAgentSession.on_chunk", run_type="tool")
+    # @traceable(name="SequentialAgentSession.on_chunk", run_type="tool")
     async def on_chunk(self, chunk: str) -> None:
         self._last_response += chunk
 
     @traceable(name="SequentialAgentSession.on_after_step", run_type="tool")
     async def on_after_step(self) -> None:
         if "<execute>" in self._last_response:
-            code_block = re.search(r"<execute>(.+)(</execute>|$)", self._last_response, re.DOTALL)
+            code_block = re.search(r"<execute>(.+?)(</execute>|$)", self._last_response, re.DOTALL)
             if code_block:
                 source_code = code_block.group(1)
                 result = await self._executor.aexecute(source_code)
@@ -167,8 +184,9 @@ class SequentialAgentSession(AgentSession):
                 self._last_observation = (
                     result.output or ""
                     if result.success
-                    else (result.error or "Error during code execution.")
+                    else ("Error detected. Halting further processing. " + (result.error or ""))
                 )
+        
 
 
     def has_solution(self) -> bool:
