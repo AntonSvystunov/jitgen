@@ -2,6 +2,7 @@ import asyncio
 from dataclasses import dataclass
 import random
 import re
+from typing import Literal
 
 from agentic.agents import IncrementalAgentSession, IncrementalAgentSession, SequentialAgentSession
 from dotenv import load_dotenv
@@ -54,57 +55,69 @@ def load_dataset_files() -> list[dict[str, str]]:
     return dataset["dev"]
 
 
+async def restart_model(model_name: str):
+    await (ChatOllama(
+        model=model_name,
+        temperature=0,
+        reasoning=False,
+        keep_alive=0,
+        num_predict=2,
+    ).ainvoke("Hi"))
+
+
 async def main():
+    model_name = "qwen3-coder:30b"
+    mode: Literal["sequential", "incremental"] = "incremental"
+    max_steps = 10
+    run_timeout_seconds = 30.0
+    
     session_id = random.randint(100000, 999999)
     
+    
+    await restart_model(model_name)
     model = ChatOllama(
-        model="qwen3-coder:30b",
+        model=model_name,
         temperature=0,
         seed=session_id,
-        reasoning=False,
+        # reasoning=True,
     )
     
     context_file_names = load_context_files()
     dataset = load_dataset_files()
     
-    test_case = dataset[1]
     
+    for test_case in dataset:
+        agent_session = SequentialAgentSession(
+            model=model,
+            context_files=context_file_names,
+            question=test_case["question"],
+            guidelines=test_case["guidelines"],
+            max_steps=max_steps,
+        ) if mode == "sequential" else IncrementalAgentSession(
+            model=model,
+            context_files=context_file_names,
+            question=test_case["question"],
+            guidelines=test_case["guidelines"],
+            max_steps=max_steps,
+        )
+        
+        try:
+            result = await asyncio.wait_for(
+                agent_session.run(), timeout=run_timeout_seconds
+            )
+        except asyncio.TimeoutError:
+            print(
+                f"Agent run timed out after {run_timeout_seconds:.1f}s for question: "
+                f"{test_case['question'][:120]}"
+            )
+            continue
     
-    sequestial_session = SequentialAgentSession(
-        model=model,
-        context_files=context_file_names,
-        question=test_case["question"],
-        guidelines=test_case["guidelines"],
-        max_steps=5,
-    )
-    
-    
-    sequential_result = await sequestial_session.run()
-    print("Sequential agent success:", sequential_result.success)
-    print("Final result:", sequential_result.output)
-    print("Expected: ", test_case["answer"])
-    print("Sequential agent total time:", sequential_result.total_time)
-    print("Sequential agent steps executed:", sequential_result.steps_executed)
-    print("Sequential agent steps duration:", ", ".join(f"{d:.2f}s" for d in sequential_result.steps_duration))
-
-    print("\n\n====================\n\n")
-    
-    incremental_agent = IncrementalAgentSession(
-        model=model,
-        context_files=context_file_names,
-        question=test_case["question"],
-        guidelines=test_case["guidelines"],
-        max_steps=5,
-    )
-    
-    incremental_result = await incremental_agent.run()
-    
-    print("Incremental agent success:", incremental_result.success)
-    print("Final result:", incremental_result.output)
-    print("Expected: ", test_case["answer"])
-    print("Incremental agent total time:", incremental_result.total_time)
-    print("Incremental agent steps executed:", incremental_result.steps_executed)
-    print("Incremental agent steps duration:", ", ".join(f"{d:.2f}s" for d in incremental_result.steps_duration))
+        print("Incremental agent success:", result.success)
+        print("Final result:", result.output)
+        print("Expected: ", test_case["answer"])
+        print("Incremental agent total time:", result.total_time)
+        print("Incremental agent steps executed:", result.steps_executed)
+        print("Incremental agent steps duration:", ", ".join(f"{d:.2f}s" for d in result.steps_duration))
 
 if __name__ == "__main__":
     asyncio.run(main())
