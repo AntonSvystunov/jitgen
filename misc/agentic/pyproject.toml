@@ -14,6 +14,7 @@ dependencies = [
     "jitgen-langchain",
     "langchain>=1.0.8",
     "langchain-ollama>=1.1.0",
+    "langchain-openai>=1.1.12",
     "langgraph>=0.4.1",
     "matplotlib>=3.10.8",
     "pandas>=2.2.0",
