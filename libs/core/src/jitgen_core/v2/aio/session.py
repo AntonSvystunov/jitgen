@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import inspect
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeVar
 
 from lark import Lark
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -14,6 +14,7 @@ from ..base import MarkerStatefulAlgorithm
 StdoutHandler = Callable[[str], Any]
 ErrorHandler = Callable[[Exception], Any]
 StatementHandler = Callable[[str, str], Any]
+T = TypeVar("T")
 
 
 class AsyncJITGenSession(BaseModel):
@@ -105,23 +106,29 @@ class AsyncJITGenSession(BaseModel):
         self._check_error()
         self._chunks.append(chunk)
 
-        for segment in self._algorithm.ingest_chunk(chunk):
+        for segment in await self._arun_algorithm_call(
+            lambda: self._algorithm.ingest_chunk(chunk)
+        ):
             if segment.text:
-                self._algorithm.append_code(segment.text)
-                self._enqueue_ready_statements(timeout=timeout, flush=False)
+                await self._arun_algorithm_call(
+                    lambda: self._algorithm.append_code(segment.text)
+                )
+                await self._aenqueue_ready_statements(timeout=timeout, flush=False)
             if segment.flush_after:
-                self._enqueue_ready_statements(timeout=timeout, flush=True)
+                await self._aenqueue_ready_statements(timeout=timeout, flush=True)
 
     async def aflush(self, *, timeout: float = 5.0) -> None:
         self._check_error()
 
-        for segment in self._algorithm.finalize_ingest():
+        for segment in await self._arun_algorithm_call(self._algorithm.finalize_ingest):
             if segment.text:
-                self._algorithm.append_code(segment.text)
+                await self._arun_algorithm_call(
+                    lambda: self._algorithm.append_code(segment.text)
+                )
             if segment.flush_after:
-                self._enqueue_ready_statements(timeout=timeout, flush=True)
+                await self._aenqueue_ready_statements(timeout=timeout, flush=True)
 
-        self._enqueue_ready_statements(timeout=timeout, flush=True)
+        await self._aenqueue_ready_statements(timeout=timeout, flush=True)
         await self._join_worker()
 
     async def __aenter__(self) -> AsyncJITGenSession:
@@ -145,10 +152,12 @@ class AsyncJITGenSession(BaseModel):
             self._error = None
             raise error
 
-    def _enqueue_ready_statements(
+    async def _aenqueue_ready_statements(
         self, *, timeout: float, flush: bool
     ) -> None:
-        statements = self._algorithm.pop_ready_statements(flush=flush)
+        statements = await self._arun_algorithm_call(
+            lambda: self._algorithm.pop_ready_statements(flush=flush)
+        )
         if statements:
             self._ensure_worker()
             self._queue.put_nowait((statements, timeout))
@@ -209,6 +218,13 @@ class AsyncJITGenSession(BaseModel):
                 self._has_output = True
                 await self._aemit_stdout(output)
             await self._aemit_statement_complete(statement, output)
+
+    async def _arun_algorithm_call(self, operation: Callable[[], T]) -> T:
+        try:
+            return operation()
+        except Exception as error:
+            await self._aemit_error(error)
+            raise
 
     async def _arun_handler(self, callback_result: Any) -> None:
         if inspect.isawaitable(callback_result):

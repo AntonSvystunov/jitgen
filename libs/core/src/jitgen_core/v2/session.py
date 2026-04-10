@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import inspect
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeVar
 
 from lark import Lark
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -14,6 +14,7 @@ from .base import MarkerStatefulAlgorithm
 StdoutHandler = Callable[[str], Any]
 ErrorHandler = Callable[[Exception], Any]
 StatementHandler = Callable[[str, str], Any]
+T = TypeVar("T")
 
 
 class JITGenSession(BaseModel):
@@ -101,9 +102,9 @@ class JITGenSession(BaseModel):
         self._chunks.append(chunk)
         output_parts: list[str] = []
 
-        for segment in self._algorithm.ingest_chunk(chunk):
+        for segment in self._run_algorithm_call(lambda: self._algorithm.ingest_chunk(chunk)):
             if segment.text:
-                self._algorithm.append_code(segment.text)
+                self._run_algorithm_call(lambda: self._algorithm.append_code(segment.text))
                 output_parts.extend(self._execute_ready_statements(timeout=timeout, flush=False))
             if segment.flush_after:
                 output_parts.extend(self._execute_ready_statements(timeout=timeout, flush=True))
@@ -113,9 +114,9 @@ class JITGenSession(BaseModel):
     def flush(self, *, timeout: float = 5.0) -> str:
         output_parts: list[str] = []
 
-        for segment in self._algorithm.finalize_ingest():
+        for segment in self._run_algorithm_call(self._algorithm.finalize_ingest):
             if segment.text:
-                self._algorithm.append_code(segment.text)
+                self._run_algorithm_call(lambda: self._algorithm.append_code(segment.text))
             if segment.flush_after:
                 output_parts.extend(self._execute_ready_statements(timeout=timeout, flush=True))
 
@@ -136,7 +137,9 @@ class JITGenSession(BaseModel):
         return False
 
     def _execute_ready_statements(self, *, timeout: float, flush: bool) -> list[str]:
-        statements = self._algorithm.pop_ready_statements(flush=flush)
+        statements = self._run_algorithm_call(
+            lambda: self._algorithm.pop_ready_statements(flush=flush)
+        )
         outputs: list[str] = []
         for statement in statements:
             execution_result = self._interpreter.execute(statement, timeout=timeout)
@@ -155,6 +158,13 @@ class JITGenSession(BaseModel):
             self._emit_statement_complete(statement, output)
             outputs.append(output)
         return outputs
+
+    def _run_algorithm_call(self, operation: Callable[[], T]) -> T:
+        try:
+            return operation()
+        except Exception as error:
+            self._emit_error(error)
+            raise
 
     def _run_handler_sync(self, callback_result: Any) -> None:
         if not inspect.isawaitable(callback_result):

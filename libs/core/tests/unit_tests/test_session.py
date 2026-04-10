@@ -155,6 +155,29 @@ def test_sync_session_calls_error_handlers(mock_parser: Mock):
     assert len(errors) == 1
 
 
+def test_sync_session_calls_error_handlers_for_algorithm_errors(mock_parser: Mock):
+    session = JITGenSession(
+        parser=mock_parser,
+        interpreter_type=MockExecutor,
+        indentation_tokens={"_DEDENT", "_NEWLINE"},
+        start_marker="<execute>",
+        end_marker="</execute>",
+    )
+
+    errors: list[Exception] = []
+
+    @session.on_error
+    def capture_error(exc: Exception) -> None:
+        errors.append(exc)
+
+    session._algorithm.ingest_chunk = Mock(side_effect=RuntimeError("Algorithm failed"))
+
+    with pytest.raises(RuntimeError, match="Algorithm failed") as exc_info:
+        session.push("<execute>x=1\n</execute>")
+
+    assert errors == [exc_info.value]
+
+
 def test_sync_session_forwards_interpreter_kwargs(mock_parser: Mock):
     session = JITGenSession(
         parser=mock_parser,
@@ -212,3 +235,27 @@ async def test_async_session_forwards_interpreter_kwargs(mock_parser: Mock):
         await session.aflush()
 
     assert stdout_events == ["tool:x=1"]
+
+
+@pytest.mark.asyncio
+async def test_async_session_calls_error_handlers_for_algorithm_errors(mock_parser: Mock):
+    session = AsyncJITGenSession(
+        parser=mock_parser,
+        interpreter_type=MockExecutor,
+        indentation_tokens={"_DEDENT", "_NEWLINE"},
+        start_marker="<execute>",
+        end_marker="</execute>",
+    )
+
+    errors: list[Exception] = []
+
+    @session.on_error
+    async def capture_error(exc: Exception) -> None:
+        errors.append(exc)
+
+    session._algorithm.ingest_chunk = Mock(side_effect=RuntimeError("Algorithm failed"))
+
+    with pytest.raises(RuntimeError, match="Algorithm failed") as exc_info:
+        await session.apush("<execute>x=1\n</execute>")
+
+    assert errors == [exc_info.value]
