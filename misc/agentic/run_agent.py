@@ -1,5 +1,7 @@
 import asyncio
+import contextlib
 from dataclasses import dataclass
+import json
 import random
 import re
 from typing import Literal
@@ -12,6 +14,8 @@ from jitgen.prebuilt.python import create_python_async_jitgen_session
 from langchain_ollama import ChatOllama
 from datasets import load_dataset
 
+from langchain.agents import create_agent
+
 from langchain.tools import tool
 
 from time import perf_counter
@@ -21,6 +25,8 @@ from langchain_core.messages import AIMessage, ToolMessage
 
 from langchain_openai import ChatOpenAI
 from langsmith import traceable
+
+import lmstudio as lms
 
 load_dotenv(override=True)
 
@@ -47,7 +53,7 @@ print(content)
 ```)
 
 IMPORTANT:
-- Do not print content of .csv or .json files directly as it can be very large. Instead, use Python to explore the data and print only relevant information.
+- Do not print content of .csv or .json files directly as it can be very large. You may print the whole content of .md files as they are usually small and contain important information about the data.
 - Environment is not a Jupiter Notebook, so you should explicitly print any output you want to see.
 
 ## Available files:
@@ -118,19 +124,229 @@ async def restart_model(model_name: str):
     ).ainvoke("Hi"))
 
 
-@tool
-def execute_code(code: str) -> str:
-    """Executes Python code and returns stdout or stderr."""
-    return ""
+
+
+@traceable
+async def incremental_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
+    @tool
+    def execute_code(code: str) -> str:
+        """Executes Python code and returns stdout or stderr."""
+        return ""
+    
+    session = create_python_async_jitgen_session(
+        start_marker="{\"code\":\"", end_marker="\"}", tools={"open": open}
+    )
+
+    @session.on_stdout
+    def on_stdout(stdout: str):
+        nonlocal response
+        nonlocal is_error
+        
+        if not is_error:
+            response += stdout
+        
+    @session.on_error
+    def on_error(stderr: Exception):
+        nonlocal response
+        nonlocal is_error
+        if not is_error:
+            response = str(stderr)
+        is_error = True
+    
+    _model = model.bind_tools([execute_code])
+
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
+        {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
+    ]
+    
+    for step in range(max_steps):
+        ai_message: AIMessage | None = None
+        tool_call_id = None
+        response = ""
+        is_error = False
+        ai_content = ""
+        tool_call_name = ""
+        raw_args = ""
+        async for event in _model.astream_events(messages):
+            if is_error:
+                break
+            
+            if event["event"] == "on_llm_end" or event["event"] == "on_chat_model_end":
+                pass
+            
+            if event["event"] == "on_chat_model_stream":
+                chunk = event["data"]["chunk"]
+                if chunk.content:
+                    ai_content += chunk.content
+                for tool_chunk in chunk.tool_call_chunks:
+                    if tool_chunk.get("id"):
+                        tool_call_id = tool_chunk["id"]
+                    if tool_chunk.get("name"):
+                        tool_call_name = tool_chunk["name"]
+                    if tool_chunk.get("args"):
+                        raw_args += tool_chunk["args"]
+                        await session.apush(tool_chunk["args"].encode().decode('unicode_escape'))
+            elif event["event"] == "on_chat_model_end":
+                ai_message = event['data']['output']
+            else:
+                pass
+        
+        try:
+            if not is_error:
+                await session.aflush()
+        except Exception as e:
+            if not is_error:
+                raise
+        finally:
+            if is_error:
+                session._algorithm._code_buffer = "" # Clear any buffered code in the session to prevent it from being executed in the next step
+                session._algorithm._raw_buffer = "" # Clear any raw buffered input as well
+
+            session._algorithm._inside_markers = False # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
+            # self._handled_session_error = None
+        
+        if ai_message and len(ai_message.tool_calls) == 0:
+            break
+        
+        if ai_message is None:
+            ai_message = AIMessage(content=ai_content, tool_calls=[
+                {
+                    "id": tool_call_id, 
+                    "name": tool_call_name,
+                    "args": {
+                        "code": json.loads((raw_args + "\"}") if not raw_args.endswith("}") else raw_args)
+                    }, # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
+                }
+            ]) # Create an AIMessage with the accumulated content if we didn't get a proper message from the model, to ensure we can at least return any output received before an error occurred
+        messages.append(ai_message)
+        messages.append(ToolMessage(content=response if raw_args not in ("", "{}") else "\"code\" should be provided.", tool_call_id=tool_call_id, name=tool_call_name))
+    
+    return ai_message.content
+
+
+@traceable
+async def sequential_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
+    @tool
+    def execute_code(code: str) -> str:
+        """Executes Python code and returns stdout or stderr."""
+        return ""
+    executor = InProcPythonExecutor()
+    
+
+    async def _execute_code_impl(code: str) -> str:
+        """Executes Python code and returns stdout or stderr."""
+        nonlocal executor
+        result = await executor.aexecute(code)
+
+        return(
+            result.output or ""
+            if result.success
+            else ("Error detected. Halting further processing. " + (result.error or ""))
+        )
+    
+    _model = model.bind_tools([execute_code])
+
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
+        {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
+    ]
+    
+    for step in range(max_steps):
+        ai_message: AIMessage | None = None
+        tool_call_id = None
+        response = ""
+        is_error = False
+        ai_content = ""
+        tool_call_name = ""
+        raw_args = ""
+        async for event in _model.astream_events(messages):
+            if is_error:
+                break
+            
+            if event["event"] == "on_llm_end" or event["event"] == "on_chat_model_end":
+                pass
+            
+            if event["event"] == "on_chat_model_stream":
+                chunk = event["data"]["chunk"]
+                if chunk.content:
+                    ai_content += chunk.content
+                for tool_chunk in chunk.tool_call_chunks:
+                    if tool_chunk.get("id"):
+                        tool_call_id = tool_chunk["id"]
+                    if tool_chunk.get("name"):
+                        tool_call_name = tool_chunk["name"]
+                    if tool_chunk.get("args"):
+                        raw_args += tool_chunk["args"]
+            elif event["event"] == "on_chat_model_end":
+                ai_message = event['data']['output']
+            else:
+                pass
+        
+        if ai_message and len(ai_message.tool_calls) == 0:
+            break
+        
+        if raw_args not in ("", "{}"):
+            try:
+                execution_result = await _execute_code_impl(json.loads(raw_args).get("code", ""))
+                response = execution_result
+            except Exception as e:
+                response = "Error detected. Halting further processing. " + str(e)
+                is_error = True
+        
+        messages.append(ai_message)
+        messages.append(ToolMessage(content=response if raw_args not in ("", "{}") else "\"code\" should be provided.", tool_call_id=tool_call_id, name=tool_call_name))
+    
+    return ai_message.content
+
+
+@traceable
+async def langchain_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
+    # messages = [
+    #     {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
+    #     
+    # ]
+    executor = InProcPythonExecutor()
+    
+    @tool
+    async def execute_code(code: str) -> str:
+        """Executes Python code and returns stdout or stderr."""
+        nonlocal executor
+        result = await executor.aexecute(code)
+
+        return(
+            result.output or ""
+            if result.success
+            else ("Error detected. Halting further processing. " + (result.error or ""))
+        )
+    
+    
+    agent = create_agent(
+        model=model,
+        tools=[execute_code],
+        system_prompt=SYSTEM_PROMPT.format(context_files="\n".join(context_file_names)),
+    ).with_config({"recursion_limit": max_steps})
+    
+    output_state = await agent.ainvoke({
+        "messages": [
+            {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
+        ]
+    })
+    
+    
+    return output_state["messages"][-1].content
 
 
 async def main():
-    model_name = "phi4-latest"
+    model_name = "openai/gpt-oss-20b" # "google/gemma-4-e4b"
     mode: Literal["sequential", "incremental"] = "incremental"
-    max_steps = 10
+    max_steps = 20
     run_timeout_seconds = 30.0
     
-    session_id = random.randint(100000, 999999)
+    session_id = 1234
+    temperature = 0.3
+        
+
     
     
     # await restart_model(model_name)
@@ -142,103 +358,63 @@ async def main():
     # )
     
     model = ChatOpenAI(
-        model="openai/gpt-oss-20b",
+        model=model_name,
         base_url="http://localhost:1234/v1",
         api_key="lm-studio",
+        temperature=0,
+        stream_usage=True,
+        streaming=True,
     )
     
     context_file_names = load_context_files()
     dataset = load_dataset_files()
+
+    test_case = dataset[7]
+    async with lms.AsyncClient() as client:
+        with contextlib.suppress(lms.LMStudioModelNotFoundError):
+            await client.llm.unload(model_name)
+        await client.llm.load_new_instance(model_name, config=lms.LlmLoadModelConfig(
+            seed=session_id,
+        ))
     
-    test_case = dataset[0]
-    
-    model = model.bind_tools([execute_code])
-    
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
-        {"role": "user", "content": HUMAN_PROMPT.format(question=test_case["question"], guidelines=test_case["guidelines"])},
-    ]
-    
-    session = create_python_async_jitgen_session(
-        start_marker="{\"code\":\"", end_marker="\"}", tools={"open": open}
+    start_time = perf_counter()
+    response = await sequential_agent_session(
+        model=model,
+        context_file_names=context_file_names,
+        question=test_case["question"],
+        guidelines=test_case["guidelines"],
+        max_steps=max_steps,
     )
     
-    @session.on_stdout
-    def on_stdout(stdout: str):
-        nonlocal response
-        response += stdout
-
-    while True:
-        ai_message: AIMessage | None = None
-        tool_call_id = None
-        response = ""
-        async for event in model.astream_events(messages):
-            if event["event"] == "on_chat_model_stream":
-                chunk = event["data"]["chunk"]
-                for tool_chunk in chunk.tool_call_chunks:
-                    # if name := tool_chunk.get("name"):
-                    #     print(f"Tool: {name}")
-                    if tool_chunk.get("id"):
-                        tool_call_id = tool_chunk["id"]
-                    if tool_chunk.get("args"):
-                        await session.apush(tool_chunk["args"].encode().decode('unicode_escape'))
-                        # print("Tool args chunk:", tool_chunk["args"])
-
-            elif event["event"] == "on_chat_model_end":
-                ai_message = event['data']['output']
-            else:
-                pass
-        
-        await session.aflush()
-        session._algorithm._inside_markers = False
-        
-        if ai_message.content and not response:
-            break
-        
-        
-        messages.append(ai_message)
-        messages.append(ToolMessage(content=response, tool_call_id=tool_call_id))
+    print("Task: ", test_case["question"])
+    print("Final response:", response)
+    print("Correct answer:", test_case["answer"])
+    print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+    
+    
+    async with lms.AsyncClient() as client:
+        with contextlib.suppress(lms.LMStudioModelNotFoundError):
+            await client.llm.unload(model_name)
+        await client.llm.load_new_instance(model_name, config=lms.LlmLoadModelConfig(
+            seed=session_id,
+        ))
+    
+    
+    
+    start_time = perf_counter()
+    response = await incremental_agent_session(
+        model=model,
+        context_file_names=context_file_names,
+        question=test_case["question"],
+        guidelines=test_case["guidelines"],
+        max_steps=max_steps,
+    )
     
     print("Task: ", test_case["question"])
-    print("Final response:", ai_message.content)
+    print("Final response:", response)
     print("Correct answer:", test_case["answer"])
-    
-    
-    
-    # for test_case in dataset:
-    #     agent_session = SequentialAgentSession(
-    #         model=model,
-    #         context_files=context_file_names,
-    #         question=test_case["question"],
-    #         guidelines=test_case["guidelines"],
-    #         max_steps=max_steps,
-    #     ) if mode == "sequential" else IncrementalAgentSession(
-    #         model=model,
-    #         context_files=context_file_names,
-    #         question=test_case["question"],
-    #         guidelines=test_case["guidelines"],
-    #         max_steps=max_steps,
-    #     )
-        
-    #     try:
-    #         result = await asyncio.wait_for(
-    #             agent_session.run(), timeout=run_timeout_seconds
-    #         )
-    #     except asyncio.TimeoutError:
-    #         print(
-    #             f"Agent run timed out after {run_timeout_seconds:.1f}s for question: "
-    #             f"{test_case['question'][:120]}"
-    #         )
-    #         continue
-    
-    #     print("Incremental agent success:", result.success)
-    #     print("Final result:", result.output)
-    #     print("Expected: ", test_case["answer"])
-    #     print("Incremental agent total time:", result.total_time)
-    #     print("Incremental agent steps executed:", result.steps_executed)
-    #     print("Incremental agent steps duration:", ", ".join(f"{d:.2f}s" for d in result.steps_duration))
-        
-    #     break
+    print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

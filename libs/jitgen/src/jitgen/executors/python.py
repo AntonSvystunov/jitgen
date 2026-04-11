@@ -58,7 +58,7 @@ class InProcPythonExecutor(BaseModel):
         return loop.run_until_complete(self.aexecute(source_code, timeout=timeout))
 
     async def aexecute(
-        self, source_code: SourceCode, *, timeout: float = 5
+        self, source_code: SourceCode, *, timeout: float = 60
     ) -> ExecutionResult:
         compiled_code = compile(source_code, "<string>", "exec", optimize=2)
 
@@ -80,11 +80,13 @@ class InProcPythonExecutor(BaseModel):
             await asyncio.wait_for(task, timeout)
         except SystemExit:
             raise
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError as e:
             has_timed_out = True
             has_error = True
-        except Exception:
+            self._last_exception = e
+        except Exception as e:
             has_error = True
+            self._last_exception = e
         finally:
             output = stdout_collector.getvalue()
             error_message = (
