@@ -1,12 +1,8 @@
 import asyncio
 import contextlib
-from dataclasses import dataclass
 import json
-import random
-import re
 from typing import Literal
 
-from agentic.agents import IncrementalAgentSession, IncrementalAgentSession, SequentialAgentSession
 from dotenv import load_dotenv
 from huggingface_hub import hf_hub_download
 from jitgen.executors.python import InProcPythonExecutor
@@ -172,9 +168,6 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
             if is_error:
                 break
             
-            if event["event"] == "on_llm_end" or event["event"] == "on_chat_model_end":
-                pass
-            
             if event["event"] == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
                 if chunk.content:
@@ -195,7 +188,7 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
         try:
             if not is_error:
                 await session.aflush()
-        except Exception as e:
+        except Exception:
             if not is_error:
                 raise
         finally:
@@ -263,9 +256,6 @@ async def sequential_agent_session(model: BaseChatModel, context_file_names: lis
         async for event in _model.astream_events(messages):
             if is_error:
                 break
-            
-            if event["event"] == "on_llm_end" or event["event"] == "on_chat_model_end":
-                pass
             
             if event["event"] == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
