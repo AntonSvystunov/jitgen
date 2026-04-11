@@ -207,13 +207,26 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
                 {
                     "id": tool_call_id, 
                     "name": tool_call_name,
-                    "args": {
-                        "code": json.loads((raw_args + "\"}") if not raw_args.endswith("}") else raw_args)
-                    }, # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
+                    "args": json.loads((raw_args + "\"}") if not raw_args.endswith("}") else raw_args) # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
                 }
             ]) # Create an AIMessage with the accumulated content if we didn't get a proper message from the model, to ensure we can at least return any output received before an error occurred
-        messages.append(ai_message)
-        messages.append(ToolMessage(content=response if raw_args not in ("", "{}") else "\"code\" should be provided.", tool_call_id=tool_call_id, name=tool_call_name))
+        
+        messages.append(AIMessage(
+            content=ai_message.content,
+            additional_kwargs=ai_message.additional_kwargs,
+            response_metadata=ai_message.response_metadata,
+            usage_metadata=ai_message.usage_metadata,
+            tool_calls=ai_message.tool_calls,
+            id=ai_message.id
+        ))
+        
+        if is_error:
+            tool_message_content = "Error detected. Halting further processing. " + response
+        else:
+            tool_message_content = response if raw_args not in ("", "{}") else "\"code\" should be provided."
+        
+        
+        messages.append(ToolMessage(content=tool_message_content, tool_call_id=tool_call_id, name=tool_call_name))
     
     return ai_message.content
 
@@ -359,7 +372,7 @@ async def main():
     context_file_names = load_context_files()
     dataset = load_dataset_files()
 
-    test_case = dataset[7]
+    test_case = dataset[7] # 7
     async with lms.AsyncClient() as client:
         with contextlib.suppress(lms.LMStudioModelNotFoundError):
             await client.llm.unload(model_name)
@@ -368,7 +381,7 @@ async def main():
         ))
     
     start_time = perf_counter()
-    response = await sequential_agent_session(
+    response = await langchain_agent_session(
         model=model,
         context_file_names=context_file_names,
         question=test_case["question"],
