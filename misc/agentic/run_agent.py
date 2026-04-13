@@ -1,14 +1,11 @@
 import asyncio
-import contextlib
 import json
-from typing import Literal
+from uuid import uuid4
 
+from agentic.results import ResultsLogger
 from dotenv import load_dotenv
-from huggingface_hub import hf_hub_download
 from jitgen.executors.python import InProcPythonExecutor
 from jitgen.prebuilt.python import create_python_async_jitgen_session
-from langchain_ollama import ChatOllama
-from datasets import load_dataset
 
 from langchain.agents import create_agent
 
@@ -22,125 +19,46 @@ from langchain_core.messages import AIMessage, ToolMessage
 from langchain_openai import ChatOpenAI
 from langsmith import traceable
 
-import lmstudio as lms
+from langgraph.errors import GraphRecursionError
+from langchain_core.callbacks import get_usage_metadata_callback
+
+from agentic.data import load_context_files, load_tasks_dataset
+from agentic.models import get_model
+from agentic.prompts import (
+    format_system_prompt,
+    format_human_prompt,
+    format_execute_code_tool_error,
+)
 
 load_dotenv(override=True)
 
 
-SYSTEM_PROMPT = """
-You are a helpful assistant assigned with the task of problem-solving. To achieve this, \
-you will be using an interactive coding environment equipped with a variety of tool \
-functions to assist you throughout the process.
-
-After that, you have two options:
-1) Interact with a Python programming environment and receive the corresponding output.
-Use *execute_code* tool to run Python code. Your code should be verbatim and should not contain any markdown formatting.
-2) Directly provide a solution that adheres to the required format for the given task.
-Your solution should be enclosed using "<solution>" tag, for example: The answer is <solution> A </solution>.
-Stricly follow the *guidelines* provided when formating your solution.
-
-## Exploring the environment:
-Use *execute_code* tool to read "*.md" files to understand the data and then read "*.csv" and "*.json" files to explore the data.
-For example, to read contents of a .md file, you can write:
-exeute_code(```
-with open("<path-to-md-file>", "r") as f:
-    content = f.read()
-print(content)
-```)
-
-IMPORTANT:
-- Do not print content of .csv or .json files directly as it can be very large. You may print the whole content of .md files as they are usually small and contain important information about the data.
-- Environment is not a Jupiter Notebook, so you should explicitly print any output you want to see.
-
-## Available files:
-You have these files available:
-{context_files}
-
-Note: *.md files contain documentation about the data, while *.csv and *.json files contain the actual data.
-""".strip()
-
-HUMAN_PROMPT = """
-Here is the question you need to answer:
-```
-{question}
-```
-
-Here are the guidelines you must STRICTLY follow when answering the question above:
-```
-{guidelines}
-```
-"""
-question = "What are the unique set of merchants in the payments data?"
-guidelines = "Answer with a comma separated list"
-
-
-
-
-def load_context_files() -> list[str]:
-    CONTEXT_FILENAMES = [
-        "data/context/acquirer_countries.csv",
-        "data/context/payments-readme.md",
-        "data/context/payments.csv",
-        "data/context/merchant_category_codes.csv",
-        "data/context/fees.json",
-        "data/context/merchant_data.json",
-        "data/context/manual.md",
-    ]
-
-    DATA_DIR = "./tmp/DABstep-data"
-    
-    for filename in CONTEXT_FILENAMES:
-        hf_hub_download(
-            repo_id="adyen/DABstep",
-            repo_type="dataset",
-            filename=filename,
-            local_dir=DATA_DIR,
-            # force_download=True
-        )
-
-    CONTEXT_FILENAMES = [f"{DATA_DIR}/{filename}" for filename in CONTEXT_FILENAMES]
-    
-    return CONTEXT_FILENAMES
-
-def load_dataset_files() -> list[dict[str, str]]:
-    dataset = load_dataset(
-        "adyen/DABstep",
-    )
-
-    return dataset["dev"]
-
-
-async def restart_model(model_name: str):
-    await (ChatOllama(
-        model=model_name,
-        temperature=0,
-        reasoning=False,
-        keep_alive=0,
-        num_predict=2,
-    ).ainvoke("Hi"))
-
-
-
-
 @traceable
-async def incremental_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
+async def incremental_agent_session(
+    model: ChatOpenAI,
+    context_file_names: list[str],
+    question: str,
+    guidelines: str,
+    max_steps: int,
+    results_logger: ResultsLogger,
+):
     @tool
     def execute_code(code: str) -> str:
         """Executes Python code and returns stdout or stderr."""
         return ""
-    
+
     session = create_python_async_jitgen_session(
-        start_marker="{\"code\":\"", end_marker="\"}", tools={"open": open}
+        start_marker='{"code":"', end_marker='"}', tools={"open": open}
     )
 
     @session.on_stdout
     def on_stdout(stdout: str):
         nonlocal response
         nonlocal is_error
-        
+
         if not is_error:
             response += stdout
-        
+
     @session.on_error
     def on_error(stderr: Exception):
         nonlocal response
@@ -148,14 +66,14 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
         if not is_error:
             response = str(stderr)
         is_error = True
-    
+
     _model = model.bind_tools([execute_code])
 
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
-        {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
+        {"role": "system", "content": format_system_prompt(context_file_names)},
+        {"role": "user", "content": format_human_prompt(question, guidelines)},
     ]
-    
+
     for step in range(max_steps):
         ai_message: AIMessage | None = None
         tool_call_id = None
@@ -164,10 +82,12 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
         ai_content = ""
         tool_call_name = ""
         raw_args = ""
+        execution_started: float | None = None
+        step_start_time = perf_counter()
         async for event in _model.astream_events(messages):
             if is_error:
                 break
-            
+
             if event["event"] == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
                 if chunk.content:
@@ -179,12 +99,17 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
                         tool_call_name = tool_chunk["name"]
                     if tool_chunk.get("args"):
                         raw_args += tool_chunk["args"]
-                        await session.apush(tool_chunk["args"].encode().decode('unicode_escape'))
+                        if not execution_started:
+                            execution_started = perf_counter()
+                        await session.apush(
+                            tool_chunk["args"].encode().decode("unicode_escape")
+                        )
             elif event["event"] == "on_chat_model_end":
-                ai_message = event['data']['output']
+                ai_message = event["data"]["output"]
             else:
                 pass
-        
+        inference_time = perf_counter() - step_start_time
+
         try:
             if not is_error:
                 await session.aflush()
@@ -192,72 +117,114 @@ async def incremental_agent_session(model: BaseChatModel, context_file_names: li
             if not is_error:
                 raise
         finally:
+            step_total_execution_time = perf_counter() - execution_started if execution_started else 0
             if is_error:
-                session._algorithm._code_buffer = "" # Clear any buffered code in the session to prevent it from being executed in the next step
-                session._algorithm._raw_buffer = "" # Clear any raw buffered input as well
+                session._algorithm._code_buffer = ""  # Clear any buffered code in the session to prevent it from being executed in the next step
+                session._algorithm._raw_buffer = (
+                    ""  # Clear any raw buffered input as well
+                )
 
-            session._algorithm._inside_markers = False # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
+            session._algorithm._inside_markers = False  # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
             # self._handled_session_error = None
+        step_end_time = perf_counter()
+
+        results_logger.add_step(
+            step_number=step + 1,
+            message=ai_message.content if ai_message else None,
+            code=raw_args if raw_args not in ("", "{}") else None,
+            observation=response if raw_args not in ("", "{}") else None,
+            is_error=is_error,
+            tool_call_success=not is_error if raw_args not in ("", "{}") else None,
+            tool_call_error_message=response if is_error else None,
+            tool_execution_time=step_total_execution_time if raw_args not in ("", "{}") else None,
+            inference_time=inference_time if raw_args not in ("", "{}") else None,
+            total_time=step_end_time - step_start_time
+        )
         
         if ai_message and len(ai_message.tool_calls) == 0:
             break
-        
+
         if ai_message is None:
-            ai_message = AIMessage(content=ai_content, tool_calls=[
-                {
-                    "id": tool_call_id, 
-                    "name": tool_call_name,
-                    "args": json.loads((raw_args + "\"}") if not raw_args.endswith("}") else raw_args) # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
-                }
-            ]) # Create an AIMessage with the accumulated content if we didn't get a proper message from the model, to ensure we can at least return any output received before an error occurred
-        
-        messages.append(AIMessage(
-            content=ai_message.content,
-            additional_kwargs=ai_message.additional_kwargs,
-            response_metadata=ai_message.response_metadata,
-            usage_metadata=ai_message.usage_metadata,
-            tool_calls=ai_message.tool_calls,
-            id=ai_message.id
-        ))
-        
+            ai_message = AIMessage(
+                content=ai_content,
+                tool_calls=[
+                    {
+                        "id": tool_call_id,
+                        "name": tool_call_name,
+                        "args": json.loads(
+                            (raw_args + '"}')
+                            if not raw_args.endswith("}")
+                            else raw_args
+                        ),  # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
+                    }
+                ],
+            )  # Create an AIMessage with the accumulated content if we didn't get a proper message from the model, to ensure we can at least return any output received before an error occurred
+
+        messages.append(
+            AIMessage(
+                content=ai_message.content,
+                additional_kwargs=ai_message.additional_kwargs,
+                response_metadata=ai_message.response_metadata,
+                usage_metadata=ai_message.usage_metadata,
+                tool_calls=ai_message.tool_calls,
+                id=ai_message.id,
+            )
+        )
+
         if is_error:
-            tool_message_content = "Error detected. Halting further processing. " + response
+            tool_message_content = format_execute_code_tool_error(response)
         else:
-            tool_message_content = response if raw_args not in ("", "{}") else "\"code\" should be provided."
-        
-        
-        messages.append(ToolMessage(content=tool_message_content, tool_call_id=tool_call_id, name=tool_call_name))
-    
+            tool_message_content = (
+                response if raw_args not in ("", "{}") else '"code" should be provided.'
+            )
+
+        messages.append(
+            ToolMessage(
+                content=tool_message_content,
+                tool_call_id=tool_call_id,
+                name=tool_call_name,
+            )
+        )
+
+    results_logger.set_messages(messages)
+
     return ai_message.content
 
 
 @traceable
-async def sequential_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
+async def sequential_agent_session(
+    model: ChatOpenAI,
+    context_file_names: list[str],
+    question: str,
+    guidelines: str,
+    max_steps: int,
+    results_logger: ResultsLogger,
+):
     @tool
     def execute_code(code: str) -> str:
         """Executes Python code and returns stdout or stderr."""
         return ""
+
     executor = InProcPythonExecutor()
-    
 
     async def _execute_code_impl(code: str) -> str:
         """Executes Python code and returns stdout or stderr."""
         nonlocal executor
         result = await executor.aexecute(code)
 
-        return(
+        return (
             result.output or ""
             if result.success
-            else ("Error detected. Halting further processing. " + (result.error or ""))
+            else format_execute_code_tool_error(result.error or "")
         )
-    
+
     _model = model.bind_tools([execute_code])
 
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
-        {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
+        {"role": "system", "content": format_system_prompt(context_file_names)},
+        {"role": "user", "content": format_human_prompt(question, guidelines)},
     ]
-    
+
     for step in range(max_steps):
         ai_message: AIMessage | None = None
         tool_call_id = None
@@ -266,10 +233,12 @@ async def sequential_agent_session(model: BaseChatModel, context_file_names: lis
         ai_content = ""
         tool_call_name = ""
         raw_args = ""
+        execution_started: float | None = None
+        step_start_time = perf_counter()
         async for event in _model.astream_events(messages):
             if is_error:
                 break
-            
+
             if event["event"] == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
                 if chunk.content:
@@ -282,145 +251,228 @@ async def sequential_agent_session(model: BaseChatModel, context_file_names: lis
                     if tool_chunk.get("args"):
                         raw_args += tool_chunk["args"]
             elif event["event"] == "on_chat_model_end":
-                ai_message = event['data']['output']
+                ai_message = event["data"]["output"]
             else:
                 pass
         
+        inference_time = perf_counter() - step_start_time
+        
         if ai_message and len(ai_message.tool_calls) == 0:
             break
-        
+
         if raw_args not in ("", "{}"):
             try:
-                execution_result = await _execute_code_impl(json.loads(raw_args).get("code", ""))
+                execution_started = perf_counter()
+                execution_result = await _execute_code_impl(
+                    json.loads(raw_args).get("code", "")
+                )
                 response = execution_result
             except Exception as e:
                 response = "Error detected. Halting further processing. " + str(e)
                 is_error = True
+
+        step_total_execution_time = perf_counter() - execution_started if execution_started else 0
+        step_end_time = perf_counter()
         
-        messages.append(ai_message)
-        messages.append(ToolMessage(content=response if raw_args not in ("", "{}") else "\"code\" should be provided.", tool_call_id=tool_call_id, name=tool_call_name))
-    
+        results_logger.add_step(
+            step_number=step + 1,
+            message=ai_message.content if ai_message else None,
+            code=raw_args if raw_args not in ("", "{}") else None,
+            observation=response if raw_args not in ("", "{}") else None,
+            is_error=is_error,
+            tool_call_success=not is_error if raw_args not in ("", "{}") else None,
+            tool_call_error_message=response if is_error else None,
+            tool_execution_time=step_total_execution_time if raw_args not in ("", "{}") else None,
+            inference_time=inference_time if raw_args not in ("", "{}") else None,
+            total_time=step_end_time - step_start_time
+        )
+        
+        messages.append(
+            AIMessage(
+                content=ai_message.content,
+                additional_kwargs=ai_message.additional_kwargs,
+                response_metadata=ai_message.response_metadata,
+                usage_metadata=ai_message.usage_metadata,
+                tool_calls=ai_message.tool_calls,
+                id=ai_message.id,
+            )
+        )
+        messages.append(
+            ToolMessage(
+                content=response
+                if raw_args not in ("", "{}")
+                else '"code" should be provided.',
+                tool_call_id=tool_call_id,
+                name=tool_call_name,
+            )
+        )
+
     return ai_message.content
 
 
 @traceable
-async def langchain_agent_session(model: BaseChatModel, context_file_names: list[str], question: str, guidelines: str, max_steps: int):
-    # messages = [
-    #     {"role": "system", "content": SYSTEM_PROMPT.format(context_files="\n".join(context_file_names))},
-    #     
-    # ]
+async def langchain_agent_session(
+    model: ChatOpenAI,
+    context_file_names: list[str],
+    question: str,
+    guidelines: str,
+    max_steps: int,
+):
     executor = InProcPythonExecutor()
-    
+
     @tool
     async def execute_code(code: str) -> str:
         """Executes Python code and returns stdout or stderr."""
         nonlocal executor
         result = await executor.aexecute(code)
 
-        return(
+        return (
             result.output or ""
             if result.success
             else ("Error detected. Halting further processing. " + (result.error or ""))
         )
-    
-    
+
     agent = create_agent(
         model=model,
         tools=[execute_code],
-        system_prompt=SYSTEM_PROMPT.format(context_files="\n".join(context_file_names)),
+        system_prompt=format_system_prompt(context_file_names),
     ).with_config({"recursion_limit": max_steps})
+    # FIXME: handle graph recursion error.
     
-    output_state = await agent.ainvoke({
-        "messages": [
-            {"role": "user", "content": HUMAN_PROMPT.format(question=question, guidelines=guidelines)},
-        ]
-    })
-    
-    
+    try:
+        output_state = await agent.ainvoke(
+            {
+                "messages": [
+                    {"role": "user", "content": format_human_prompt(question, guidelines)},
+                ]
+            }
+        )
+    except GraphRecursionError:
+        return ""
+
     return output_state["messages"][-1].content
 
 
 async def main():
-    model_name = "openai/gpt-oss-20b" # "google/gemma-4-e4b"
-    mode: Literal["sequential", "incremental"] = "incremental"
-    max_steps = 20
-    run_timeout_seconds = 30.0
+    context_file_names = load_context_files("./tmp")
+    dataset = load_tasks_dataset("dev")
+
+    model_name = "google/gemma-4-e4b" # "openai/gpt-oss-20b"  # 
+    seed = 1234
+    temperature = 0
+
+    test_case = dataset[1]  # 7
+
+    run_id = uuid4()
     
-    session_id = 1234
-    temperature = 0.3
+    incremental_steps = []
+    sequential_steps = []
+
+    async with get_model(
+        model_name=model_name, temperature=temperature, seed=seed
+    ) as model:
+        start_time = perf_counter()
         
+        results_logger = ResultsLogger(run_id, model_name, temperature, seed, type="incremental")
+        
+        with get_usage_metadata_callback() as cb:
+            response = await incremental_agent_session(
+                model=model,
+                context_file_names=context_file_names,
+                question=test_case["question"],
+                guidelines=test_case["guidelines"],
+                max_steps=20,
+                results_logger=results_logger,
+            )
+            
+            print("Usage metadata:", cb.usage_metadata)
+            
+            for step in results_logger.steps:
+                print(f"Step {step.step_number}:")
+                print("Message:", step.message)
+                print("Code:", step.code)
+                # print("Observation:", step.observation)
+                print("Is error:", step.is_error)
+                print("Tool call success:", step.tool_call_success)
+                print("Tool call error message:", step.tool_call_error_message)
+                print("Inference time:", step.inference_time)
+                print("Tool execution time:", step.tool_execution_time)
+                print("Total time:", step.total_time)
+                print("-" * 20)
+                
+            incremental_steps = results_logger.steps
 
-    
-    
-    # await restart_model(model_name)
-    # model = ChatOllama(
-    #     model=model_name,
-    #     temperature=0,
-    #     seed=session_id,
-    #     # reasoning=True,
-    # )
-    
-    model = ChatOpenAI(
-        model=model_name,
-        base_url="http://localhost:1234/v1",
-        api_key="lm-studio",
-        temperature=0,
-        stream_usage=True,
-        streaming=True,
-    )
-    
-    context_file_names = load_context_files()
-    dataset = load_dataset_files()
+        print("Task: ", test_case["question"])
+        print("Final response:", response)
+        print("Correct answer:", test_case["answer"])
+        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
 
-    test_case = dataset[7] # 7
-    async with lms.AsyncClient() as client:
-        with contextlib.suppress(lms.LMStudioModelNotFoundError):
-            await client.llm.unload(model_name)
-        await client.llm.load_new_instance(model_name, config=lms.LlmLoadModelConfig(
-            seed=session_id,
-        ))
-    
-    start_time = perf_counter()
-    response = await langchain_agent_session(
-        model=model,
-        context_file_names=context_file_names,
-        question=test_case["question"],
-        guidelines=test_case["guidelines"],
-        max_steps=max_steps,
-    )
-    
-    print("Task: ", test_case["question"])
-    print("Final response:", response)
-    print("Correct answer:", test_case["answer"])
-    print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
-    
-    
-    async with lms.AsyncClient() as client:
-        with contextlib.suppress(lms.LMStudioModelNotFoundError):
-            await client.llm.unload(model_name)
-        await client.llm.load_new_instance(model_name, config=lms.LlmLoadModelConfig(
-            seed=session_id,
-        ))
-    
-    
-    
-    start_time = perf_counter()
-    response = await incremental_agent_session(
-        model=model,
-        context_file_names=context_file_names,
-        question=test_case["question"],
-        guidelines=test_case["guidelines"],
-        max_steps=max_steps,
-    )
-    
-    print("Task: ", test_case["question"])
-    print("Final response:", response)
-    print("Correct answer:", test_case["answer"])
-    print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+    async with get_model(
+        model_name=model_name, temperature=temperature, seed=seed
+    ) as model:
+        start_time = perf_counter()
+        results_logger = ResultsLogger(run_id, model_name, temperature, seed, type="sequential")
+        response = await sequential_agent_session(
+            model=model,
+            context_file_names=context_file_names,
+            question=test_case["question"],
+            guidelines=test_case["guidelines"],
+            max_steps=20,
+            results_logger=results_logger,
+        )
+        
+        for step in results_logger.steps:
+            print(f"Step {step.step_number}:")
+            print("Message:", step.message)
+            print("Code:", step.code)
+            # print("Observation:", step.observation)
+            print("Is error:", step.is_error)
+            print("Tool call success:", step.tool_call_success)
+            print("Tool call error message:", step.tool_call_error_message)
+            print("Inference time:", step.inference_time)
+            print("Tool execution time:", step.tool_execution_time)
+            print("Total time:", step.total_time)
+            print("-" * 20)
+            
+        sequential_steps = results_logger.steps
+
+        print("Task: ", test_case["question"])
+        print("Final response:", response)
+        print("Correct answer:", test_case["answer"])
+        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+
+
+    for inc, seq in zip(incremental_steps, sequential_steps):
+        print(f"Step {inc.step_number}:")
+        print("Inference time difference:", inc.inference_time - seq.inference_time if inc.inference_time and seq.inference_time else None)
+        print("Tool execution time difference:", inc.tool_execution_time - seq.tool_execution_time if inc.tool_execution_time and seq.tool_execution_time else None)
+        print("Total time difference:", inc.total_time - seq.total_time)
+        
+        print("-" * 20)
+
+
+    return
+
+    async with get_model(
+        model_name=model_name, temperature=temperature, seed=seed
+    ) as model:
+        start_time = perf_counter()
+        
+        response = await langchain_agent_session(
+            model=model,
+            context_file_names=context_file_names,
+            question=test_case["question"],
+            guidelines=test_case["guidelines"],
+            max_steps=20,
+        )
+
+        print("Task: ", test_case["question"])
+        print("Final response:", response)
+        print("Correct answer:", test_case["answer"])
+        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+
+   
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-

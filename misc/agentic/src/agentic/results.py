@@ -1,116 +1,161 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-from datetime import datetime
-import json
-from pathlib import Path
-
-import pandas as pd
-
-TABLE_COLUMNS = [
-    "model_name",
-    "mode",
-    "task_id",
-    "success",
-    "final_result",
-    "expected_answer",
-    "is_correct",
-    "is_timeout",
-    "is_error",
-    "no_steps_left",
-    "steps_count",
-    "total_time",
-    "steps_executed",
-    "steps_duration",
-]
+from typing import Literal
+from uuid import UUID
+from langchain_core.messages import AnyMessage
 
 
-@dataclass(slots=True)
-class AgenticEvaluationRecord:
+RunType = Literal["incremental", "sequential", "sequential_langchain"]
+
+@dataclass
+class RunInfo:
+    id: UUID
     model_name: str
-    mode: str
+    temperature: float
+    seed: int
+    type: RunType
+
+
+@dataclass
+class TaskRunStats:
     task_id: str
-    success: bool
-    final_result: str | None
-    expected_answer: str
-    is_correct: bool
-    is_timeout: bool
+    run_id: UUID
+
+    messages: list[AnyMessage]
+    
+    total_tool_calls_count: int
+    
+    successful_tool_calls_count: int
+    failed_tool_calls_count: int
+    
+    total_tokens: int
+    total_input_tokens: int
+    total_output_tokens: int
+    total_reasoning_tokens: int
+    
+    final_answer: str | None
+    final_answer_parsed: str | None
+    
+    has_timeout: bool
+    
+    total_execution_time: float
+    
+
+@dataclass
+class StepLogEntry:
+    task_id: str
+    run_id: UUID
+    step_number: int
+    
+    message: str | None
+    code: str | None
+    observation: str | None
+    
     is_error: bool
-    no_steps_left: bool
-    steps_count: int
+    
+    tool_call_success: bool | None
+    tool_call_error_message: str | None
+    
     total_time: float
-    steps_executed: int
-    steps_duration: list[float]
-    messages: list[dict[str, str]]
+    inference_time: float | None
+    tool_execution_time: float | None
 
-    def to_table_row(self) -> dict[str, object]:
-        return {
-            "model_name": self.model_name,
-            "mode": self.mode,
-            "task_id": self.task_id,
-            "success": self.success,
-            "final_result": self.final_result,
-            "expected_answer": self.expected_answer,
-            "is_correct": self.is_correct,
-            "is_timeout": self.is_timeout,
-            "is_error": self.is_error,
-            "no_steps_left": self.no_steps_left,
-            "steps_count": self.steps_count,
-            "total_time": self.total_time,
-            "steps_executed": self.steps_executed,
-            "steps_duration": json.dumps(self.steps_duration),
-        }
-
-    def to_raw_record(self) -> dict[str, object]:
-        return {
-            **self.to_table_row(),
-            "steps_duration": self.steps_duration,
-            "messages": [message.copy() for message in self.messages],
-        }
+@dataclass
+class TaskRunResult:
+    run_info: RunInfo
+    messages: list[AnyMessage]
+    task_run_stats: TaskRunStats
+    steps: list[StepLogEntry]
 
 
-def sanitize_filename_component(value: str) -> str:
-    return value.replace("/", "__").replace(":", "_").replace(".", "_")
 
 
-def build_run_stem(
-    model_name: str,
-    mode: str,
-    dataset: str,
-    started_at: datetime,
-) -> str:
-    timestamp = started_at.strftime("%Y%m%d_%H%M%S")
-    safe_model_name = sanitize_filename_component(model_name)
-    return f"{safe_model_name}_{mode}_{dataset}_{timestamp}"
+class ResultsLogger:
+    def __init__(self, id: UUID, model_name: str, temperature: float, seed: int, type: RunType):
+        self.run_info = RunInfo(
+            id=id,
+            model_name=model_name,
+            temperature=temperature,
+            seed=seed,
+            type=type
+        )
+        self.messages: list[AnyMessage] = []
+        self.task_run_stats: TaskRunStats | None = None
+        self.steps: list[StepLogEntry] = []
+    
+    
+    def set_messages(self, messages: list[AnyMessage]) -> None:
+        self.messages = messages
+        
+    def set_task_run_stats(
+        self,
+        total_tool_calls_count: int,
+        successful_tool_calls_count: int,
+        failed_tool_calls_count: int,
+        total_tokens: int,
+        total_input_tokens: int,
+        total_output_tokens: int,
+        total_reasoning_tokens: int,
+        final_answer: str | None,
+        final_answer_parsed: str | None,
+        has_timeout: bool,
+        total_execution_time: float
+    ) -> None:
+        self.task_run_stats = TaskRunStats(
+            task_id="",
+            run_id=self.run_info.id,
+            messages=self.messages,
+            total_tool_calls_count=total_tool_calls_count,
+            successful_tool_calls_count=successful_tool_calls_count,
+            failed_tool_calls_count=failed_tool_calls_count,
+            total_tokens=total_tokens,
+            total_input_tokens=total_input_tokens,
+            total_output_tokens=total_output_tokens,
+            total_reasoning_tokens=total_reasoning_tokens,
+            final_answer=final_answer,
+            final_answer_parsed=final_answer_parsed,
+            has_timeout=has_timeout,
+            total_execution_time=total_execution_time
+        )
+    
+    def add_step(
+        self,
+        step_number: int,
+        message: str | None,
+        code: str | None,
+        observation: str | None,
+        is_error: bool,
+        tool_call_success: bool | None,
+        tool_call_error_message: str | None,
+        total_time: float,
+        tool_execution_time: float | None,
+        inference_time: float | None = None
+    ) -> None:
+        step_entry = StepLogEntry(
+            task_id="",
+            run_id=self.run_info.id,
+            step_number=step_number,
+            message=message,
+            code=code,
+            observation=observation,
+            is_error=is_error,
+            tool_call_success=tool_call_success,
+            tool_call_error_message=tool_call_error_message,
+            total_time=total_time,
+            tool_execution_time=tool_execution_time,
+            inference_time=inference_time
+        )
+        self.steps.append(step_entry)
+        
+    def get_result(self) -> TaskRunResult:
+        if self.task_run_stats is None:
+            raise ValueError("Task run stats have not been set yet.")
+        
+        return TaskRunResult(
+            run_info=self.run_info,
+            messages=self.messages,
+            task_run_stats=self.task_run_stats,
+            steps=self.steps
+        )
+    
+    
 
-
-def write_results(
-    records: list[AgenticEvaluationRecord],
-    *,
-    results_directory: str,
-    model_name: str,
-    mode: str,
-    dataset: str,
-    started_at: datetime,
-) -> tuple[Path, Path]:
-    results_root = Path(results_directory)
-    tables_directory = results_root / "tables"
-    raw_directory = results_root / "raw"
-    tables_directory.mkdir(parents=True, exist_ok=True)
-    raw_directory.mkdir(parents=True, exist_ok=True)
-
-    run_stem = build_run_stem(model_name, mode, dataset, started_at)
-    csv_path = tables_directory / f"{run_stem}.csv"
-    json_path = raw_directory / f"{run_stem}.json"
-
-    pd.DataFrame(
-        [record.to_table_row() for record in records],
-        columns=TABLE_COLUMNS,
-    ).to_csv(csv_path, index=False)
-
-    json_path.write_text(
-        json.dumps([record.to_raw_record() for record in records], indent=2),
-        encoding="utf-8",
-    )
-
-    return csv_path, json_path
