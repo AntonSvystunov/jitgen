@@ -24,6 +24,7 @@ async def _load_fresh_model(
         model_name,
         config=lms.LlmLoadModelConfig(
             seed=seed,
+            context_length=50000,
         ),
     )
 
@@ -33,7 +34,7 @@ async def get_model(
     model_name: str, temperature: float, seed: int
 ) -> AsyncIterator[ChatOpenAI]:
     async with lms.AsyncClient(api_host=LM_STUDIO_API_HOST) as client:
-        # await _load_fresh_model(client, model_name, seed)
+        await _load_fresh_model(client, model_name, seed)
         llm = ChatOpenAI(
             model=model_name,
             base_url=OPENAI_API_BASE,
@@ -44,4 +45,4 @@ async def get_model(
             streaming=True,
         )
         yield llm
-        # await _unload_model(client, model_name)
+        await _unload_model(client, model_name)

@@ -1,11 +1,11 @@
 import asyncio
 import json
-from uuid import uuid4
 
 from agentic.agents import LangchainAgent
 from dotenv import load_dotenv
 from jitgen.executors.python import InProcPythonExecutor
-from jitgen.prebuilt.python import create_python_async_jitgen_session
+from jitgen.markers import MarkerStripper
+from jitgen.prebuilt.python import create_python_jitgen
 
 from langchain.agents import create_agent
 
@@ -46,25 +46,9 @@ async def incremental_agent_session(
         """Executes Python code and returns stdout or stderr."""
         return ""
 
-    session = create_python_async_jitgen_session(
-        start_marker='{"code":"', end_marker='"}', tools={"open": open}
-    )
-
-    @session.on_stdout
-    def on_stdout(stdout: str):
-        nonlocal response
-        nonlocal is_error
-
-        if not is_error:
-            response += stdout
-
-    @session.on_error
-    def on_error(stderr: Exception):
-        nonlocal response
-        nonlocal is_error
-        if not is_error:
-            response = str(stderr)
-        is_error = True
+    executor = InProcPythonExecutor(tools={"open": open})
+    session = create_python_jitgen(executor=executor)
+    stripper = MarkerStripper(start='{"code":"', end='"}')
 
     _model = model.bind_tools([execute_code])
 
@@ -74,17 +58,19 @@ async def incremental_agent_session(
     ]
 
     for step in range(max_steps):
+        session.reset()
+        stripper.reset()
+
         ai_message: AIMessage | None = None
         tool_call_id = None
-        response = ""
-        is_error = False
         ai_content = ""
         tool_call_name = ""
         raw_args = ""
         execution_started: float | None = None
         step_start_time = perf_counter()
+
         async for event in _model.astream_events(messages):
-            if is_error:
+            if session.has_error:
                 break
 
             if event["event"] == "on_chat_model_stream":
@@ -100,33 +86,32 @@ async def incremental_agent_session(
                         raw_args += tool_chunk["args"]
                         if not execution_started:
                             execution_started = perf_counter()
-                        await session.apush(
-                            tool_chunk["args"].encode().decode("unicode_escape")
-                        )
+                        decoded = tool_chunk["args"].encode().decode("unicode_escape")
+                        for seg in stripper.process(decoded):
+                            session.push(seg.text)
+                            if session.has_error:
+                                break
             elif event["event"] == "on_chat_model_end":
                 ai_message = event["data"]["output"]
-            else:
-                pass
+
         inference_time = perf_counter() - step_start_time
 
-        try:
-            if not is_error:
-                await session.aflush()
-        except Exception:
-            if not is_error:
-                raise
-        finally:
-            step_total_execution_time = perf_counter() - execution_started if execution_started else 0
-            if is_error:
-                session._algorithm._code_buffer = ""  # Clear any buffered code in the session to prevent it from being executed in the next step
-                session._algorithm._raw_buffer = (
-                    ""  # Clear any raw buffered input as well
-                )
+        is_error = session.has_error
+        if is_error:
+            response = str(session.error)
+        else:
+            try:
+                response = await session.result()
+                is_error = False
+            except Exception as exc:
+                response = str(exc)
+                is_error = True
 
-            session._algorithm._inside_markers = False  # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
-            # self._handled_session_error = None
+        step_total_execution_time = (
+            perf_counter() - execution_started if execution_started else 0
+        )
         step_end_time = perf_counter()
-        
+
         if ai_message and len(ai_message.tool_calls) == 0:
             break
 
@@ -141,10 +126,10 @@ async def incremental_agent_session(
                             (raw_args + '"}')
                             if not raw_args.endswith("}")
                             else raw_args
-                        ),  # We already pushed the tool args to the session as they came in, so we can leave this empty to avoid confusion
+                        ),
                     }
                 ],
-            )  # Create an AIMessage with the accumulated content if we didn't get a proper message from the model, to ensure we can at least return any output received before an error occurred
+            )
 
         messages.append(
             AIMessage(
@@ -191,10 +176,7 @@ async def sequential_agent_session(
     executor = InProcPythonExecutor()
 
     async def _execute_code_impl(code: str) -> str:
-        """Executes Python code and returns stdout or stderr."""
-        nonlocal executor
         result = await executor.aexecute(code)
-
         return (
             result.output or ""
             if result.success
@@ -218,10 +200,8 @@ async def sequential_agent_session(
         raw_args = ""
         execution_started: float | None = None
         step_start_time = perf_counter()
-        async for event in _model.astream_events(messages):
-            if is_error:
-                break
 
+        async for event in _model.astream_events(messages):
             if event["event"] == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
                 if chunk.content:
@@ -235,28 +215,27 @@ async def sequential_agent_session(
                         raw_args += tool_chunk["args"]
             elif event["event"] == "on_chat_model_end":
                 ai_message = event["data"]["output"]
-            else:
-                pass
-        
+
         inference_time = perf_counter() - step_start_time
-        
+
         if ai_message and len(ai_message.tool_calls) == 0:
             break
 
         if raw_args not in ("", "{}"):
             try:
                 execution_started = perf_counter()
-                execution_result = await _execute_code_impl(
+                response = await _execute_code_impl(
                     json.loads(raw_args).get("code", "")
                 )
-                response = execution_result
-            except Exception as e:
-                response = "Error detected. Halting further processing. " + str(e)
+            except Exception as exc:
+                response = "Error detected. Halting further processing. " + str(exc)
                 is_error = True
 
-        step_total_execution_time = perf_counter() - execution_started if execution_started else 0
+        step_total_execution_time = (
+            perf_counter() - execution_started if execution_started else 0
+        )
         step_end_time = perf_counter()
-        
+
         messages.append(
             AIMessage(
                 content=ai_message.content,
@@ -293,9 +272,7 @@ async def langchain_agent_session(
     @tool
     async def execute_code(code: str) -> str:
         """Executes Python code and returns stdout or stderr."""
-        nonlocal executor
         result = await executor.aexecute(code)
-
         return (
             result.output or ""
             if result.success
@@ -307,13 +284,15 @@ async def langchain_agent_session(
         tools=[execute_code],
         system_prompt=format_system_prompt(context_file_names),
     ).with_config({"recursion_limit": max_steps})
-    # FIXME: handle graph recursion error.
-    
+
     try:
         output_state = await agent.ainvoke(
             {
                 "messages": [
-                    {"role": "user", "content": format_human_prompt(question, guidelines)},
+                    {
+                        "role": "user",
+                        "content": format_human_prompt(question, guidelines),
+                    }
                 ]
             }
         )
@@ -327,76 +306,16 @@ async def main():
     context_file_names = load_context_files("./tmp")
     dataset = load_tasks_dataset("dev")
 
-    model_name = "google/gemma-4-e4b" # "openai/gpt-oss-20b"  # 
+    model_name = "google/gemma-4-e4b"
     seed = 1234
     temperature = 0.7
-
-    # test_case = dataset[1]  # 7
-    
-
-    # async with get_model(
-    #     model_name=model_name, temperature=temperature, seed=seed
-    # ) as model:
-    #     start_time = perf_counter()
-    #     response = await sequential_agent_session(
-    #         model=model,
-    #         context_file_names=context_file_names,
-    #         question=test_case["question"],
-    #         guidelines=test_case["guidelines"],
-    #         max_steps=20,
-    #     )
-
-    #     print("Task: ", test_case["question"])
-    #     print("Final response:", response)
-    #     print("Correct answer:", test_case["answer"])
-    #     print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
-
-    # async with get_model(
-    #     model_name=model_name, temperature=temperature, seed=seed
-    # ) as model:
-    #     start_time = perf_counter()
-        
-    #     with get_usage_metadata_callback() as cb:
-    #         response = await incremental_agent_session(
-    #             model=model,
-    #             context_file_names=context_file_names,
-    #             question=test_case["question"],
-    #             guidelines=test_case["guidelines"],
-    #             max_steps=20,
-    #         )
-            
-    #         print("Usage metadata:", cb.usage_metadata)
-
-    #     print("Task: ", test_case["question"])
-    #     print("Final response:", response)
-    #     print("Correct answer:", test_case["answer"])
-    #     print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
-
-
-
 
     async with get_model(
         model_name=model_name, temperature=temperature, seed=seed
     ) as model:
         for test_case in dataset.skip(5).take(2):
             print("Task: ", test_case["task_id"])
-            # agent = LangchainAgent(
-            #     model=model,
-            #     context_file_names=context_file_names,
-            #     max_steps=20,
-            # )
-            
-            # response = await agent.run(
-            #     question=test_case["question"],
-            #     guidelines=test_case["guidelines"],
-            # )
-            
-            # print("Steps taken: ", response.steps_taken)
-            # print(f"Time taken: {response.total_execution_time:.2f} seconds")
-            # print("Is success: ", response.success)
-            # print("Final response:", response.output)
-            # print("Correct answer:", test_case["answer"])
-            
+
             response = await incremental_agent_session(
                 model=model,
                 context_file_names=context_file_names,
@@ -404,12 +323,24 @@ async def main():
                 guidelines=test_case["guidelines"],
                 max_steps=20,
             )
-            
+
             print("Final result: ", response)
+    
+    async with get_model(
+        model_name=model_name, temperature=temperature, seed=seed
+    ) as model:
+        for test_case in dataset.skip(5).take(2):
+            print("Task: ", test_case["task_id"])
 
-            
+            response = await langchain_agent_session(
+                model=model,
+                context_file_names=context_file_names,
+                question=test_case["question"],
+                guidelines=test_case["guidelines"],
+                max_steps=20,
+            )
 
-   
+            print("Final result: ", response)
 
 
 if __name__ == "__main__":

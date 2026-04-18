@@ -1,261 +1,234 @@
-"""Unit tests for stateful sync/async JITGen sessions."""
+"""Tests for jitgen_core.session.Session."""
 
-from unittest.mock import Mock
+import asyncio
 
 import pytest
-from lark import Lark
-from lark.tree import Branch
 
-from jitgen_core import AsyncJITGenSession, ExecutionResult, JITGenSession
-from jitgen_core.base import BaseExecutor
+from jitgen_core import ExecutionResult, Session
+from jitgen_core.base import BaseExecutor, SourceCode, StatementExtractor
 
 
-class MockExecutor(BaseExecutor):
-    def execute(self, source_code: str, *, timeout: float = 5.0) -> ExecutionResult:
-        return ExecutionResult(success=True, output=f"output:{source_code.strip()}")
+# ── Fakes ──────────────────────────────────────────────────────────────────────
 
-    async def aexecute(
-        self, source_code: str, *, timeout: float = 5.0
-    ) -> ExecutionResult:
-        return ExecutionResult(success=True, output=f"output:{source_code.strip()}")
+class EchoExtractor:
+    """Trivial extractor: each newline-terminated line is a complete statement."""
 
-
-class MockFailingExecutor(BaseExecutor):
-    def execute(self, source_code: str, *, timeout: float = 5.0) -> ExecutionResult:
-        return ExecutionResult(success=False, error="Execution failed", output="")
-
-    async def aexecute(
-        self, source_code: str, *, timeout: float = 5.0
-    ) -> ExecutionResult:
-        return ExecutionResult(success=False, error="Execution failed", output="")
-
-
-class MockExecutorWithPrefix(BaseExecutor):
-    def __init__(self, *, prefix: str):
-        self.prefix = prefix
-
-    def execute(self, source_code: str, *, timeout: float = 5.0) -> ExecutionResult:
-        return ExecutionResult(success=True, output=f"{self.prefix}:{source_code.strip()}")
-
-    async def aexecute(
-        self, source_code: str, *, timeout: float = 5.0
-    ) -> ExecutionResult:
-        return ExecutionResult(success=True, output=f"{self.prefix}:{source_code.strip()}")
+    def extract(
+        self, source: SourceCode, *, final: bool
+    ) -> tuple[list[SourceCode], SourceCode]:
+        lines = source.split("\n")
+        if final:
+            stmts = [l for l in lines if l.strip()]
+            return stmts, ""
+        # Non-final: only lines that end with \n are ready
+        complete = lines[:-1]
+        leftover = lines[-1]
+        stmts = [l for l in complete if l.strip()]
+        return stmts, leftover
 
 
-def create_mock_statement(start_pos: int, end_pos: int) -> Branch:
-    statement = Mock(spec=Branch)
-    meta = Mock()
-    meta.start_pos = start_pos
-    meta.end_pos = end_pos
-    statement.meta = meta
-    return statement
+class FailingExtractor:
+    """Extractor that raises SyntaxError on first call."""
+
+    def extract(
+        self, source: SourceCode, *, final: bool
+    ) -> tuple[list[SourceCode], SourceCode]:
+        raise SyntaxError("bad syntax")
 
 
-def create_mock_tree(*statements: Branch) -> Branch:
-    tree = Mock(spec=Branch)
-    tree.children = list(statements)
-    return tree
+class EchoExecutor:
+    """Executor that echoes back the source code as output."""
+
+    async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+        return ExecutionResult(success=True, output=f"echo:{source_code.strip()}")
 
 
-@pytest.fixture
-def mock_parser() -> Mock:
-    parser = Mock(spec=Lark)
+class FailExecutor:
+    """Executor that always fails."""
 
-    def parse_side_effect(buffer: str) -> Branch:
-        return create_mock_tree(create_mock_statement(0, len(buffer)))
-
-    parser.parse.side_effect = parse_side_effect
-    return parser
+    async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+        return ExecutionResult(success=False, error="exec failed")
 
 
-def test_sync_session_executes_when_end_marker_seen(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
+class SlowExecutor:
+    """Executor that takes a non-trivial amount of time."""
 
-    assert session.push("<exe") == ""
-    assert session.push("cute>print('A')\n") == ""
-    assert session.push("</execute>") == "output:print('A')"
+    def __init__(self, delay: float = 0.05) -> None:
+        self.delay = delay
+        self.calls: list[str] = []
 
-    assert session.has_executed is True
-    assert session.has_output is True
-    assert session.code_buffer == ""
+    async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+        self.calls.append(source_code)
+        await asyncio.sleep(self.delay)
+        return ExecutionResult(success=True, output=f"slow:{source_code.strip()}")
 
 
-def test_sync_session_supports_multiple_marker_windows(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
+# ── push / result basics ───────────────────────────────────────────────────────
 
-    output = session.push("<execute>a=1\n</execute>ignored<execute>b=2\n</execute>")
-
-    assert "output:a=1" in output
-    assert "output:b=2" in output
-    assert session.code_buffer == ""
-
-
-def test_sync_session_handlers_support_sync_and_async(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
-
-    stdout_events: list[str] = []
-    statement_events: list[tuple[str, str]] = []
-
-    @session.on_stdout
-    def capture_stdout(output: str) -> None:
-        stdout_events.append(f"sync:{output}")
-
-    @session.on_stdout
-    async def capture_stdout_async(output: str) -> None:
-        stdout_events.append(f"async:{output}")
-
-    @session.on_statement_complete
-    def capture_statement(statement: str, output: str) -> None:
-        statement_events.append((statement.strip(), output))
-
-    result = session.push("<execute>x=1\n</execute>")
-
-    assert result == "output:x=1"
-    assert stdout_events == ["sync:output:x=1", "async:output:x=1"]
-    assert statement_events == [("x=1", "output:x=1")]
-
-
-def test_sync_session_calls_error_handlers(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockFailingExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
-
-    errors: list[Exception] = []
-
-    @session.on_error
-    def capture_error(exc: Exception) -> None:
-        errors.append(exc)
-
-    with pytest.raises(ValueError, match="Error detected"):
-        session.push("<execute>x=1\n</execute>")
-
-    assert len(errors) == 1
-
-
-def test_sync_session_calls_error_handlers_for_algorithm_errors(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
-
-    errors: list[Exception] = []
-
-    @session.on_error
-    def capture_error(exc: Exception) -> None:
-        errors.append(exc)
-
-    session._algorithm.ingest_chunk = Mock(side_effect=RuntimeError("Algorithm failed"))
-
-    with pytest.raises(RuntimeError, match="Algorithm failed") as exc_info:
-        session.push("<execute>x=1\n</execute>")
-
-    assert errors == [exc_info.value]
-
-
-def test_sync_session_forwards_interpreter_kwargs(mock_parser: Mock):
-    session = JITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutorWithPrefix,
-        interpreter_kwargs={"prefix": "tool"},
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
-
-    output = session.push("<execute>x=1\n</execute>")
-
-    assert output == "tool:x=1"
+@pytest.mark.asyncio
+async def test_push_and_result_single_statement():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("print('hi')\n")
+    out = await session.result()
+    assert out == "echo:print('hi')"
 
 
 @pytest.mark.asyncio
-async def test_async_session_autoflushes_on_context_exit(mock_parser: Mock):
-    stdout_events: list[str] = []
-
-    async with AsyncJITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    ) as session:
-
-        @session.on_stdout
-        async def capture_stdout(output: str) -> None:
-            stdout_events.append(output)
-
-        await session.apush("<execute>print('hello')\n")
-
-    assert stdout_events == ["output:print('hello')"]
+async def test_result_concatenates_multiple_statements_in_order():
+    slow = SlowExecutor(delay=0.02)
+    session = Session(extractor=EchoExtractor(), executor=slow)
+    session.push("a\n")
+    session.push("b\n")
+    session.push("c\n")
+    out = await session.result()
+    assert out == "slow:aslow:bslow:c"
+    assert slow.calls == ["a", "b", "c"]
 
 
 @pytest.mark.asyncio
-async def test_async_session_forwards_interpreter_kwargs(mock_parser: Mock):
-    stdout_events: list[str] = []
-
-    async with AsyncJITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutorWithPrefix,
-        interpreter_kwargs={"prefix": "tool"},
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    ) as session:
-
-        @session.on_stdout
-        async def capture_stdout(output: str) -> None:
-            stdout_events.append(output)
-
-        await session.apush("<execute>x=1\n</execute>")
-        await session.aflush()
-
-    assert stdout_events == ["tool:x=1"]
+async def test_push_is_nonblocking():
+    """push() should return before the background task completes."""
+    slow = SlowExecutor(delay=0.1)
+    session = Session(extractor=EchoExtractor(), executor=slow)
+    t0 = asyncio.get_event_loop().time()
+    session.push("x\n")
+    elapsed = asyncio.get_event_loop().time() - t0
+    assert elapsed < 0.05, "push() should return immediately"
+    await session.result()  # drain
 
 
 @pytest.mark.asyncio
-async def test_async_session_calls_error_handlers_for_algorithm_errors(mock_parser: Mock):
-    session = AsyncJITGenSession(
-        parser=mock_parser,
-        interpreter_type=MockExecutor,
-        indentation_tokens={"_DEDENT", "_NEWLINE"},
-        start_marker="<execute>",
-        end_marker="</execute>",
-    )
+async def test_result_empty_when_nothing_pushed():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    out = await session.result()
+    assert out == ""
 
-    errors: list[Exception] = []
 
-    @session.on_error
-    async def capture_error(exc: Exception) -> None:
-        errors.append(exc)
+# ── error handling ─────────────────────────────────────────────────────────────
 
-    session._algorithm.ingest_chunk = Mock(side_effect=RuntimeError("Algorithm failed"))
+@pytest.mark.asyncio
+async def test_syntax_error_captured_synchronously_in_push():
+    session = Session(extractor=FailingExtractor(), executor=EchoExecutor())
+    session.push("bad code")
+    # error is observable immediately — no await needed
+    assert session.has_error
+    assert isinstance(session.error, SyntaxError)
 
-    with pytest.raises(RuntimeError, match="Algorithm failed") as exc_info:
-        await session.apush("<execute>x=1\n</execute>")
 
-    assert errors == [exc_info.value]
+@pytest.mark.asyncio
+async def test_result_raises_syntax_error():
+    session = Session(extractor=FailingExtractor(), executor=EchoExecutor())
+    session.push("bad code")
+    with pytest.raises(SyntaxError):
+        await session.result()
+
+
+@pytest.mark.asyncio
+async def test_runtime_error_captured_in_task_and_raised_by_result():
+    session = Session(extractor=EchoExtractor(), executor=FailExecutor())
+    session.push("x\n")
+    assert not session.has_error  # not yet set — task is async
+    with pytest.raises(RuntimeError, match="exec failed"):
+        await session.result()
+    assert session.has_error
+
+
+@pytest.mark.asyncio
+async def test_push_after_error_is_no_op():
+    session = Session(extractor=EchoExtractor(), executor=FailExecutor())
+    session.push("x\n")
+    with pytest.raises(RuntimeError):
+        await session.result()
+    # subsequent push should not enqueue more work
+    session.push("y\n")
+    assert session.has_error  # still in error state until reset
+
+
+# ── subsequent statements do not run after error ───────────────────────────────
+
+@pytest.mark.asyncio
+async def test_subsequent_statements_not_executed_after_runtime_error():
+    executed: list[str] = []
+
+    class TrackingFailFirstExecutor:
+        def __init__(self):
+            self.n = 0
+
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            self.n += 1
+            if self.n == 1:
+                return ExecutionResult(success=False, error="first fails")
+            executed.append(source_code)
+            return ExecutionResult(success=True, output=source_code)
+
+    executor = TrackingFailFirstExecutor()
+    session = Session(extractor=EchoExtractor(), executor=executor)
+    session.push("a\n")
+    session.push("b\n")
+    session.push("c\n")
+    with pytest.raises(RuntimeError):
+        await session.result()
+    # b and c should not have been executed
+    assert executed == []
+
+
+# ── reset ──────────────────────────────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_reset_clears_error_and_output():
+    session = Session(extractor=EchoExtractor(), executor=FailExecutor())
+    session.push("x\n")
+    with pytest.raises(RuntimeError):
+        await session.result()
+    session.reset()
+    assert not session.has_error
+    assert session.error is None
+    assert session.buffer == ""
+
+
+@pytest.mark.asyncio
+async def test_reset_preserves_executor_repl_state():
+    """Executor keeps its own state across reset; Session only resets its own buffers."""
+    calls: list[str] = []
+
+    class StatefulExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            calls.append(source_code.strip())
+            return ExecutionResult(success=True, output=source_code)
+
+    executor = StatefulExecutor()
+    session = Session(extractor=EchoExtractor(), executor=executor)
+    session.push("first\n")
+    await session.result()
+    session.reset()
+    session.push("second\n")
+    await session.result()
+    assert calls == ["first", "second"]
+
+
+@pytest.mark.asyncio
+async def test_session_works_after_reset():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    out1 = await session.result()
+    session.reset()
+    session.push("b\n")
+    out2 = await session.result()
+    assert out1 == "echo:a"
+    assert out2 == "echo:b"
+
+
+# ── executor injection (proves core is agnostic) ───────────────────────────────
+
+@pytest.mark.asyncio
+async def test_fake_executor_drives_session_end_to_end():
+    """Any BaseExecutor impl can be plugged in — proves core is executor-agnostic."""
+
+    class UppercaseExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            return ExecutionResult(success=True, output=source_code.upper())
+
+    session = Session(extractor=EchoExtractor(), executor=UppercaseExecutor())
+    session.push("hello\n")
+    out = await session.result()
+    assert out == "HELLO"

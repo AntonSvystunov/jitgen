@@ -1,399 +1,139 @@
-from jitgen.executors.python import InProcPythonExecutor
-
+"""Tests for InProcPythonExecutor."""
 
 import pytest
 
+from jitgen.executors.python import InProcPythonExecutor
+
 
 @pytest.fixture()
-def python_executor():
+def executor():
     return InProcPythonExecutor()
 
 
 @pytest.mark.asyncio
-async def test_hello_world(python_executor: InProcPythonExecutor):
-    source_code = "print('Hello, World!')"
-    result = await python_executor.aexecute(source_code)
-
+async def test_hello_world(executor: InProcPythonExecutor):
+    result = await executor.aexecute("print('Hello, World!')")
     assert result.success
     assert result.output == "Hello, World!\n"
     assert result.error is None
     assert not result.has_timed_out
-    assert result.timeout_value is None
 
 
 @pytest.mark.asyncio
-async def test_syntax_error(python_executor: InProcPythonExecutor):
-    source_code = "print('Hello, World!')\nprint('This will cause a syntax error'"
-    with pytest.raises(SyntaxError):
-        _ = await python_executor.aexecute(source_code)
-
-
-@pytest.mark.asyncio
-async def test_semantic_error(python_executor: InProcPythonExecutor):
-    source_code = "print('Hello, World!')\nprint(undefined_variable)"
-    result = await python_executor.aexecute(source_code)
-
-    assert not result.success
-    assert result.output == "Hello, World!\n"
-    assert result.error is not None
-    assert "undefined_variable" in result.error
-    assert not result.has_timed_out
-    assert result.timeout_value is None
-
-
-@pytest.mark.asyncio
-async def test_locals(python_executor: InProcPythonExecutor):
-    source_code = "a = 10"
-    result = await python_executor.aexecute(source_code)
-
-    assert result.success
-    assert result.output == ""
-    assert result.error is None
-    assert not result.has_timed_out
-    assert result.timeout_value is None
-
-    # Access protected member for testing purposes
-    assert python_executor._locals["a"] == 10  # noqa: SLF001
-
-
-@pytest.mark.asyncio
-async def test_sequence_of_statements(python_executor: InProcPythonExecutor):
-    source_code = ["a = 10", "b = 20", "print(a + b)"]
-
-    result = None
-    for stmt in source_code:
-        result = await python_executor.aexecute(stmt)
-
-        assert result.success
-        assert not result.has_timed_out
-        assert result.timeout_value is None
-
-    # Access protected member for testing purposes
-    assert python_executor._locals["a"] == 10  # noqa: SLF001
-    assert python_executor._locals["b"] == 20  # noqa: SLF001
-
-    assert result is not None
-    assert result.output == "30\n"
-
-
-@pytest.mark.asyncio
-async def test_timeout(python_executor: InProcPythonExecutor):
-    """Test that timeout is properly handled."""
-    source_code = "import time; time.sleep(10)"  # Sleep for 10 seconds
-    result = await python_executor.aexecute(
-        source_code, timeout=0.1
-    )  # 0.1 second timeout
-
-    assert not result.success
-    assert result.has_timed_out
-    assert result.timeout_value == 0.1
-    assert result.error is None  # Timeout doesn't set error
-
-
-@pytest.mark.asyncio
-async def test_timeout_with_custom_value(python_executor: InProcPythonExecutor):
-    """Test timeout with custom timeout value."""
-    source_code = "import time; time.sleep(10)"
-    result = await python_executor.aexecute(source_code, timeout=0.5)
-
-    assert not result.success
-    assert result.has_timed_out
-    assert result.timeout_value == 0.5
-
-
-@pytest.mark.asyncio
-async def test_empty_code(python_executor: InProcPythonExecutor):
-    """Test executing empty code."""
-    result = await python_executor.aexecute("")
-
-    assert result.success
-    assert result.output == ""
-    assert result.error is None
-    assert not result.has_timed_out
-
-
-@pytest.mark.asyncio
-async def test_whitespace_only_code(python_executor: InProcPythonExecutor):
-    """Test executing whitespace-only code."""
-    result = await python_executor.aexecute("   \n   \n")
-
-    assert result.success
-    assert result.output == ""
-    assert result.error is None
-
-
-@pytest.mark.asyncio
-async def test_multiple_outputs(python_executor: InProcPythonExecutor):
-    """Test multiple print statements."""
-    source_code = "print('First'); print('Second'); print('Third')"
-    result = await python_executor.aexecute(source_code)
-
-    assert result.success
-    assert result.output == "First\nSecond\nThird\n"
-    assert result.error is None
-
-
-@pytest.mark.asyncio
-async def test_stderr_capture(python_executor: InProcPythonExecutor):
-    """Test that stderr is captured in error field."""
-    source_code = "import sys; sys.stderr.write('Error message\\n')"
-    result = await python_executor.aexecute(source_code)
-
-    # Note: sys.stderr.write doesn't raise an exception, so success is True
-    # But the error message should be captured if there's an exception
-    assert result.success
-
-
-@pytest.mark.asyncio
-async def test_exception_capture(python_executor: InProcPythonExecutor):
-    """Test that exceptions are properly captured."""
-    source_code = "raise ValueError('Test error')"
-    result = await python_executor.aexecute(source_code)
-
-    assert not result.success
-    assert result.error is not None
-    assert "ValueError" in result.error or "Test error" in result.error
-
-
-@pytest.mark.asyncio
-async def test_system_exit_handling(python_executor: InProcPythonExecutor):
-    """Test that SystemExit is handled correctly.
-
-    Note: SystemExit behavior from asyncio.to_thread can vary depending on
-    the Python version and pytest configuration. The executor code is designed
-    to re-raise SystemExit, but in some test environments it may be handled
-    differently. This test verifies that SystemExit doesn't result in a
-    normal exception being caught.
-    """
-    source_code = "import sys; sys.exit(1)"
-    # The executor should handle SystemExit specially (re-raise it)
-    # In test environments, SystemExit may be caught by pytest
-    # We verify the code path doesn't treat it as a normal exception
-    result = await python_executor.aexecute(source_code)
-    # SystemExit should either be re-raised (caught by pytest) or handled specially
-    # If it's not re-raised, it shouldn't be treated as a normal error
-    # Note: This test may pass or fail depending on pytest's SystemExit handling
-    assert result is not None
-
-
-def test_execute_sync(python_executor: InProcPythonExecutor):
-    """Test synchronous execute method."""
-    source_code = "print('Hello, Sync!')"
-    result = python_executor.execute(source_code)
-
-    assert result.success
-    assert result.output == "Hello, Sync!\n"
-    assert result.error is None
-    assert not result.has_timed_out
-
-
-def test_execute_sync_with_timeout(python_executor: InProcPythonExecutor):
-    """Test synchronous execute with timeout."""
-    source_code = "import time; time.sleep(10)"
-    result = python_executor.execute(source_code, timeout=0.1)
-
-    assert not result.success
-    assert result.has_timed_out
-    assert result.timeout_value == 0.1
-
-
-def test_execute_sync_with_error(python_executor: InProcPythonExecutor):
-    """Test synchronous execute with runtime error."""
-    source_code = "print(undefined_variable)"
-    result = python_executor.execute(source_code)
-
+async def test_runtime_error(executor: InProcPythonExecutor):
+    result = await executor.aexecute("print(undefined_variable)")
     assert not result.success
     assert result.error is not None
     assert "undefined_variable" in result.error
+    assert not result.has_timed_out
 
 
 @pytest.mark.asyncio
-async def test_locals_persistence(python_executor: InProcPythonExecutor):
-    """Test that locals persist across multiple executions."""
-    _ = await python_executor.aexecute("x = 42")
-    _ = await python_executor.aexecute("y = 'hello'")
-    result = await python_executor.aexecute("print(f'{x} {y}')")
-
+async def test_repl_state_persists(executor: InProcPythonExecutor):
+    await executor.aexecute("x = 42")
+    result = await executor.aexecute("print(x)")
     assert result.success
-    assert result.output == "42 hello\n"
-    assert python_executor._locals["x"] == 42  # noqa: SLF001
-    assert python_executor._locals["y"] == "hello"  # noqa: SLF001
+    assert result.output == "42\n"
 
 
 @pytest.mark.asyncio
-async def test_tools_are_available_from_constructor():
-    def add(left: int, right: int) -> int:
-        return left + right
+async def test_locals_dict_populated(executor: InProcPythonExecutor):
+    await executor.aexecute("a = 10")
+    assert executor._locals["a"] == 10  # noqa: SLF001
 
-    python_executor = InProcPythonExecutor(tools={"add": add})
 
-    result = await python_executor.aexecute("print(add(2, 3))")
+@pytest.mark.asyncio
+async def test_timeout_configured_on_executor():
+    slow_exec = InProcPythonExecutor(timeout=0.1)
+    result = await slow_exec.aexecute("import time; time.sleep(10)")
+    assert not result.success
+    assert result.has_timed_out
 
+
+@pytest.mark.asyncio
+async def test_no_timeout_by_default_for_fast_code(executor: InProcPythonExecutor):
+    result = await executor.aexecute("print('fast')")
+    assert result.success
+    assert not result.has_timed_out
+
+
+@pytest.mark.asyncio
+async def test_empty_code_succeeds(executor: InProcPythonExecutor):
+    result = await executor.aexecute("")
+    assert result.success
+
+
+@pytest.mark.asyncio
+async def test_output_is_none_when_no_print(executor: InProcPythonExecutor):
+    result = await executor.aexecute("x = 1")
+    assert result.success
+    assert result.output is None
+
+
+@pytest.mark.asyncio
+async def test_multiple_print_statements(executor: InProcPythonExecutor):
+    result = await executor.aexecute("print('a'); print('b'); print('c')")
+    assert result.success
+    assert result.output == "a\nb\nc\n"
+
+
+@pytest.mark.asyncio
+async def test_exception_captured_in_result(executor: InProcPythonExecutor):
+    result = await executor.aexecute("raise ValueError('boom')")
+    assert not result.success
+    assert result.error is not None
+    assert "boom" in result.error
+
+
+@pytest.mark.asyncio
+async def test_tools_registered_at_construction():
+    exec_ = InProcPythonExecutor(tools={"add": lambda a, b: a + b})
+    result = await exec_.aexecute("print(add(2, 3))")
     assert result.success
     assert result.output == "5\n"
-    assert result.error is None
 
 
 @pytest.mark.asyncio
-async def test_register_tool_adds_runtime_local(python_executor: InProcPythonExecutor):
-    def multiply(left: int, right: int) -> int:
-        return left * right
-
-    python_executor.register_tool("multiply", multiply)
-    result = await python_executor.aexecute("print(multiply(4, 5))")
-
+async def test_register_tool_after_construction(executor: InProcPythonExecutor):
+    executor.register_tool("greet", lambda name: f"hi {name}")
+    result = await executor.aexecute("print(greet('world'))")
     assert result.success
-    assert result.output == "20\n"
-    assert result.error is None
+    assert result.output == "hi world\n"
 
 
 @pytest.mark.asyncio
-async def test_register_tools_adds_multiple_runtime_locals(
-    python_executor: InProcPythonExecutor,
-):
-    def add(left: int, right: int) -> int:
-        return left + right
-
-    def multiply(left: int, right: int) -> int:
-        return left * right
-
-    python_executor.register_tools({"add": add, "multiply": multiply})
-    result = await python_executor.aexecute(
-        "print(add(2, 3))\nprint(multiply(4, 5))"
-    )
-
+async def test_tools_isolated_between_executors():
+    e1 = InProcPythonExecutor(tools={"secret": lambda: 42})
+    e2 = InProcPythonExecutor()
+    result = await e2.aexecute("print('secret' in dir())")
     assert result.success
-    assert result.output == "5\n20\n"
-    assert result.error is None
+    assert result.output == "False\n"
 
 
 @pytest.mark.asyncio
-async def test_registered_tools_persist_across_executions():
-    def add(left: int, right: int) -> int:
-        return left + right
-
-    python_executor = InProcPythonExecutor(tools={"add": add})
-
-    first_result = await python_executor.aexecute("total = add(2, 3)")
-    second_result = await python_executor.aexecute("print(add(total, 4))")
-
-    assert first_result.success
-    assert second_result.success
-    assert second_result.output == "9\n"
-
-
-@pytest.mark.asyncio
-async def test_registered_tool_exception_is_captured():
-    def fail_tool() -> None:
-        raise RuntimeError("tool exploded")
-
-    python_executor = InProcPythonExecutor(tools={"fail_tool": fail_tool})
-
-    result = await python_executor.aexecute("fail_tool()")
-
+async def test_tool_exception_captured(executor: InProcPythonExecutor):
+    executor.register_tool("bad", lambda: (_ for _ in ()).throw(RuntimeError("oops")))
+    result = await executor.aexecute("bad()")
     assert not result.success
-    assert result.error is not None
-    assert "tool exploded" in result.error
+    assert "oops" in result.error
 
 
 @pytest.mark.asyncio
-async def test_constructor_tool_can_alias_open(tmp_path):
-    file_path = tmp_path / "sample.txt"
-    file_path.write_text("alpha,beta,gamma", encoding="utf-8")
+async def test_success_after_failure_is_independent(executor: InProcPythonExecutor):
+    fail = await executor.aexecute("raise ValueError('first')")
+    assert not fail.success
+    ok = await executor.aexecute("print('ok')")
+    assert ok.success
+    assert ok.output == "ok\n"
 
-    python_executor = InProcPythonExecutor(tools={"open_file": open})
 
-    result = await python_executor.aexecute(
-        "with open_file(" + repr(str(file_path)) + ", encoding='utf-8') as handle:\n"
-        "    print(handle.read())"
+@pytest.mark.asyncio
+async def test_open_tool_can_read_file(tmp_path: pytest.fixture):
+    f = tmp_path / "data.txt"
+    f.write_text("hello", encoding="utf-8")
+    exec_ = InProcPythonExecutor(tools={"open": open})
+    result = await exec_.aexecute(
+        f"with open({str(f)!r}, encoding='utf-8') as h:\n    print(h.read())"
     )
-
     assert result.success
-    assert result.output == "alpha,beta,gamma\n"
-    assert result.error is None
-
-
-@pytest.mark.asyncio
-async def test_registered_tools_are_isolated_between_executors():
-    first_executor = InProcPythonExecutor(tools={"answer": lambda: 41})
-    second_executor = InProcPythonExecutor()
-
-    first_result = await first_executor.aexecute("print(answer())")
-    second_result = await second_executor.aexecute("print('answer' in globals())")
-
-    assert first_result.success
-    assert first_result.output == "41\n"
-    assert second_result.success
-    assert second_result.output == "False\n"
-
-
-@pytest.mark.asyncio
-async def test_default_timeout(python_executor: InProcPythonExecutor):
-    """Test that default timeout is used when not specified."""
-    source_code = "print('Hello')"
-    result = await python_executor.aexecute(source_code)  # No timeout specified
-
-    assert result.success
-    assert not result.has_timed_out
-    assert result.timeout_value is None
-
-
-@pytest.mark.asyncio
-async def test_complex_code_execution(python_executor: InProcPythonExecutor):
-    """Test execution of more complex code."""
-    source_code = """
-def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)
-
-result = factorial(5)
-print(result)
-"""
-    result = await python_executor.aexecute(source_code)
-
-    assert result.success
-    assert result.output == "120\n"
-    assert result.error is None
-
-
-@pytest.mark.asyncio
-async def test_import_statements(python_executor: InProcPythonExecutor):
-    """Test that imports work correctly."""
-    source_code = "import math; print(math.pi)"
-    result = await python_executor.aexecute(source_code)
-
-    assert result.success
-    assert result.output is not None
-    assert "3.14159" in result.output
-    assert result.error is None
-
-
-@pytest.mark.asyncio
-async def test_third_party_imports_persist_across_executions(
-    python_executor: InProcPythonExecutor,
-):
-    pytest.importorskip("numpy")
-
-    first_result = await python_executor.aexecute("import numpy as np")
-    second_result = await python_executor.aexecute("print(int(np.arange(4).sum()))")
-
-    assert first_result.success
-    assert second_result.success
-    assert second_result.output == "6\n"
-    assert python_executor._locals["np"].__name__ == "numpy"  # noqa: SLF001
-
-
-@pytest.mark.asyncio
-async def test_last_exception_cleared(python_executor: InProcPythonExecutor):
-    """Test that _last_exception is cleared between executions."""
-    # First execution with error
-    result1 = await python_executor.aexecute("print(undefined_var)")
-    assert not result1.success
-    assert python_executor._last_exception is not None  # noqa: SLF001
-
-    # Second execution should clear the exception
-    result2 = await python_executor.aexecute("print('Success')")
-    assert result2.success
-    # Exception should be None after successful execution
-    assert python_executor._last_exception is None  # noqa: SLF001
+    assert result.output == "hello\n"

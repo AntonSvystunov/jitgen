@@ -1,4 +1,5 @@
 from typing import Protocol, runtime_checkable
+
 from pydantic import BaseModel, Field
 
 SourceCode = str
@@ -13,20 +14,33 @@ class ExecutionResult(BaseModel):
         default=None,
         description="Any error message (stderr) from the execution, if applicable",
     )
-
     has_timed_out: bool = Field(
         default=False, description="Indicates if the execution timed out"
     )
-    timeout_value: float | None = Field(
-        default=None, description="The timeout value in seconds, if applicable"
-    )
+
 
 @runtime_checkable
 class BaseExecutor(Protocol):
-    def execute(
-        self, source_code: SourceCode, *, timeout: float
-    ) -> ExecutionResult: ...
+    """Async executor contract.
 
-    async def aexecute(
-        self, source_code: SourceCode, *, timeout: float
-    ) -> ExecutionResult: ...
+    Timeout and any other runtime knobs are owned by the executor instance
+    (typically configured in ``__init__``). Callers simply submit source code.
+    """
+
+    async def aexecute(self, source_code: SourceCode) -> ExecutionResult: ...
+
+
+@runtime_checkable
+class StatementExtractor(Protocol):
+    """Grammar-aware converter of an evolving source buffer into ready statements.
+
+    Implementations own their full recovery policy for a specific grammar:
+    what parse errors mean "the buffer is incomplete, give me more" vs.
+    "this is an unrecoverable syntax error". Return
+    ``(statements, leftover_buffer)``; raise :class:`SyntaxError` on
+    unrecoverable input.
+    """
+
+    def extract(
+        self, source: SourceCode, *, final: bool
+    ) -> tuple[list[SourceCode], SourceCode]: ...

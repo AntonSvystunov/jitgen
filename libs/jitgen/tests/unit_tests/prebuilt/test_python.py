@@ -2,89 +2,50 @@
 
 import pytest
 
-from jitgen.prebuilt.python import (
-    create_python_async_jitgen_session,
-    create_python_jitgen,
-    create_python_jitgen_session,
-)
-from jitgen_core.v2.aio import AsyncJITGenSession
-from jitgen_core.jit import JITGen
-from jitgen_core.v2 import JITGenSession
 from jitgen.executors.python import InProcPythonExecutor
+from jitgen.prebuilt.python import create_python_jitgen
+from jitgen_core import Session
 
 
-def test_create_python_jitgen():
-    """Test the create_python_jitgen factory function."""
-    jitgen = create_python_jitgen()
-    
-    assert isinstance(jitgen, JITGen)
-    assert jitgen.interpreter_type == InProcPythonExecutor
-    assert len(jitgen.indentation_tokens) == 3
-    assert "_DEDENT" in jitgen.indentation_tokens
-    assert "_NEWLINE" in jitgen.indentation_tokens
-    assert "$END" in jitgen.indentation_tokens
-    assert jitgen.parser is not None
+def test_create_python_jitgen_returns_session():
+    session = create_python_jitgen()
+    assert isinstance(session, Session)
 
 
-def test_create_python_jitgen_session():
-    session = create_python_jitgen_session()
-
-    assert isinstance(session, JITGenSession)
-    assert session.interpreter_type == InProcPythonExecutor
-    assert session.start_marker == "```python"
-    assert session.end_marker == "```"
+def test_create_python_jitgen_with_default_executor():
+    """No executor arg → a stock InProcPythonExecutor is used."""
+    session = create_python_jitgen()
+    assert session._executor is not None  # noqa: SLF001
+    assert isinstance(session._executor, InProcPythonExecutor)  # noqa: SLF001
 
 
-def test_create_python_async_jitgen_session():
-    session = create_python_async_jitgen_session()
-
-    assert isinstance(session, AsyncJITGenSession)
-    assert session.interpreter_type == InProcPythonExecutor
-    assert session.start_marker == "```python"
-    assert session.end_marker == "```"
-
-
-def test_create_python_jitgen_session_with_tools():
-    def add(left: int, right: int) -> int:
-        return left + right
-
-    session = create_python_jitgen_session(tools={"add": add})
-
-    output = session.push("```python\nprint(add(2, 3))\n```")
-
-    assert output == "5\n"
-
-
-def test_create_python_jitgen_session_with_open_tool(tmp_path):
-    file_path = tmp_path / "sample.txt"
-    file_path.write_text("jitgen tool", encoding="utf-8")
-
-    session = create_python_jitgen_session(tools={"open_file": open})
-
-    output = session.push(
-        "```python\n"
-        f"with open_file({str(file_path)!r}, encoding='utf-8') as handle:\n"
-        "    print(handle.read())\n"
-        "```"
-    )
-
-    assert output == "jitgen tool\n"
+def test_create_python_jitgen_accepts_custom_executor():
+    custom = InProcPythonExecutor(timeout=5.0)
+    session = create_python_jitgen(executor=custom)
+    assert session._executor is custom  # noqa: SLF001
 
 
 @pytest.mark.asyncio
-async def test_create_python_async_jitgen_session_with_tools():
-    def add(left: int, right: int) -> int:
-        return left + right
+async def test_create_python_jitgen_executes_simple_statement():
+    session = create_python_jitgen()
+    session.push("print('hello')\n")
+    out = await session.result()
+    assert out == "hello\n"
 
-    stdout_events: list[str] = []
-    session = create_python_async_jitgen_session(tools={"add": add})
 
-    @session.on_stdout
-    async def capture_stdout(output: str) -> None:
-        stdout_events.append(output)
+@pytest.mark.asyncio
+async def test_create_python_jitgen_maintains_repl_state():
+    session = create_python_jitgen()
+    session.push("x = 42\n")
+    session.push("print(x)\n")
+    out = await session.result()
+    assert out == "42\n"
 
-    await session.apush("```python\nprint(add(2, 3))\n```")
-    await session.aflush()
 
-    assert stdout_events == ["5\n"]
-
+@pytest.mark.asyncio
+async def test_create_python_jitgen_with_injected_tool():
+    exec_ = InProcPythonExecutor(tools={"add": lambda a, b: a + b})
+    session = create_python_jitgen(executor=exec_)
+    session.push("print(add(2, 3))\n")
+    out = await session.result()
+    assert out == "5\n"

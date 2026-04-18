@@ -1,82 +1,43 @@
-from collections.abc import Mapping
-from typing import Any
-
 from lark import Lark
 from lark.indenter import PythonIndenter
-from jitgen_core import JITGen
-from jitgen_core.v2.aio import AsyncJITGenSession
-from jitgen_core.v2 import JITGenV2
-from jitgen_core.v2 import JITGenSession
+
+from jitgen_core import BaseExecutor, Session
 
 from jitgen.executors.python import InProcPythonExecutor
+from jitgen.extractors.python import PythonLarkExtractor
 
-kwargs = dict(postlex=PythonIndenter(), start="file_input", propagate_positions=True)
-python_parser3 = Lark.open_from_package(
-    "lark", "python.lark", ["grammars"], parser="lalr", **kwargs
+_PYTHON_PARSER: Lark = Lark.open_from_package(
+    "lark",
+    "python.lark",
+    ["grammars"],
+    parser="lalr",
+    postlex=PythonIndenter(),
+    start="file_input",
+    propagate_positions=True,
 )
 
-def create_python_jitgen() -> JITGen:
-    return JITGen(
-        parser=python_parser3,
-        interpreter_type=InProcPythonExecutor,
-        indentation_tokens={
-            "_DEDENT",
-            "_NEWLINE",
-            "$END",
-        },
-    )
 
+def create_python_jitgen(executor: BaseExecutor | None = None) -> Session:
+    """Build a :class:`~jitgen_core.Session` wired for Python grammar.
 
-def create_python_jitgen_v2() -> JITGenV2:
-    """Create a push-based JITGenV2 instance configured for Python."""
-    return JITGenV2(
-        parser=python_parser3,
-        interpreter_type=InProcPythonExecutor,
-        indentation_tokens={
-            "_DEDENT",
-            "_NEWLINE",
-            "$END",
-        },
-    )
+    The *executor* is fully client-owned.  Pass any :class:`~jitgen_core.BaseExecutor`
+    implementation (e.g. an OpenSandbox-backed executor).  When *None*, a
+    default :class:`~jitgen.executors.python.InProcPythonExecutor` is used.
 
+    Marker stripping is **not** handled here — create a
+    :class:`~jitgen.markers.MarkerStripper` client-side and call
+    :meth:`~jitgen.markers.MarkerStripper.process` before :meth:`~jitgen_core.Session.push`.
 
-def create_python_jitgen_session(
-    *,
-    start_marker: str = "```python",
-    end_marker: str = "```",
-    tools: Mapping[str, Any] | None = None,
-) -> JITGenSession:
-    """Create a stateful marker-aware JITGen session for synchronous workflows."""
-    return JITGenSession(
-        parser=python_parser3,
-        interpreter_type=InProcPythonExecutor,
-        interpreter_kwargs={"tools": dict(tools or {})},
-        indentation_tokens={
-            "_DEDENT",
-            "_NEWLINE",
-            "$END",
-        },
-        start_marker=start_marker,
-        end_marker=end_marker,
-    )
+    Example::
 
+        from jitgen.prebuilt.python import create_python_jitgen
+        from jitgen.markers import MarkerStripper
 
-def create_python_async_jitgen_session(
-    *,
-    start_marker: str = "```python",
-    end_marker: str = "```",
-    tools: Mapping[str, Any] | None = None,
-) -> AsyncJITGenSession:
-    """Create a stateful marker-aware JITGen session for async workflows."""
-    return AsyncJITGenSession(
-        parser=python_parser3,
-        interpreter_type=InProcPythonExecutor,
-        interpreter_kwargs={"tools": dict(tools or {})},
-        indentation_tokens={
-            "_DEDENT",
-            "_NEWLINE",
-            "$END",
-        },
-        start_marker=start_marker,
-        end_marker=end_marker,
+        executor = InProcPythonExecutor(timeout=30.0, tools={"open": open})
+        session  = create_python_jitgen(executor=executor)
+        stripper = MarkerStripper(start='{"code":"', end='"}')
+    """
+    return Session(
+        extractor=PythonLarkExtractor(_PYTHON_PARSER),
+        executor=executor if executor is not None else InProcPythonExecutor(),
     )
