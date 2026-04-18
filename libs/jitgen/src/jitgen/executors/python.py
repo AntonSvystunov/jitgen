@@ -60,16 +60,16 @@ class InProcPythonExecutor(BaseModel):
     async def aexecute(
         self, source_code: SourceCode, *, timeout: float = 60
     ) -> ExecutionResult:
-        compiled_code = compile(source_code, "<string>", "exec", optimize=2)
-
         stdout_collector = io.StringIO()
         stderr_collector = io.StringIO()
 
         has_error = False
         has_timed_out = False
         self._last_exception = None
-
         try:
+            compiled_code = compile(source_code, "<string>", "exec", optimize=2)
+
+            
             task = asyncio.to_thread(
                 self._execute_code,
                 compiled_code,

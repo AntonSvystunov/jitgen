@@ -2,7 +2,7 @@ import asyncio
 import json
 from uuid import uuid4
 
-from agentic.results import ResultsLogger
+from agentic.agents import LangchainAgent
 from dotenv import load_dotenv
 from jitgen.executors.python import InProcPythonExecutor
 from jitgen.prebuilt.python import create_python_async_jitgen_session
@@ -40,7 +40,6 @@ async def incremental_agent_session(
     question: str,
     guidelines: str,
     max_steps: int,
-    results_logger: ResultsLogger,
 ):
     @tool
     def execute_code(code: str) -> str:
@@ -127,19 +126,6 @@ async def incremental_agent_session(
             session._algorithm._inside_markers = False  # Reset marker state after each step to allow for new code blocks in subsequent steps FIXME: Expose a proper API for this in the algorithm/session instead of reaching into internals
             # self._handled_session_error = None
         step_end_time = perf_counter()
-
-        results_logger.add_step(
-            step_number=step + 1,
-            message=ai_message.content if ai_message else None,
-            code=raw_args if raw_args not in ("", "{}") else None,
-            observation=response if raw_args not in ("", "{}") else None,
-            is_error=is_error,
-            tool_call_success=not is_error if raw_args not in ("", "{}") else None,
-            tool_call_error_message=response if is_error else None,
-            tool_execution_time=step_total_execution_time if raw_args not in ("", "{}") else None,
-            inference_time=inference_time if raw_args not in ("", "{}") else None,
-            total_time=step_end_time - step_start_time
-        )
         
         if ai_message and len(ai_message.tool_calls) == 0:
             break
@@ -186,8 +172,6 @@ async def incremental_agent_session(
             )
         )
 
-    results_logger.set_messages(messages)
-
     return ai_message.content
 
 
@@ -198,7 +182,6 @@ async def sequential_agent_session(
     question: str,
     guidelines: str,
     max_steps: int,
-    results_logger: ResultsLogger,
 ):
     @tool
     def execute_code(code: str) -> str:
@@ -274,19 +257,6 @@ async def sequential_agent_session(
         step_total_execution_time = perf_counter() - execution_started if execution_started else 0
         step_end_time = perf_counter()
         
-        results_logger.add_step(
-            step_number=step + 1,
-            message=ai_message.content if ai_message else None,
-            code=raw_args if raw_args not in ("", "{}") else None,
-            observation=response if raw_args not in ("", "{}") else None,
-            is_error=is_error,
-            tool_call_success=not is_error if raw_args not in ("", "{}") else None,
-            tool_call_error_message=response if is_error else None,
-            tool_execution_time=step_total_execution_time if raw_args not in ("", "{}") else None,
-            inference_time=inference_time if raw_args not in ("", "{}") else None,
-            total_time=step_end_time - step_start_time
-        )
-        
         messages.append(
             AIMessage(
                 content=ai_message.content,
@@ -359,117 +329,85 @@ async def main():
 
     model_name = "google/gemma-4-e4b" # "openai/gpt-oss-20b"  # 
     seed = 1234
-    temperature = 0
+    temperature = 0.7
 
-    test_case = dataset[1]  # 7
-
-    run_id = uuid4()
+    # test_case = dataset[1]  # 7
     
-    incremental_steps = []
-    sequential_steps = []
+
+    # async with get_model(
+    #     model_name=model_name, temperature=temperature, seed=seed
+    # ) as model:
+    #     start_time = perf_counter()
+    #     response = await sequential_agent_session(
+    #         model=model,
+    #         context_file_names=context_file_names,
+    #         question=test_case["question"],
+    #         guidelines=test_case["guidelines"],
+    #         max_steps=20,
+    #     )
+
+    #     print("Task: ", test_case["question"])
+    #     print("Final response:", response)
+    #     print("Correct answer:", test_case["answer"])
+    #     print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+
+    # async with get_model(
+    #     model_name=model_name, temperature=temperature, seed=seed
+    # ) as model:
+    #     start_time = perf_counter()
+        
+    #     with get_usage_metadata_callback() as cb:
+    #         response = await incremental_agent_session(
+    #             model=model,
+    #             context_file_names=context_file_names,
+    #             question=test_case["question"],
+    #             guidelines=test_case["guidelines"],
+    #             max_steps=20,
+    #         )
+            
+    #         print("Usage metadata:", cb.usage_metadata)
+
+    #     print("Task: ", test_case["question"])
+    #     print("Final response:", response)
+    #     print("Correct answer:", test_case["answer"])
+    #     print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
+
+
+
 
     async with get_model(
         model_name=model_name, temperature=temperature, seed=seed
     ) as model:
-        start_time = perf_counter()
-        
-        results_logger = ResultsLogger(run_id, model_name, temperature, seed, type="incremental")
-        
-        with get_usage_metadata_callback() as cb:
+        for test_case in dataset.skip(5).take(2):
+            print("Task: ", test_case["task_id"])
+            # agent = LangchainAgent(
+            #     model=model,
+            #     context_file_names=context_file_names,
+            #     max_steps=20,
+            # )
+            
+            # response = await agent.run(
+            #     question=test_case["question"],
+            #     guidelines=test_case["guidelines"],
+            # )
+            
+            # print("Steps taken: ", response.steps_taken)
+            # print(f"Time taken: {response.total_execution_time:.2f} seconds")
+            # print("Is success: ", response.success)
+            # print("Final response:", response.output)
+            # print("Correct answer:", test_case["answer"])
+            
             response = await incremental_agent_session(
                 model=model,
                 context_file_names=context_file_names,
                 question=test_case["question"],
                 guidelines=test_case["guidelines"],
                 max_steps=20,
-                results_logger=results_logger,
             )
             
-            print("Usage metadata:", cb.usage_metadata)
+            print("Final result: ", response)
+
             
-            for step in results_logger.steps:
-                print(f"Step {step.step_number}:")
-                print("Message:", step.message)
-                print("Code:", step.code)
-                # print("Observation:", step.observation)
-                print("Is error:", step.is_error)
-                print("Tool call success:", step.tool_call_success)
-                print("Tool call error message:", step.tool_call_error_message)
-                print("Inference time:", step.inference_time)
-                print("Tool execution time:", step.tool_execution_time)
-                print("Total time:", step.total_time)
-                print("-" * 20)
-                
-            incremental_steps = results_logger.steps
-
-        print("Task: ", test_case["question"])
-        print("Final response:", response)
-        print("Correct answer:", test_case["answer"])
-        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
-
-    async with get_model(
-        model_name=model_name, temperature=temperature, seed=seed
-    ) as model:
-        start_time = perf_counter()
-        results_logger = ResultsLogger(run_id, model_name, temperature, seed, type="sequential")
-        response = await sequential_agent_session(
-            model=model,
-            context_file_names=context_file_names,
-            question=test_case["question"],
-            guidelines=test_case["guidelines"],
-            max_steps=20,
-            results_logger=results_logger,
-        )
-        
-        for step in results_logger.steps:
-            print(f"Step {step.step_number}:")
-            print("Message:", step.message)
-            print("Code:", step.code)
-            # print("Observation:", step.observation)
-            print("Is error:", step.is_error)
-            print("Tool call success:", step.tool_call_success)
-            print("Tool call error message:", step.tool_call_error_message)
-            print("Inference time:", step.inference_time)
-            print("Tool execution time:", step.tool_execution_time)
-            print("Total time:", step.total_time)
-            print("-" * 20)
-            
-        sequential_steps = results_logger.steps
-
-        print("Task: ", test_case["question"])
-        print("Final response:", response)
-        print("Correct answer:", test_case["answer"])
-        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
-
-
-    for inc, seq in zip(incremental_steps, sequential_steps):
-        print(f"Step {inc.step_number}:")
-        print("Inference time difference:", inc.inference_time - seq.inference_time if inc.inference_time and seq.inference_time else None)
-        print("Tool execution time difference:", inc.tool_execution_time - seq.tool_execution_time if inc.tool_execution_time and seq.tool_execution_time else None)
-        print("Total time difference:", inc.total_time - seq.total_time)
-        
-        print("-" * 20)
-
-
-    return
-
-    async with get_model(
-        model_name=model_name, temperature=temperature, seed=seed
-    ) as model:
-        start_time = perf_counter()
-        
-        response = await langchain_agent_session(
-            model=model,
-            context_file_names=context_file_names,
-            question=test_case["question"],
-            guidelines=test_case["guidelines"],
-            max_steps=20,
-        )
-
-        print("Task: ", test_case["question"])
-        print("Final response:", response)
-        print("Correct answer:", test_case["answer"])
-        print(f"Total execution time: {perf_counter() - start_time:.2f} seconds")
 
    
 

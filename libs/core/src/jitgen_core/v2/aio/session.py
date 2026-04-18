@@ -224,7 +224,7 @@ class AsyncJITGenSession(BaseModel):
             return operation()
         except Exception as error:
             await self._aemit_error(error)
-            raise
+            # raise
 
     async def _arun_handler(self, callback_result: Any) -> None:
         if inspect.isawaitable(callback_result):
