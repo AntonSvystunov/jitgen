@@ -17,6 +17,9 @@ class ExecutionResult(BaseModel):
     has_timed_out: bool = Field(
         default=False, description="Indicates if the execution timed out"
     )
+    has_cancelled: bool = Field(
+        default=False, description="Indicates if the execution was cancelled via acancel()"
+    )
 
 
 @runtime_checkable

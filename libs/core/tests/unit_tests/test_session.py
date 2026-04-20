@@ -180,7 +180,7 @@ async def test_reset_clears_error_and_output():
     session.push("x\n")
     with pytest.raises(RuntimeError):
         await session.result()
-    session.reset()
+    await session.reset()
     assert not session.has_error
     assert session.error is None
     assert session.buffer == ""
@@ -200,7 +200,7 @@ async def test_reset_preserves_executor_repl_state():
     session = Session(extractor=EchoExtractor(), executor=executor)
     session.push("first\n")
     await session.result()
-    session.reset()
+    await session.reset()
     session.push("second\n")
     await session.result()
     assert calls == ["first", "second"]
@@ -211,11 +211,150 @@ async def test_session_works_after_reset():
     session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
     session.push("a\n")
     out1 = await session.result()
-    session.reset()
+    await session.reset()
     session.push("b\n")
     out2 = await session.result()
     assert out1 == "echo:a"
     assert out2 == "echo:b"
+
+
+# ── reset / cancellation / aclose ─────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_reset_drops_queued_statements():
+    """Statements queued behind a slow in-flight one are dropped after reset()."""
+    calls: list[str] = []
+
+    class TrackingSlowExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            calls.append(source_code.strip())
+            await asyncio.sleep(0.05)
+            return ExecutionResult(success=True, output=source_code)
+
+    executor = TrackingSlowExecutor()
+    session = Session(extractor=EchoExtractor(), executor=executor)
+    session.push("a\n")
+    session.push("b\n")
+    session.push("c\n")
+    # Give the worker a moment to pick up "a" before we reset
+    await asyncio.sleep(0.01)
+    await session.reset()
+    # b and c should have been discarded; only a may have run
+    assert "b" not in calls
+    assert "c" not in calls
+
+
+@pytest.mark.asyncio
+async def test_reset_during_in_flight_does_not_corrupt_next_turn():
+    """After reset(), a fresh push+result cycle sees clean state."""
+    session = Session(extractor=EchoExtractor(), executor=SlowExecutor(delay=0.05))
+    session.push("first\n")
+    await asyncio.sleep(0.01)
+    await session.reset()
+    # New turn
+    session.push("second\n")
+    out = await session.result()
+    assert out == "slow:second"
+
+
+@pytest.mark.asyncio
+async def test_fifo_ordering_under_rapid_push():
+    """Worker must process statements in exactly the order they were pushed."""
+    order: list[str] = []
+
+    class OrderingExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            order.append(source_code.strip())
+            return ExecutionResult(success=True, output=source_code)
+
+    session = Session(extractor=EchoExtractor(), executor=OrderingExecutor())
+    n = 20
+    for i in range(n):
+        session.push(f"s{i}\n")
+    await session.result()
+    assert order == [f"s{i}" for i in range(n)]
+
+
+@pytest.mark.asyncio
+async def test_worker_survives_executor_exception():
+    """If executor raises, the worker keeps running; after reset a new push works."""
+    class RaisingExecutor:
+        def __init__(self) -> None:
+            self.n = 0
+
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            self.n += 1
+            if self.n == 1:
+                raise ValueError("boom")
+            return ExecutionResult(success=True, output="ok")
+
+    executor = RaisingExecutor()
+    session = Session(extractor=EchoExtractor(), executor=executor)
+    session.push("x\n")
+    with pytest.raises(ValueError, match="boom"):
+        await session.result()
+    await session.reset()
+    session.push("y\n")
+    out = await session.result()
+    assert out == "ok"
+
+
+@pytest.mark.asyncio
+async def test_acancel_called_on_reset_when_supported():
+    """reset() must call executor.acancel() when the method is present."""
+    cancelled: list[bool] = []
+
+    class CancellableExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            await asyncio.sleep(0.1)
+            return ExecutionResult(success=True, output="done")
+
+        async def acancel(self) -> None:
+            cancelled.append(True)
+
+    session = Session(extractor=EchoExtractor(), executor=CancellableExecutor())
+    session.push("x\n")
+    await asyncio.sleep(0.01)
+    await session.reset()
+    assert cancelled, "acancel() should have been called during reset()"
+
+
+@pytest.mark.asyncio
+async def test_acancel_absent_is_safe():
+    """reset() must not raise when executor has no acancel() method."""
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    await session.result()
+    await session.reset()  # EchoExecutor has no acancel — must not raise
+
+
+@pytest.mark.asyncio
+async def test_reset_awaits_worker_quiescence():
+    """After await reset(), no in-flight aexecute is still running."""
+    finished: list[bool] = []
+
+    class MarkerExecutor:
+        async def aexecute(self, source_code: SourceCode) -> ExecutionResult:
+            await asyncio.sleep(0.05)
+            finished.append(True)
+            return ExecutionResult(success=True, output="x")
+
+    session = Session(extractor=EchoExtractor(), executor=MarkerExecutor())
+    session.push("x\n")
+    await asyncio.sleep(0.01)
+    await session.reset()
+    # Worker was in the middle of sleep; reset() must wait for it to finish
+    assert finished, "reset() returned before in-flight aexecute completed"
+
+
+@pytest.mark.asyncio
+async def test_aclose_reaps_worker():
+    """aclose() must resolve cleanly with no pending-task warnings."""
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    await session.result()
+    await session.aclose()
+    assert session._worker is None or session._worker.done()  # noqa: SLF001
 
 
 # ── executor injection (proves core is agnostic) ───────────────────────────────

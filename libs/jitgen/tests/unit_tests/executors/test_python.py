@@ -1,5 +1,8 @@
 """Tests for InProcPythonExecutor."""
 
+import asyncio
+import time
+
 import pytest
 
 from jitgen.executors.python import InProcPythonExecutor
@@ -137,3 +140,64 @@ async def test_open_tool_can_read_file(tmp_path: pytest.fixture):
     )
     assert result.success
     assert result.output == "hello\n"
+
+
+# ── single-worker-thread serialization & cancellation ─────────────────────────
+
+@pytest.mark.asyncio
+async def test_timeout_still_prompt_on_caller_side():
+    """aexecute returns within ~timeout even though the thread keeps running."""
+    exec_ = InProcPythonExecutor(timeout=0.1)
+    t0 = time.monotonic()
+    result = await exec_.aexecute("import time; time.sleep(10)")
+    elapsed = time.monotonic() - t0
+    assert result.has_timed_out
+    assert not result.success
+    assert elapsed < 1.0, f"aexecute blocked for {elapsed:.2f}s, expected ~0.1s"
+    # Do not call aclose() here — the zombie thread is still sleeping (10s).
+    # Daemon threads are killed when the process exits; no join needed.
+
+
+@pytest.mark.asyncio
+async def test_locals_consistent_after_timeout():
+    """_locals is consistent after a timed-out call: no concurrent mutations."""
+    exec_ = InProcPythonExecutor(timeout=0.1)
+    # Times out at 0.1s; zombie continues and sets x = 99 after 0.2s.
+    await exec_.aexecute("import time; time.sleep(0.2); x = 99")
+    # Wait for the zombie to finish before submitting the next job.
+    await asyncio.sleep(0.3)
+    # Thread is idle now; this job runs immediately and must see x == 99.
+    result = await exec_.aexecute("print(x)")
+    assert result.success
+    assert result.output == "99\n"
+    await exec_.aclose()
+
+
+@pytest.mark.asyncio
+async def test_system_exit_does_not_kill_worker(executor: InProcPythonExecutor):
+    """sys.exit() is caught; subsequent aexecute still works."""
+    result_exit = await executor.aexecute("import sys; sys.exit(0)")
+    assert not result_exit.success
+    assert "SystemExit" in result_exit.error
+    result_ok = await executor.aexecute("print('alive')")
+    assert result_ok.success
+    assert result_ok.output == "alive\n"
+
+
+@pytest.mark.asyncio
+async def test_acancel_is_safe_before_any_work():
+    """acancel() before any execution must not raise."""
+    exec_ = InProcPythonExecutor()
+    await exec_.acancel()
+    result = await exec_.aexecute("print(1)")
+    assert result.success
+    await exec_.aclose()
+
+
+@pytest.mark.asyncio
+async def test_aclose_joins_worker_thread():
+    """After aclose(), the worker thread must be dead."""
+    exec_ = InProcPythonExecutor()
+    await exec_.aexecute("x = 1")
+    await exec_.aclose()
+    assert not exec_._thread.is_alive()  # noqa: SLF001

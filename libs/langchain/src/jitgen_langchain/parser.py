@@ -65,33 +65,36 @@ class JITGenParser(BaseTransformOutputParser[str]):
     async def _atransform(
         self, input: AsyncIterator[str | BaseMessage]  # noqa: A002
     ) -> AsyncIterator[str]:
-        async for chunk in input:
-            if self.session.has_error:
-                break
-
-            text = str(chunk.content) if isinstance(chunk, BaseMessage) else chunk
-            for seg in self.stripper.process(text):
-                self.session.push(seg.text)
+        try:
+            async for chunk in input:
                 if self.session.has_error:
                     break
-                if seg.end_of_block:
+
+                text = str(chunk.content) if isinstance(chunk, BaseMessage) else chunk
+                for seg in self.stripper.process(text):
+                    self.session.push(seg.text)
+                    if self.session.has_error:
+                        break
+                    if seg.end_of_block:
+                        try:
+                            output = await self.session.result()
+                        except Exception as exc:
+                            yield f"[JITGen error: {exc}]"
+                            await self.session.reset()
+                            self.stripper.reset()
+                            break
+                        if output:
+                            yield output
+                        await self.session.reset()
+                        self.stripper.reset()
+
+                if self.session.has_error:
                     try:
-                        output = await self.session.result()
+                        await self.session.result()
                     except Exception as exc:
                         yield f"[JITGen error: {exc}]"
-                        self.session.reset()
-                        self.stripper.reset()
-                        break
-                    if output:
-                        yield output
-                    self.session.reset()
+                    await self.session.reset()
                     self.stripper.reset()
-
-            if self.session.has_error:
-                try:
-                    await self.session.result()
-                except Exception as exc:
-                    yield f"[JITGen error: {exc}]"
-                self.session.reset()
-                self.stripper.reset()
-                break
+                    break
+        finally:
+            await self.session.aclose()

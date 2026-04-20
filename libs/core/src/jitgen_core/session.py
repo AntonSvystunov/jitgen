@@ -1,8 +1,24 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
 
 from .base import BaseExecutor, SourceCode, StatementExtractor
+
+
+@dataclass
+class _WorkItem:
+    statement: SourceCode
+    generation: int
+
+
+@dataclass
+class _Sentinel:
+    future: asyncio.Future[None]
+
+
+class _Shutdown:
+    pass
 
 
 class Session:
@@ -26,7 +42,7 @@ class Session:
         except Exception as e:
             output = str(e)
 
-        session.reset()   # keep executor REPL state; clear buffers for next turn
+        await session.reset()   # keep executor REPL state; clear buffers for next turn
         stripper.reset()
     """
 
@@ -38,8 +54,9 @@ class Session:
         self._buffer: SourceCode = ""
         self._output_parts: list[str] = []
         self._error: Exception | None = None
-        self._tail: asyncio.Task[None] | None = None
         self._generation: int = 0
+        self._queue: asyncio.Queue[_WorkItem | _Sentinel | _Shutdown] = asyncio.Queue()
+        self._worker: asyncio.Task[None] | None = None
 
     # ── public properties ──────────────────────────────────────────────
 
@@ -48,7 +65,7 @@ class Session:
         """First error encountered (syntax or runtime), or ``None``.
 
         Set synchronously on syntax errors inside :meth:`push`, and
-        asynchronously by the background execution task on runtime errors.
+        asynchronously by the background worker on runtime errors.
         Poll this after each :meth:`push` to abort LLM inference early.
         """
         return self._error
@@ -65,7 +82,7 @@ class Session:
 
     def push(self, source: SourceCode) -> None:
         """Append *source* to the buffer, extract ready statements, and
-        schedule their execution as a background task (fire-and-forget).
+        schedule their execution via the background worker (fire-and-forget).
 
         Returns immediately without awaiting execution.  Syntax errors from
         the extractor are captured into :attr:`error` (never raised) so that
@@ -82,7 +99,9 @@ class Session:
             self._error = exc
             return
         for stmt in statements:
-            self._schedule(stmt)
+            self._queue.put_nowait(_WorkItem(stmt, self._generation))
+        if statements:
+            self._ensure_worker()
 
     async def result(self) -> str:
         """Flush remaining buffer, await all pending executions, and return
@@ -99,57 +118,117 @@ class Session:
                 self._error = exc
             else:
                 for stmt in statements:
-                    self._schedule(stmt)
+                    self._queue.put_nowait(_WorkItem(stmt, self._generation))
+                if statements:
+                    self._ensure_worker()
 
-        if self._tail is not None:
-            await self._tail
+        if self._worker is not None and not self._worker.done():
+            fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+            self._queue.put_nowait(_Sentinel(fut))
+            try:
+                await fut
+            except asyncio.CancelledError:
+                self._fire_acancel()
+                raise
 
         if self._error is not None:
             raise self._error
 
         return "".join(self._output_parts)
 
-    def reset(self) -> None:
-        """Clear buffer, aggregated output, captured error, and the pending
-        task chain.  The executor retains its own state (REPL ``_locals``).
+    async def reset(self) -> None:
+        """Clear buffer, aggregated output, captured error, and drain the pending
+        queue.  The executor retains its own state (REPL ``_locals``).
 
-        Call at the start of each agent turn to prepare for the next stream.
+        Awaits executor cancellation and worker quiescence before returning,
+        so no in-flight execution mutates shared state after this call resolves.
+
+        Call at the end of each agent turn to prepare for the next stream.
         """
         self._generation += 1
-        if self._tail is not None and not self._tail.done():
-            self._tail.cancel()
+        # Drain pending items so the worker skips them quickly.
+        while not self._queue.empty():
+            try:
+                self._queue.get_nowait()
+            except asyncio.QueueEmpty:
+                break
+        # Best-effort cancellation of any in-flight executor call.
+        acancel = getattr(self._executor, "acancel", None)
+        if acancel is not None:
+            try:
+                await acancel()
+            except Exception:
+                pass
+        # Wait for the worker to finish any in-flight aexecute and reach a
+        # clean pause point before we wipe state.
+        if self._worker is not None and not self._worker.done():
+            fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+            self._queue.put_nowait(_Sentinel(fut))
+            try:
+                await fut
+            except asyncio.CancelledError:
+                # Outer task was cancelled while waiting; fire another acancel
+                # so the worker unblocks faster, clear state, then re-raise.
+                self._fire_acancel()
+                self._buffer = ""
+                self._output_parts = []
+                self._error = None
+                raise
+        # Clear session state; executor state (REPL _locals) is preserved.
         self._buffer = ""
         self._output_parts = []
         self._error = None
-        self._tail = None
+
+    async def aclose(self) -> None:
+        """Shut down the background worker task.
+
+        Call once when the session is no longer needed to avoid pending-task
+        warnings on event-loop close.
+        """
+        if self._worker is not None and not self._worker.done():
+            self._queue.put_nowait(_Shutdown())
+            await self._worker
+        self._worker = None
 
     # ── private helpers ────────────────────────────────────────────────
 
-    def _schedule(self, statement: SourceCode) -> None:
-        """Chain *statement* execution onto the existing tail task."""
-        prev = self._tail
-        gen = self._generation
+    def _fire_acancel(self) -> None:
+        """Schedule executor.acancel() as a background task (fire-and-forget).
 
-        async def _run() -> None:
-            if prev is not None:
-                try:
-                    await prev
-                except Exception:
-                    pass  # error already captured in self._error
-            if self._generation != gen or self._error is not None:
+        Used when the caller is being cancelled so we do not block on the
+        cleanup, but still give the executor a chance to interrupt in-flight
+        work before the next call arrives.
+        """
+        acancel = getattr(self._executor, "acancel", None)
+        if acancel is not None:
+            asyncio.get_running_loop().create_task(acancel())
+
+    def _ensure_worker(self) -> None:
+        if self._worker is None or self._worker.done():
+            self._worker = asyncio.create_task(self._worker_loop())
+
+    async def _worker_loop(self) -> None:
+        while True:
+            item = await self._queue.get()
+            if isinstance(item, _Shutdown):
                 return
+            if isinstance(item, _Sentinel):
+                if not item.future.done():
+                    item.future.set_result(None)
+                continue
+            # _WorkItem: skip if stale generation or a prior error was recorded.
+            if item.generation != self._generation or self._error is not None:
+                continue
             try:
-                exec_result = await self._executor.aexecute(statement)
+                exec_result = await self._executor.aexecute(item.statement)
             except Exception as exc:
-                if self._generation == gen:
+                if item.generation == self._generation:
                     self._error = exc
-                return
-            if self._generation != gen:
-                return
+                continue
+            if item.generation != self._generation:
+                continue
             if not exec_result.success:
                 self._error = RuntimeError(exec_result.error or "Execution failed")
-                return
+                continue
             if exec_result.output:
                 self._output_parts.append(exec_result.output)
-
-        self._tail = asyncio.create_task(_run())

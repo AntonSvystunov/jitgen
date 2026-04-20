@@ -15,18 +15,29 @@ _CONTEXT_FILENAMES = [
     "data/context/manual.md",
 ]
 
+_CONTAINER_FILE_NAMES = [
+    "/opt/context/acquirer_countries.csv",
+    "/opt/context/payments-readme.md",
+    "/opt/context/payments.csv",
+    "/opt/context/merchant_category_codes.csv",
+    "/opt/context/fees.json",
+    "/opt/context/merchant_data.json",
+    "/opt/context/manual.md",
+]
+
 
 def load_context_files(base_dir: str) -> list[str]:
-    for filename in _CONTEXT_FILENAMES:
-        hf_hub_download(
-            repo_id=_DATASET_ID,
-            repo_type="dataset",
-            filename=filename,
-            local_dir=base_dir,
-            # force_download=True
-        )
+    return _CONTAINER_FILE_NAMES
+    # for filename in _CONTEXT_FILENAMES:
+    #     hf_hub_download(
+    #         repo_id=_DATASET_ID,
+    #         repo_type="dataset",
+    #         filename=filename,
+    #         local_dir=base_dir,
+    #         # force_download=True
+    #     )
 
-    return [str(Path(base_dir) / filename) for filename in _CONTEXT_FILENAMES]
+    # return [str(Path(base_dir) / filename) for filename in _CONTEXT_FILENAMES]
 
 
 def load_tasks_dataset(split: str) -> Dataset:
