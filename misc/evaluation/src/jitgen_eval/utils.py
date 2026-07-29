@@ -1,6 +1,8 @@
 import asyncio
 import time
 import pandas as pd
+from collections.abc import Callable
+from dataclasses import dataclass
 from pydantic import BaseModel
 import logging
 import sys
@@ -9,6 +11,7 @@ from langchain_core.runnables import RunnableSerializable
 from langchain_core.language_models.chat_models import BaseChatModel
 from tqdm import tqdm
 
+from .chains import ChainBundle
 from .config import config
 
 from .prompt import TaskInput
@@ -31,10 +34,22 @@ class TqdmLoggingHandler(logging.Handler):
 logger = logging.getLogger(__name__)
 
 
-async def timeout_async_iterator(aiter, timeout, task_id=None):
+@dataclass
+class StreamStatus:
+    """Out-param for :func:`timeout_async_iterator`.
+
+    The iterator swallows the timeout so the caller keeps whatever output it has
+    already accumulated; this records that a timeout happened so the caller does
+    not report the truncated run as a success.
+    """
+
+    timed_out: bool = False
+
+
+async def timeout_async_iterator(aiter, timeout, task_id=None, status=None):
     """
     Wraps an asynchronous iterator 'aiter' so that each next item is awaited with a timeout.
-    If a timeout occurs, the iteration is terminated.
+    If a timeout occurs, the iteration is terminated and ``status.timed_out`` is set.
     """
     task = None
     item_count = 0
@@ -49,9 +64,17 @@ async def timeout_async_iterator(aiter, timeout, task_id=None):
                 item_count += 1
                 yield item
             except asyncio.TimeoutError:
+                if status is not None:
+                    status.timed_out = True
                 tqdm.write(
                     f"⚠️  Timeout reached for task {task_id} after {item_count} items",
                     file=sys.stderr,
+                )
+                logger.warning(
+                    "Timeout for task %s after %d items (%.1fs per-chunk limit)",
+                    task_id,
+                    item_count,
+                    timeout,
                 )
                 if task and not task.done():
                     task.cancel()
@@ -130,9 +153,11 @@ async def execute_test_case_with_timeout(
     has_timed_out = False
     output = ""
 
+    status = StreamStatus()
+
     try:
         async for text in timeout_async_iterator(
-            lcel_chain.astream(case_input), timeout, task_id=task_id
+            lcel_chain.astream(case_input), timeout, task_id=task_id, status=status
         ):
             if first_output_time is None:
                 first_output_time = time.perf_counter()
@@ -144,6 +169,9 @@ async def execute_test_case_with_timeout(
             output += text
 
         total_time = time.perf_counter() - start_time
+
+        # A per-chunk timeout truncates the stream; don't report that as success.
+        has_timed_out = has_timed_out or status.timed_out
 
         test_case = case_input["test_output"]
 
@@ -163,6 +191,10 @@ async def execute_test_case_with_timeout(
         tqdm.write(
             f"❌ Exception in task {task_id}: {type(e).__name__}: {e}", file=sys.stderr
         )
+        # A failing test case is an expected outcome (the model wrote bad code),
+        # so keep this concise; the full traceback is available at DEBUG.
+        logger.warning("Task %s failed: %s: %s", task_id, type(e).__name__, e)
+        logger.debug("Traceback for task %s", task_id, exc_info=True)
         return TestCaseExecutionResult(
             success=False,
             has_timed_out="Timeout" in str(e),
@@ -211,8 +243,15 @@ async def execute_test_case(
 async def run_test_cases(
     llm: BaseChatModel,
     dataset: Dataset,
-    lcel_chain: RunnableSerializable[TaskInput, str],
+    chain_factory: Callable[[], ChainBundle],
 ) -> pd.DataFrame:
+    """Run every test case, giving each one a freshly built chain.
+
+    ``chain_factory`` is called once per test case so that no REPL namespace,
+    JITGen session or marker-stripper state leaks between cases.  Sharing a
+    single chain also lets a cancelled stream (see ``timeout_async_iterator``)
+    corrupt the session used by subsequent cases.
+    """
     def disabled_input(*args, **kwargs):
         raise Exception("The input() function has been disabled.")
 
@@ -239,10 +278,24 @@ async def run_test_cases(
             "test_output": case.get("test_output", ""),
         }
 
-        # result = await execute_test_case(case_input, lcel_chain)
-        result = await execute_test_case_with_timeout(
-            case_input, lcel_chain, timeout=config.test_case_timeout, task_id=task_id
-        )
+        bundle = chain_factory()
+        try:
+            result = await execute_test_case_with_timeout(
+                case_input,
+                bundle.chain,
+                timeout=config.test_case_timeout,
+                task_id=task_id,
+            )
+        finally:
+            await bundle.aclose()
+
+        if result.success and not result.output and result.error is None:
+            logger.warning(
+                "Task %s produced no output and no error — the chain yielded "
+                "zero chunks in %.3fs",
+                task_id,
+                result.total_time,
+            )
 
         results.append((task_id, result))
 

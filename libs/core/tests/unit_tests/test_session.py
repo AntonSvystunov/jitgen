@@ -357,6 +357,72 @@ async def test_aclose_reaps_worker():
     assert session._worker is None or session._worker.done()  # noqa: SLF001
 
 
+@pytest.mark.asyncio
+async def test_session_reusable_after_aclose():
+    """aclose() stops the worker but must not retire the session.
+
+    No reset() in between: a client that closes at the end of one stream and
+    pushes at the start of the next must get correct output.
+    """
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    assert await session.result() == "echo:a"
+    await session.aclose()
+
+    await session.reset()
+    session.push("b\n")
+    async with asyncio.timeout(5):
+        assert await session.result() == "echo:b"
+    await session.aclose()
+
+
+@pytest.mark.asyncio
+async def test_cancelled_aclose_does_not_poison_next_turn():
+    """A cancelled aclose() must not leave a worker that skips queued work.
+
+    Regression: aclose() used to enqueue a _Shutdown sentinel before awaiting
+    the worker.  When that await was cancelled the sentinel stayed in the queue,
+    so the *next* turn's worker consumed it and returned without executing
+    anything — result() then either silently returned "" or deadlocked waiting
+    on a sentinel nobody would ever read.  This mirrors the real flow
+    (JITGenParser closed the session in its finally, and the next stream began
+    with push(), never reset()).
+    """
+    session = Session(extractor=EchoExtractor(), executor=SlowExecutor(delay=0.05))
+    session.push("a\n")
+
+    closer = asyncio.create_task(session.aclose())
+    await asyncio.sleep(0)  # let aclose() reach its await
+    closer.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await closer
+
+    session.push("b\n")
+    # Bounded: the poisoned queue used to make result() hang indefinitely.
+    async with asyncio.timeout(5):
+        assert "slow:b" in await session.result()
+    await session.aclose()
+
+
+@pytest.mark.asyncio
+async def test_result_runs_queued_work_when_worker_died():
+    """result() must not return "" just because the worker task is gone.
+
+    The worker is torn down while a statement is still queued and no further
+    push() follows, so only result() itself can revive it.
+    """
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    # Kill the worker before it drains the queue, mimicking a cancellation that
+    # tore down the task while statements were still pending.
+    worker = session._worker  # noqa: SLF001
+    worker.cancel()
+    await asyncio.gather(worker, return_exceptions=True)
+
+    assert "echo:a" in await session.result()
+    await session.aclose()
+
+
 # ── executor injection (proves core is agnostic) ───────────────────────────────
 
 @pytest.mark.asyncio

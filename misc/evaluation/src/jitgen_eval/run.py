@@ -1,6 +1,7 @@
 from datasets import load_dataset
 from .chains import create_jitgen_chain, create_sync_executor_chain
 from .utils import get_results_file_name, run_test_cases, TqdmLoggingHandler
+from functools import partial
 from random import randint
 import logging
 import sys
@@ -8,21 +9,26 @@ from tqdm import tqdm
 
 from .config import config, get_model
 
-# Configure logging with tqdm-compatible handler
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+# Configure logging with tqdm-compatible handler.  Attach to the *package*
+# logger, not __name__ — otherwise records from sibling modules such as
+# jitgen_eval.utils propagate straight past these handlers to the root logger
+# and never reach the log file.
+package_logger = logging.getLogger(__package__)
+package_logger.setLevel(logging.INFO)
 
 # File handler for detailed logs
 file_handler = logging.FileHandler("jitgen_eval.log")
 file_handler.setFormatter(
     logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 )
-logger.addHandler(file_handler)
+package_logger.addHandler(file_handler)
 
 # Tqdm-compatible console handler
 tqdm_handler = TqdmLoggingHandler()
 tqdm_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
-logger.addHandler(tqdm_handler)
+package_logger.addHandler(tqdm_handler)
+
+logger = logging.getLogger(__name__)
 
 
 async def run_evaluation():
@@ -44,9 +50,6 @@ async def run_evaluation():
         tqdm.write(f"{'=' * 60}\n", file=sys.stderr)
         llm = get_model(model_name, session_id)
 
-        jitgen_chain = create_jitgen_chain(llm)
-        sync_chain = create_sync_executor_chain(llm)
-
         target_dataset = (
             dataset_full[config.dataset].select(
                 range(
@@ -66,13 +69,17 @@ async def run_evaluation():
         )
 
         tqdm.write("🔄 Running ASYNC chain evaluation...", file=sys.stderr)
-        async_chain_results = await run_test_cases(llm, target_dataset, jitgen_chain)
+        async_chain_results = await run_test_cases(
+            llm, target_dataset, partial(create_jitgen_chain, llm)
+        )
         output_file = get_results_file_name(config.results_directory, model_name, config.dataset, "async_chain")
         async_chain_results.to_csv(output_file, index=False)
         tqdm.write(f"💾 Async results saved: {output_file}\n", file=sys.stderr)
 
         tqdm.write("🔄 Running SYNC chain evaluation...", file=sys.stderr)
-        sync_chain_results = await run_test_cases(llm, target_dataset, sync_chain)
+        sync_chain_results = await run_test_cases(
+            llm, target_dataset, partial(create_sync_executor_chain, llm)
+        )
         output_file = get_results_file_name(config.results_directory, model_name, config.dataset, "sync_chain")
         sync_chain_results.to_csv(output_file, index=False)
         tqdm.write(f"💾 Sync results saved: {output_file}\n", file=sys.stderr)

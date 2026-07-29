@@ -20,7 +20,11 @@ class JITGenParser(BaseTransformOutputParser[str]):
     aggregated stdout is yielded and the session is reset for the next block.
 
     The *session* and *stripper* are fully client-owned — configure markers,
-    executor, and timeout before constructing this parser.
+    executor, and timeout before constructing this parser.  Ownership extends to
+    teardown: the parser resets both after each stream (so a single parser may be
+    reused across many ``astream`` calls) but never calls
+    :meth:`~jitgen_core.Session.aclose`.  The client must do that when the
+    session is no longer needed.
 
     Example::
 
@@ -96,5 +100,23 @@ class JITGenParser(BaseTransformOutputParser[str]):
                     await self.session.reset()
                     self.stripper.reset()
                     break
+
+            # Stream ended while still inside a code block (e.g. the model
+            # omitted the closing marker), or an error surfaced after the last
+            # handled boundary.  Flush rather than silently discarding.
+            if self.stripper.inside_markers or self.session.has_error:
+                for seg in self.stripper.finalize():
+                    self.session.push(seg.text)
+                try:
+                    output = await self.session.result()
+                except Exception as exc:
+                    yield f"[JITGen error: {exc}]"
+                else:
+                    if output:
+                        yield output
         finally:
-            await self.session.aclose()
+            # Reset for the next stream.  The stripper reset is synchronous, so
+            # do it first — it still runs if the await below is cancelled.
+            # Session.aclose() is the client's responsibility, not ours.
+            self.stripper.reset()
+            await self.session.reset()

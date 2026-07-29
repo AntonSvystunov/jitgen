@@ -45,14 +45,14 @@ class EvaluationConfig(BaseSettings):
 config = EvaluationConfig()
 
 def get_model(model_name: str, session_id: str) -> ChatOpenRouter:
-    if "/" in model_name:
-        return ChatOpenRouter(
-            model_name=model_name,
-            temperature=0,
-            seed=session_id,
-            cache=False,
-            api_key=config.openrouter_api_key,
-        )
+    # if "/" in model_name:
+    #     return ChatOpenRouter(
+    #         model_name=model_name,
+    #         temperature=0,
+    #         seed=session_id,
+    #         cache=False,
+    #         api_key=config.openrouter_api_key,
+    #     )
 
     return ChatOllama(
         model=model_name,

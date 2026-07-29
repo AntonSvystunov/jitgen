@@ -17,10 +17,6 @@ class _Sentinel:
     future: asyncio.Future[None]
 
 
-class _Shutdown:
-    pass
-
-
 class Session:
     """Grammar-agnostic, executor-agnostic JITGen session.
 
@@ -55,7 +51,7 @@ class Session:
         self._output_parts: list[str] = []
         self._error: Exception | None = None
         self._generation: int = 0
-        self._queue: asyncio.Queue[_WorkItem | _Sentinel | _Shutdown] = asyncio.Queue()
+        self._queue: asyncio.Queue[_WorkItem | _Sentinel] = asyncio.Queue()
         self._worker: asyncio.Task[None] | None = None
 
     # ── public properties ──────────────────────────────────────────────
@@ -122,7 +118,12 @@ class Session:
                 if statements:
                     self._ensure_worker()
 
-        if self._worker is not None and not self._worker.done():
+        if not self._queue.empty() or (
+            self._worker is not None and not self._worker.done()
+        ):
+            # Revive a dead/absent worker so queued items still run and the
+            # sentinel is guaranteed to be consumed.
+            self._ensure_worker()
             fut: asyncio.Future[None] = asyncio.get_running_loop().create_future()
             self._queue.put_nowait(_Sentinel(fut))
             try:
@@ -174,21 +175,33 @@ class Session:
                 self._output_parts = []
                 self._error = None
                 raise
+        elif self._worker is not None:
+            # Worker already finished (e.g. cancelled mid-turn); drop the stale
+            # reference so the next push() starts a fresh one.
+            self._worker = None
         # Clear session state; executor state (REPL _locals) is preserved.
         self._buffer = ""
         self._output_parts = []
         self._error = None
 
     async def aclose(self) -> None:
-        """Shut down the background worker task.
+        """Stop the background worker task.
 
-        Call once when the session is no longer needed to avoid pending-task
-        warnings on event-loop close.
+        Call when the session is no longer needed to avoid pending-task warnings
+        on event-loop close.  The session remains usable afterwards: a later
+        :meth:`push` / :meth:`result` transparently starts a fresh worker.
+
+        Cancellation-safe — the worker reference is dropped before awaiting, so
+        an interrupted ``aclose()`` cannot leave a doomed worker behind for the
+        next turn to adopt.
         """
-        if self._worker is not None and not self._worker.done():
-            self._queue.put_nowait(_Shutdown())
-            await self._worker
-        self._worker = None
+        worker, self._worker = self._worker, None
+        if worker is None or worker.done():
+            return
+        worker.cancel()
+        # return_exceptions=True absorbs the worker's own CancelledError while
+        # still letting cancellation of *this* task propagate.
+        await asyncio.gather(worker, return_exceptions=True)
 
     # ── private helpers ────────────────────────────────────────────────
 
@@ -210,8 +223,6 @@ class Session:
     async def _worker_loop(self) -> None:
         while True:
             item = await self._queue.get()
-            if isinstance(item, _Shutdown):
-                return
             if isinstance(item, _Sentinel):
                 if not item.future.done():
                     item.future.set_result(None)

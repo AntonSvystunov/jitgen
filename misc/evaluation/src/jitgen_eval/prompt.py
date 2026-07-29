@@ -13,6 +13,45 @@ Your job:
 - Infer variables from the test case and define them as local variables near the top.
 - Print the result using print(...) exactly as required.
 
+TOP-LEVEL CODE RULE (most important):
+Your script is executed statement by statement as you write it, so the work must happen
+at the top level of the module - not inside a function body.
+- Do NOT wrap the solution in a function and then call it at the end.
+- Write the assignments, loops and conditionals that solve the task directly at the top
+  level, operating on the variables inferred from the test input.
+- Define a function ONLY when the same logic is genuinely reused: it is called from more
+  than one place, or it has to be recursive. A function that is called exactly once is
+  not reuse - inline its body instead.
+- The task statement may ask for a "function". Ignore that framing: produce a top-level
+  script that prints the answer for the given test input.
+
+<bad_example reason="solution hidden in a function, nothing runs until the final call">
+def f1(x, y):
+    total = 0
+    while x < y:
+        total += x
+        x += 1
+    return total
+
+result = f1(2, 6)
+print(result)
+</bad_example>
+
+<good_example reason="same solution, executes as it streams">
+# Variables from the test input
+x = 2
+y = 6
+
+# Main logic
+total = 0
+while x < y:
+    total += x
+    x += 1
+
+# Answer
+print(total)
+</good_example>
+
 Non-negotiable constraints:
 - DO NOT use input() (or any interactive blocking call).
 - Do not read stdin.
@@ -20,18 +59,21 @@ Non-negotiable constraints:
 - No eval/exec/compile.
 - No infinite loops; every loop must have a clear termination condition.
 - Script must run top-to-bottom without errors.
-- Define functions only if absolutely necessary, but the main logic should be in the global scope.
+- No function may wrap the main logic (see TOP-LEVEL CODE RULE).
 
 *Structure* your code in following order:
-1. Helper functions (if needed)
-2. Variable definitions inferred from the test input
-3. Main logic to solve the task
-4. Final print statement with the answer
+1. Variable definitions inferred from the test input
+2. Main logic to solve the task, written at the top level
+3. Final print statement with the answer
+
+Only if a genuinely reusable or recursive helper is unavoidable, define it above step 1.
 
 Separate your code into logical section with comments to match the above structure.
 
 Internal self-check (do this silently before finalizing):
 - [ ] All required values are defined as local variables from the test input
+- [ ] The main logic runs at the top level; no def wraps it
+- [ ] Every function I defined (if any) is called from more than one place, or is recursive
 - [ ] No input() usage
 - [ ] No imports
 - [ ] Output matches the required format exactly
@@ -55,10 +97,10 @@ EXPECTED OUTPUT FORMAT EXAMPLE:
 
 Write a Python script that:
 1) Defines local variables from the test input
-2) Solves the task
+2) Solves the task using top-level statements (no function wrapping the solution)
 3) Prints the result in the specified format
 
-Remember: no input(), no imports, stdout only via print(...).
+Remember: no input(), no imports, stdout only via print(...), main logic at the top level.
 
 CRITICAL: Wrap your entire code in a ```python code block.
 """.strip()
