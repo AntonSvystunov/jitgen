@@ -61,13 +61,20 @@ class LarkStatementExtractor(ABC):
             ]
             return [s for s in statements if s.strip()], ""
 
-        # Non-final: need ≥2 children to confirm the first N-1 are complete.
-        if len(tree.children) < 2:
+        # Non-final: the first N-1 children are complete by construction — a
+        # further child could only ever extend the *last* one.  The last child
+        # is additionally safe when it cannot grow: see :meth:`_is_sealed`.
+        children = list(tree.children)
+        if children and self._is_sealed(source, children[-1]):
+            ready = children
+        elif len(children) < 2:
             return [], source
+        else:
+            ready = children[:-1]
 
         statements: list[SourceCode] = []
         executed_upto = 0
-        for child in tree.children[:-1]:
+        for child in ready:
             stmt = self._statement_text(source, child)
             if stmt.strip():
                 statements.append(stmt)
@@ -75,6 +82,45 @@ class LarkStatementExtractor(ABC):
             if meta is not None:
                 executed_upto = getattr(meta, "end_pos", 0)
         return statements, source[executed_upto:]
+
+    def _is_sealed(self, source: SourceCode, node: Branch[Token]) -> bool:
+        """Can *node* still be extended by input that has not arrived yet?
+
+        The N-1 rule is conservative: it waits for the *next* statement to start
+        before releasing one, which costs a full line of latency per statement
+        and — since a generated script's ``print`` is usually its last line —
+        defers all output to the final flush.
+
+        A statement is *sealed* (safe to release right away) when both hold:
+
+        * its grammar rule cannot take further clauses or an indented body —
+          :meth:`_extensible_rules` names the ones that can; and
+        * a real newline follows it in *source*, so the terminating NEWLINE came
+          from the model rather than from the ``"\\n"`` that
+          :meth:`_parse_or_recover` appends.  Without this, ``x = 1`` would be
+          released while the stream is still one chunk away from ``x = 1 + 2``.
+        """
+        extensible = self._extensible_rules()
+        if extensible is None:
+            return False
+        rule = getattr(node, "data", None)
+        if rule is None or str(rule) in extensible:
+            return False
+        meta = getattr(node, "meta", None)
+        if meta is None:
+            return False
+        return "\n" in source[getattr(meta, "end_pos", len(source)) :]
+
+    @staticmethod
+    def _extensible_rules() -> frozenset[str] | None:
+        """Rule names whose nodes may still grow when more input arrives.
+
+        ``None`` — the default — means the grammar has not classified its rules,
+        so sealing is disabled entirely and the conservative N-1 rule applies.
+        Erring the other way would hand the executor a fragment of a statement,
+        so a new grammar has to opt in by overriding this.
+        """
+        return None
 
     @staticmethod
     def _statement_text(buffer: str, node: Branch[Token]) -> SourceCode:

@@ -68,21 +68,26 @@ async def run_evaluation():
             file=sys.stderr,
         )
 
-        tqdm.write("🔄 Running ASYNC chain evaluation...", file=sys.stderr)
-        async_chain_results = await run_test_cases(
-            llm, target_dataset, partial(create_jitgen_chain, llm)
+        # One pass per arm, each preceded by an identical warm-up.  See
+        # run_test_cases: this is what makes both arms generate the *same*
+        # program, which matters more than the ~1% tailwind that interleaving
+        # would have balanced.
+        tqdm.write("🔄 Running ASYNC/SYNC chain evaluation...", file=sys.stderr)
+        results = await run_test_cases(
+            llm,
+            target_dataset,
+            {
+                "async_chain": partial(create_jitgen_chain, llm),
+                "sync_chain": partial(create_sync_executor_chain, llm),
+            },
         )
-        output_file = get_results_file_name(config.results_directory, model_name, config.dataset, "async_chain")
-        async_chain_results.to_csv(output_file, index=False)
-        tqdm.write(f"💾 Async results saved: {output_file}\n", file=sys.stderr)
 
-        tqdm.write("🔄 Running SYNC chain evaluation...", file=sys.stderr)
-        sync_chain_results = await run_test_cases(
-            llm, target_dataset, partial(create_sync_executor_chain, llm)
-        )
-        output_file = get_results_file_name(config.results_directory, model_name, config.dataset, "sync_chain")
-        sync_chain_results.to_csv(output_file, index=False)
-        tqdm.write(f"💾 Sync results saved: {output_file}\n", file=sys.stderr)
+        for chain_type, df in results.items():
+            output_file = get_results_file_name(
+                config.results_directory, model_name, config.dataset, chain_type
+            )
+            df.to_csv(output_file, index=False)
+            tqdm.write(f"💾 {chain_type} results saved: {output_file}\n", file=sys.stderr)
 
     tqdm.write(f"\n{'=' * 60}", file=sys.stderr)
     tqdm.write("🎉 Evaluation completed successfully!", file=sys.stderr)

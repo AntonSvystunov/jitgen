@@ -1,7 +1,7 @@
 import asyncio
 import time
 import pandas as pd
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pydantic import BaseModel
 import logging
@@ -14,7 +14,7 @@ from tqdm import tqdm
 from .chains import ChainBundle
 from .config import config
 
-from .prompt import TaskInput
+from .prompt import TaskInput, task_prompt
 
 import builtins
 from datasets import Dataset
@@ -240,69 +240,34 @@ async def execute_test_case(
         return True, str(e), end_time - start_time, first_output - start_time
 
 
-async def run_test_cases(
-    llm: BaseChatModel,
-    dataset: Dataset,
-    chain_factory: Callable[[], ChainBundle],
-) -> pd.DataFrame:
-    """Run every test case, giving each one a freshly built chain.
+def _build_case_input(case: dict) -> TaskInput:
+    return {
+        "task": case["text"].replace("function", "Python code"),
+        "example_test_input": case.get("example_test_input", ""),
+        "example_test_output": case.get("example_test_output", ""),
+        "test_input": case.get("test_input", ""),
+        "test_output": case.get("test_output", ""),
+    }
 
-    ``chain_factory`` is called once per test case so that no REPL namespace,
-    JITGen session or marker-stripper state leaks between cases.  Sharing a
-    single chain also lets a cancelled stream (see ``timeout_async_iterator``)
-    corrupt the session used by subsequent cases.
+
+async def _warm_up(llm: BaseChatModel, case_input: TaskInput | None) -> None:
+    """Load the model and prime its KV cache with a representative prompt.
+
+    Warming with a bare ``"hi"`` shares no prefix with the evaluation prompts, so
+    the first measured case absorbs a cold prefill of the long system prompt
+    (~82ms measured: 112ms time-to-first-token against 30ms once warm) that no
+    later case pays.  Warming on a real prompt moves that cost out of the
+    measured region instead of charging it to whichever arm happens to run first.
     """
-    def disabled_input(*args, **kwargs):
-        raise Exception("The input() function has been disabled.")
-
-    # Override the built-in input
-    old_input = builtins.input
-    builtins.input = disabled_input
-
     tqdm.write("🔥 Warming up the model...", file=sys.stderr)
-    await llm.ainvoke("hi")  # Warm up the model
-    tqdm.write(
-        f"✅ Model ready. Starting evaluation of {len(dataset)} test cases\n",
-        file=sys.stderr,
-    )
+    if case_input is None:
+        await llm.ainvoke("hi")
+    else:
+        await (task_prompt | llm).ainvoke(case_input)
 
-    results = []
-    for idx, case in enumerate(tqdm(dataset, desc="Evaluating", unit="test")):
-        task_id = case.get("task_id", f"case_{idx}")
 
-        case_input: TaskInput = {
-            "task": case["text"].replace("function", "Python code"),
-            "example_test_input": case.get("example_test_input", ""),
-            "example_test_output": case.get("example_test_output", ""),
-            "test_input": case.get("test_input", ""),
-            "test_output": case.get("test_output", ""),
-        }
-
-        bundle = chain_factory()
-        try:
-            result = await execute_test_case_with_timeout(
-                case_input,
-                bundle.chain,
-                timeout=config.test_case_timeout,
-                task_id=task_id,
-            )
-        finally:
-            await bundle.aclose()
-
-        if result.success and not result.output and result.error is None:
-            logger.warning(
-                "Task %s produced no output and no error — the chain yielded "
-                "zero chunks in %.3fs",
-                task_id,
-                result.total_time,
-            )
-
-        results.append((task_id, result))
-
-    builtins.input = old_input
-    tqdm.write(f"\n✅ All {len(dataset)} test cases completed", file=sys.stderr)
-
-    df = pd.DataFrame(results, columns=["RowID", "ExecutionInfo"])
+def _to_dataframe(rows: list[tuple[str, TestCaseExecutionResult]]) -> pd.DataFrame:
+    df = pd.DataFrame(rows, columns=["RowID", "ExecutionInfo"])
     df["ErrorOccurred"] = df["ExecutionInfo"].apply(lambda x: not x.success)
     df["ExecutionOutput"] = df["ExecutionInfo"].apply(lambda x: x.output)
     df["HasTimedOut"] = df["ExecutionInfo"].apply(lambda x: x.has_timed_out)
@@ -319,8 +284,100 @@ async def run_test_cases(
     )
     df["FirstOutput"] = df["ExecutionInfo"].apply(lambda x: x.first_output_time)
     df.drop(columns=["ExecutionInfo"], inplace=True)
-
     return df
+
+
+async def run_test_cases(
+    llm: BaseChatModel,
+    dataset: Dataset,
+    chain_factories: Mapping[str, Callable[[], ChainBundle]],
+) -> dict[str, pd.DataFrame]:
+    """Run every test case through every arm under matched conditions.
+
+    Each factory is called once per test case, so no REPL namespace, JITGen
+    session or marker-stripper state leaks between cases.  Sharing a single chain
+    would also let a cancelled stream (see :func:`timeout_async_iterator`)
+    corrupt the session used by subsequent cases.
+
+    Each arm gets its own full pass over the dataset, and every pass is preceded
+    by an identical warm-up.  That combination is what puts the arms on equal
+    footing, and it is subtler than it looks.
+
+    Now that the model stays resident between requests (see
+    ``EvaluationConfig.ollama_keep_alive``) its KV cache survives, and **the text
+    the model generates depends on the cache state the previous request left
+    behind** — measured directly: the same prompt, at temperature 0 with a fixed
+    seed, produces different completions depending on which request preceded it.
+    Determinism therefore requires every arm to see the same *sequence* of
+    predecessors, which a full pass per arm gives for free: case *i* follows case
+    *i-1* in every pass.  Both arms then execute the identical generated program
+    and the only variable left is the execution strategy.
+
+    Interleaving the arms case by case looks fairer — it would balance the
+    cheaper prefill that the second arm gets against a repeated prompt — but it
+    destroys exactly that property: an arm's call would be preceded by the *other*
+    arm's identical prompt, the completions diverge, and the arms end up being
+    scored on different programs.  Measured, that cost one arm a correctness
+    point outright.  A ~1% timing tailwind is the cheaper problem, and warming up
+    before each pass removes most of it by making both arms start from the same
+    warm state instead of charging the first arm for a cold prefill.
+
+    Returns one DataFrame per arm, keyed by the names given in *chain_factories*.
+    """
+    def disabled_input(*args, **kwargs):
+        raise Exception("The input() function has been disabled.")
+
+    arm_names = list(chain_factories)
+    results: dict[str, list[tuple[str, TestCaseExecutionResult]]] = {}
+    cases = [
+        (case.get("task_id", f"case_{idx}"), _build_case_input(case))
+        for idx, case in enumerate(dataset)
+    ]
+
+    # Override the built-in input
+    old_input = builtins.input
+    builtins.input = disabled_input
+    try:
+        for name in arm_names:
+            # One identical warm-up per pass, so no arm is charged for the cold
+            # prefill of the long system prompt and every pass starts from the
+            # same cache state.
+            await _warm_up(llm, cases[0][1] if cases else None)
+            tqdm.write(
+                f"✅ Model ready. Evaluating {len(cases)} test cases — {name}\n",
+                file=sys.stderr,
+            )
+
+            rows: list[tuple[str, TestCaseExecutionResult]] = []
+            for task_id, case_input in tqdm(cases, desc=f"Evaluating {name}", unit="test"):
+                bundle = chain_factories[name]()
+                try:
+                    result = await execute_test_case_with_timeout(
+                        case_input,
+                        bundle.chain,
+                        timeout=config.test_case_timeout,
+                        task_id=task_id,
+                    )
+                finally:
+                    await bundle.aclose()
+
+                if result.success and not result.output and result.error is None:
+                    logger.warning(
+                        "Task %s (%s) produced no output and no error — the chain "
+                        "yielded zero chunks in %.3fs",
+                        task_id,
+                        name,
+                        result.total_time,
+                    )
+
+                rows.append((task_id, result))
+            results[name] = rows
+    finally:
+        builtins.input = old_input
+
+    tqdm.write(f"\n✅ All {len(cases)} test cases completed", file=sys.stderr)
+
+    return {name: _to_dataframe(rows) for name, rows in results.items()}
 
 
 def get_results_file_name(

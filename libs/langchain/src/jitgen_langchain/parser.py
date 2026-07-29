@@ -75,6 +75,7 @@ class JITGenParser(BaseTransformOutputParser[str]):
                     break
 
                 text = str(chunk.content) if isinstance(chunk, BaseMessage) else chunk
+                flushed = False
                 for seg in self.stripper.process(text):
                     self.session.push(seg.text)
                     if self.session.has_error:
@@ -91,6 +92,21 @@ class JITGenParser(BaseTransformOutputParser[str]):
                             yield output
                         await self.session.reset()
                         self.stripper.reset()
+                        flushed = True
+
+                # Forward stdout as the background worker produces it instead of
+                # banking it until the closing marker — holding it back pins
+                # time-to-first-output to the end of generation, which is exactly
+                # what the sequential baseline does.
+                #
+                # Drained per *chunk*, not per segment: while the stripper is
+                # withholding a suffix that might turn out to be the end marker
+                # it emits no segments at all, and those are precisely the final
+                # chunks, when the last statement's output has just landed.
+                if not flushed and not self.session.has_error:
+                    ready = self.session.take_output()
+                    if ready:
+                        yield ready
 
                 if self.session.has_error:
                     try:

@@ -437,3 +437,68 @@ async def test_fake_executor_drives_session_end_to_end():
     session.push("hello\n")
     out = await session.result()
     assert out == "HELLO"
+
+
+# ── incremental output draining ────────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_take_output_returns_stdout_without_awaiting_result():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    assert session.take_output() == "", "worker has not run yet"
+    await asyncio.sleep(0)  # let the worker drain the queue
+    await asyncio.sleep(0)
+    assert session.take_output() == "echo:a"
+
+
+@pytest.mark.asyncio
+async def test_take_output_does_not_duplicate_into_result():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("a\n")
+    session.push("b\n")
+    while (taken := session.take_output()) == "":
+        await asyncio.sleep(0)
+    assert await session.result() + taken == "echo:aecho:b"
+
+
+@pytest.mark.asyncio
+async def test_take_output_empty_when_nothing_executed():
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    assert session.take_output() == ""
+
+
+# ── parse gating ───────────────────────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_gated_push_still_extracts_every_statement():
+    """Chunking must not change what runs — only how often the extractor is asked."""
+
+    class CountingExtractor(EchoExtractor):
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def extract(self, source, *, final):  # noqa: ANN001, ANN202
+            self.calls += 1
+            return super().extract(source, final=final)
+
+    program = "alpha\nbeta\ngamma\n"
+    extractor = CountingExtractor()
+    session = Session(extractor=extractor, executor=EchoExecutor())
+    for char in program:  # one character at a time: the worst case
+        session.push(char)
+    assert await session.result() == "echo:alphaecho:betaecho:gamma"
+    # Two boundaries per statement can move it: the newline that terminates it,
+    # and the column-0 character that starts the next one (which is what lets a
+    # grammar-aware extractor confirm a preceding compound statement).  So 3
+    # newlines + 3 statement starts + the final flush — the remaining 12
+    # mid-line characters never reach the parser.
+    assert extractor.calls == 7
+    assert extractor.calls < len(program)
+
+
+@pytest.mark.asyncio
+async def test_push_without_boundary_defers_to_result():
+    """A statement never terminated by a newline still runs at the final flush."""
+    session = Session(extractor=EchoExtractor(), executor=EchoExecutor())
+    session.push("no_newline_here")
+    assert await session.result() == "echo:no_newline_here"

@@ -17,6 +17,31 @@ class _Sentinel:
     future: asyncio.Future[None]
 
 
+def _may_close_statement(buffer: SourceCode, appended_at: int) -> bool:
+    """Could the text appended at *appended_at* have completed a statement?
+
+    A cheap, grammar-independent necessary condition for
+    :meth:`StatementExtractor.extract` to return anything new.  Only two events
+    can move a statement boundary:
+
+    * a newline arrives — the statement it terminates may now be complete; or
+    * a non-blank character lands in column 0 — a *new* top-level statement
+      starts, which is what lets an extractor confirm the preceding one.
+
+    Scans only the appended span, so cost is proportional to the chunk rather
+    than the buffer.  Conservative in the safe direction: when it returns
+    ``True`` the extractor still decides, and it only returns ``False`` when
+    neither event occurred.
+    """
+    for i in range(appended_at, len(buffer)):
+        char = buffer[i]
+        if char == "\n":
+            return True
+        if char not in " \t\r" and (i == 0 or buffer[i - 1] == "\n"):
+            return True
+    return False
+
+
 class Session:
     """Grammar-agnostic, executor-agnostic JITGen session.
 
@@ -86,7 +111,14 @@ class Session:
         """
         if self._error is not None:
             return
+        appended_at = len(self._buffer)
         self._buffer += source
+        # Parsing is the only expensive part of push(), and it runs on the event
+        # loop — every wasted parse is latency stolen from reading the LLM
+        # stream.  Most chunks land mid-line and cannot move a statement
+        # boundary, so skip them outright.
+        if not _may_close_statement(self._buffer, appended_at):
+            return
         try:
             statements, self._buffer = self._extractor.extract(
                 self._buffer, final=False
@@ -98,6 +130,19 @@ class Session:
             self._queue.put_nowait(_WorkItem(stmt, self._generation))
         if statements:
             self._ensure_worker()
+
+    def take_output(self) -> str:
+        """Pop and return stdout produced so far, without awaiting pending work.
+
+        Lets a caller forward output the moment a statement produces it instead
+        of holding everything back until :meth:`result`.  Returns ``""`` when
+        nothing new has been produced.  Output is returned once — a later
+        :meth:`result` call sees only what arrives after this.
+        """
+        if not self._output_parts:
+            return ""
+        parts, self._output_parts = self._output_parts, []
+        return "".join(parts)
 
     async def result(self) -> str:
         """Flush remaining buffer, await all pending executions, and return

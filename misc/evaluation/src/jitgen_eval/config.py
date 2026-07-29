@@ -30,6 +30,14 @@ class EvaluationConfig(BaseSettings):
 
     ollama_url: str = "http://host.docker.internal:11434"
 
+    # How long Ollama keeps the model resident after a request.  ``0`` evicts it
+    # immediately, so every test case pays a full model load: measured at ~2.3s
+    # of time-to-first-token plus ~3x slower per-token generation for a 7B Q8
+    # model.  That cost lands identically on both chains and dwarfs the
+    # execution time the incremental/sequential comparison is trying to measure,
+    # so keep the model resident and let the warm-up call absorb the one load.
+    ollama_keep_alive: str = "30m"
+
     # Directory where results will be saved
     results_directory: str = "./results"
 
@@ -59,7 +67,7 @@ def get_model(model_name: str, session_id: str) -> ChatOpenRouter:
         temperature=0,
         base_url=config.ollama_url,
         seed=session_id,
-        keep_alive=0,
+        keep_alive=config.ollama_keep_alive,
         cache=False,
     )
 
