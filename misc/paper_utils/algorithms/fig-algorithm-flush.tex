@@ -1,0 +1,30 @@
+% Fig. 2 — Procedure FlushRemaining (post-stream flush). TARP: 170 mm wide, 14 pt Times.
+\documentclass[14pt]{extarticle}
+\usepackage[paperwidth=170mm, paperheight=297mm, margin=0mm]{geometry}
+\usepackage{newtxtext,newtxmath}   % Times-like text+math under pdflatex
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\pagestyle{empty}
+% line numbers at full size (default is smaller)
+\makeatletter
+\algrenewcommand\alglinenumber[1]{\normalsize #1:}
+\makeatother
+\begin{document}
+\vspace*{5mm}% headroom so trim.py's 20 px top padding is not clamped at the page edge
+\noindent
+\begin{minipage}{\textwidth}
+\hrule\vspace{2pt}\hrule\vspace{4pt}
+\begin{algorithmic}[1]
+\Procedure{FlushRemaining}{$b, G, \iota$}
+    \If{$b = \varepsilon$} \State \textbf{return} \EndIf
+    \State $(\tau, \_) \gets \Call{Parse}{G, b}$
+    \ForAll{$s \in \Call{TopLevelStatements}{\tau}$}
+        \State $c \gets b[\,s.\mathit{start}\,..\,s.\mathit{end}\,]$
+        \State $o \gets \iota.\Call{Execute}{c}$
+        \State \textbf{yield} $o$
+    \EndFor
+\EndProcedure
+\end{algorithmic}
+\vspace{4pt}\hrule
+\end{minipage}
+\end{document}

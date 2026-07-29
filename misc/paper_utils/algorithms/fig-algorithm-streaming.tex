@@ -1,0 +1,50 @@
+% Fig. 1 — Procedure JitGen (streaming phase). TARP: 170 mm wide, 14 pt Times.
+\documentclass[14pt]{extarticle}
+\usepackage[paperwidth=170mm, paperheight=297mm, margin=0mm]{geometry}
+\usepackage{newtxtext,newtxmath}   % Times-like text+math under pdflatex
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\pagestyle{empty}
+% line numbers at full size (default is smaller)
+\makeatletter
+\algrenewcommand\alglinenumber[1]{\normalsize #1:}
+\makeatother
+\begin{document}
+\vspace*{5mm}% headroom so trim.py's 20 px top padding is not clamped at the page edge
+\noindent
+\begin{minipage}{\textwidth}
+\hrule\vspace{2pt}\hrule\vspace{4pt}
+\begin{algorithmic}[1]
+\Require Token stream $\sigma$ from the LLM; context-free grammar $G$ of the target language.
+\Ensure A sequence of execution outputs, yielded incrementally;
+\Statex \hspace{1.5em} \textsc{ParseError} or \textsc{ExecutionError} raised on the first failure.
+\Statex
+\Statex \textbf{Invariant.} At the start of every iteration of the main loop, $b$ contains exactly the suffix of the tokens emitted so far that has not yet been dispatched for execution.
+\Statex
+\Procedure{JitGen}{$\sigma, G$}
+    \State $\iota \gets \Call{CreateInterpreter}{\,}$
+    \State $b \gets \varepsilon$ \Comment{unexecuted-suffix buffer}
+    \ForAll{$f \in \sigma$}
+        \State $b \gets b \cdot f$
+        \State $(\tau, \mathit{ok}) \gets \Call{Parse}{G, b}$
+        \Statex \hspace{2.45em} \Comment{returns $\mathit{ok}$=\textsc{Incomplete} or raises \textsc{ParseError}}
+        \If{$\mathit{ok} = \textsc{Incomplete}$}
+            \State \textbf{continue}
+        \EndIf
+        \State $S \gets \Call{TopLevelStatements}{\tau}$
+        \If{$|S| \geq 2$}
+            \Statex \hspace{2.45em} \textbf{Stability:} $S[1\!:\!|S|{-}1]$ cannot be extended by future tokens.
+            \For{$i \gets 1$ \textbf{to} $|S| - 1$}
+                \State $c \gets b[\,S[i].\mathit{start}\,..\,S[i].\mathit{end}\,]$
+                \State $o \gets \iota.\Call{Execute}{c}$
+                \State \textbf{yield} $o$
+            \EndFor
+            \State $b \gets b[\,S[|S|].\mathit{start}\,..\,]$
+        \EndIf
+    \EndFor
+    \State \Call{FlushRemaining}{$b, G, \iota$}
+\EndProcedure
+\end{algorithmic}
+\vspace{4pt}\hrule
+\end{minipage}
+\end{document}

@@ -1,12 +1,13 @@
 # Paper Utils — JitGen Artifact Generation
 
-This directory contains the notebook and outputs for generating publication-quality figures and tables for the JitGen research paper. The artifacts compare **async (JitGen)** — incremental, streaming code execution — against **sync (sequential)** — traditional generate-then-execute — across 5 LLMs on the MBPP benchmark.
+This directory contains the notebook and outputs for generating publication-quality figures and tables for the JitGen article submitted to *Technology Audit and Production Reserves* (TARP). The artifacts compare **Async (JitGen)** — incremental, streaming code execution — against **Sync** — traditional generate-then-execute — across 6 LLMs on the MBPP benchmark.
 
 ## Quick Start
 
 ```bash
 uv sync
-# Open artifacts.ipynb in VS Code / Jupyter and run all cells
+# Open artifacts.ipynb in VS Code / Jupyter and run all cells, or headless:
+uv run --with jupyter,nbconvert jupyter nbconvert --to notebook --execute --inplace artifacts.ipynb
 ```
 
 ## Models Evaluated
@@ -18,6 +19,7 @@ uv sync
 | Phi 4 | `phi4_latest` |
 | GPT-OSS 20B | `gpt-oss_20b` |
 | Qwen3-Coder 30B | `qwen3-coder_30b` |
+| CodeAct-Mistral | `xingyaow__codeact-agent-mistral` |
 
 ## Metrics
 
@@ -71,11 +73,11 @@ Wilcoxon signed-rank tests with Bonferroni correction for paired (Async − Sync
 | `MeanDelta`, `MedianDelta` | Mean and median of the paired difference |
 | `W` | Wilcoxon test statistic |
 | `p_value` | Raw p-value (two-sided) |
-| `p_corrected` | Bonferroni-corrected p-value (×10 tests) |
+| `p_corrected` | Bonferroni-corrected p-value (×12 tests) |
 | `EffectSize_r` | Rank-biserial correlation |
 | `Significant` | `Yes` if p_corrected < 0.05 |
 
-**Paper use:** Provides statistical evidence that first-output time differences are significant (p < 0.001 for all 5 models after correction).
+**Paper use:** Provides statistical evidence that first-output time differences are significant (p < 0.001 for all 6 models after correction).
 
 ### `error_breakdown.csv`
 Cross-tabulation of error categories by (Model, Algorithm).
@@ -97,64 +99,54 @@ Legacy tables from earlier analysis runs. Retained for backward compatibility.
 
 ## Figures (`images/`)
 
-### `correctness_barplot.png`
-**Type:** Grouped bar chart  
-**Axes:** x = Model, y = Correctness Rate (%), grouped by Algorithm  
-**Key insight:** Async and sync bars are identical for each model, proving JitGen preserves correctness.
+All figures follow the TARP journal format: **170 mm printed width at 300 DPI** (≈2008 px, insert into Word at 100 % scale), all in-figure text **14 pt Times New Roman**, no in-figure titles (captions live in the manuscript), every color/hatch/linestyle decoded by an in-figure legend, both axes labeled with units on every panel, and the Async/Sync pair distinguishable in grayscale (hatch + linestyle, not color alone). Figure numbers match the TARP manuscript (`draft_tarp.md`); Figs 1–2 of the article are pseudocode and not generated here. The final notebook cell checks pixel width, height, and file size for every figure.
 
-### `first_output_violin.png` ⭐ Key Figure
-**Type:** Violin plots faceted by model  
-**Axes:** x = Algorithm, y = Time to First Output (s)  
-**Key insight:** Async violins show lower medians and tighter distributions — JitGen produces user-visible output significantly earlier than sequential execution.
+### `fig-first-output-violin.png` — Fig. 3 ⭐ Main figure
+**Type:** Grouped violins (Async vs Sync per model), log-scale Y  
+**Axes:** x = Model, y = Time to first output, s (log scale)  
+**Key insight:** Async violins show lower medians — JitGen produces user-visible output earlier than sequential execution.
 
-### `execution_time_violin.png`
-**Type:** Violin plots faceted by model  
-**Axes:** x = Algorithm, y = Total Execution Time (s)  
+### `fig-first-output-ecdf.png` — Fig. 4
+**Type:** ECDF, 3×2 grid, one model per panel (*a*–*f*), Async solid / Sync dashed  
+**Axes:** x = Time to first output, s (log scale), y = Fraction of tasks  
+**Key insight:** The async CDF curve is shifted left (faster). More rigorous than histograms — avoids bin-width sensitivity.
+
+### `fig-delta-first-output-boxplot.png` — Fig. 5
+**Type:** Box plot of paired per-task differences with Δ = 0 reference line  
+**Axes:** x = Model, y = Δ = Async − Sync, s (axis clipped; CodeAct-Mistral median annotated)  
+**Key insight:** Boxes sit below zero (JitGen faster). Shows per-task consistency — not just aggregate means. Significance lives in `statistical_tests.csv`.
+
+### `fig-execution-time-violin.png` — Fig. 6
+**Type:** Grouped violins, same layout and log-Y decision as Fig. 3  
+**Axes:** x = Model, y = Execution time, s (log scale)  
 **Key insight:** Total execution times are comparable between async and sync, confirming JitGen adds negligible overhead.
 
-### `first_output_ecdf.png`
-**Type:** Empirical CDF (two panels: aggregate + per-model)  
-**Axes:** x = Time to First Output (s), y = Cumulative Proportion  
-**Key insight:** The async CDF curve is shifted left (faster) with median annotations. More rigorous than histograms — avoids bin-width sensitivity.
+### `fig-speedup-ratio-barplot.png` — Fig. 7
+**Type:** Bar chart with IQR error bars, values printed above bars, 1.0× reference line  
+**Axes:** x = Model, y = Median speedup, × (Sync / Async)  
+**Key insight:** All models above 1.0× baseline; CodeAct-Mistral achieves 4.58×.
 
-### `delta_first_output_boxplot.png`
-**Type:** Box + strip plot with significance annotations  
-**Axes:** x = Model, y = ΔFirstOutput (Async − Sync) in seconds  
-**Key insight:** Boxes sit below zero (JitGen faster) with *** annotations from Wilcoxon tests. Shows per-task consistency — not just aggregate means.
+### `fig-correctness-barplot.png` — Fig. 8
+**Type:** Grouped bars, 4 series (Pass/Correctness × Async/Sync); metric by color, strategy by hatch; values on bars  
+**Axes:** x = Model, y = Rate, % (fixed 0–100)  
+**Key insight:** Async and sync bars are identical (or near-identical) for each model, proving JitGen preserves correctness.
 
-### `speedup_ratio_barplot.png`
-**Type:** Bar chart with IQR error bars  
-**Axes:** x = Model, y = Median Speedup Ratio (Sync / Async)  
-**Key insight:** All models above 1.0× baseline; Gemma 3 achieves 1.22×, easily citable as "N× speedup."
+### `fig-error-distribution.png` — Fig. 9
+**Type:** Grouped bars of outcome counts, 3×2 grid, one model per panel (*a*–*f*), symlog Y so zero counts stay visible, counts annotated  
+**Axes:** x = Outcome category, y = Number of tasks (log scale)  
+**Key insight:** Error category counts are symmetric between async and sync — JitGen does not change failure behavior.
 
-### `error_distribution.png`
-**Type:** Stacked horizontal bar chart  
-**Axes:** y = Model × Algorithm, x = Percentage (%)  
-**Key insight:** Error category proportions are symmetric between async and sync — JitGen does not change failure behavior.
-
-### `summary_heatmap.png`
-**Type:** Annotated heatmap (normalized per column, raw values annotated)  
-**Rows:** Models, **Columns:** PassRate / Correctness / Median ExecTime / Median FirstOutput × Algorithm  
-**Key insight:** Compact overview for appendix — visually highlights that MdnFirstOutput(Async) < MdnFirstOutput(Sync) in every row.
-
-### Legacy figures
-The following are retained from earlier analysis (`plots.ipynb`):
-
-| File | Description |
-|---|---|
-| `execution_time_catplot.png` | Box plots of execution time faceted by model |
-| `first_output_catplot.png` | Box plots of first output time faceted by model |
-| `execution_time_hist.png` | Overlaid histograms of execution time (Async vs Sync) |
-| `first_output_hist.png` | Overlaid histograms of first output time |
-| `execution_time_boxplot.png` | Box plot grouped by (ErrorOccurred, Algorithm) |
-| `delta_execution_time_boxplot.png` | Delta execution time box plot per model |
+### `fig-summary-heatmap.png` — Fig. 10
+**Type:** Annotated heatmap (color per-column min–max normalized, raw values annotated, horizontal colorbar)  
+**Rows:** Model + strategy (12), **Columns:** Pass rate, % / Correctness, % / Median exec. time, s / Median first output, s  
+**Key insight:** Compact overview — median first output (Async) < (Sync) in every model pair.
 
 ---
 
 ## Statistical Methods
 
 - **Wilcoxon signed-rank test** (two-sided): Non-parametric paired test for comparing async vs sync times on the same tasks. Appropriate because execution times are non-normal (right-skewed).
-- **Bonferroni correction**: Conservative multiple-comparison adjustment across 5 models × 2 metrics = 10 tests (α = 0.05).
+- **Bonferroni correction**: Conservative multiple-comparison adjustment across 6 models × 2 metrics = 12 tests (α = 0.05).
 - **Rank-biserial correlation (r)**: Effect size computed as `r = 1 − 2W / [n(n+1)/2]`. Interpretable as the net proportion of pairs favoring one approach.
 
 ## Dependencies
