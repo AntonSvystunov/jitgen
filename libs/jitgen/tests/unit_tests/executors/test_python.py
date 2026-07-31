@@ -1,6 +1,7 @@
 """Tests for InProcPythonExecutor."""
 
 import asyncio
+import sys
 import time
 
 import pytest
@@ -159,17 +160,38 @@ async def test_timeout_still_prompt_on_caller_side():
 
 
 @pytest.mark.asyncio
-async def test_locals_consistent_after_timeout():
-    """_locals is consistent after a timed-out call: no concurrent mutations."""
+async def test_timed_out_statement_does_not_keep_mutating_state():
+    """A timed-out statement is aborted, not left to finish in the background.
+
+    It used to run to completion on the worker thread, so state written *after*
+    the caller had already been told the call timed out still landed in the REPL
+    namespace — a later statement would then observe a value from a statement
+    that had officially failed.  The trailing assignment must not take effect.
+    """
     exec_ = InProcPythonExecutor(timeout=0.1)
-    # Times out at 0.1s; zombie continues and sets x = 99 after 0.2s.
-    await exec_.aexecute("import time; time.sleep(0.2); x = 99")
-    # Wait for the zombie to finish before submitting the next job.
-    await asyncio.sleep(0.3)
-    # Thread is idle now; this job runs immediately and must see x == 99.
-    result = await exec_.aexecute("print(x)")
+    # Times out at 0.1s.  The interrupt is delivered once time.sleep returns,
+    # before the assignment's bytecode runs.
+    result = await exec_.aexecute("import time; time.sleep(0.2); x = 99")
+    assert result.has_timed_out
+
+    await asyncio.sleep(0.4)  # give the interrupted job time to unwind
+    probe = await exec_.aexecute("print('x' in dir())")
+    assert probe.success
+    assert probe.output == "False\n"
+    await exec_.aclose()
+
+
+@pytest.mark.asyncio
+async def test_locals_consistent_after_timeout():
+    """_locals stays usable after a timed-out call: no concurrent mutations."""
+    exec_ = InProcPythonExecutor(timeout=0.1)
+    await exec_.aexecute("before = 1")
+    await exec_.aexecute("import time; time.sleep(0.2)")
+    await asyncio.sleep(0.4)
+
+    result = await exec_.aexecute("print(before)")
     assert result.success
-    assert result.output == "99\n"
+    assert result.output == "1\n"
     await exec_.aclose()
 
 
@@ -201,3 +223,106 @@ async def test_aclose_joins_worker_thread():
     await exec_.aexecute("x = 1")
     await exec_.aclose()
     assert not exec_._thread.is_alive()  # noqa: SLF001
+
+
+# ── runaway code must not wedge the executor ──────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_infinite_loop_is_interrupted_at_timeout():
+    """A ``while True:`` must stop when its budget runs out.
+
+    Without interruption the worker thread spins for the life of the process,
+    burning a core and holding the process-wide stdout redirect.
+    """
+    executor = InProcPythonExecutor(timeout=0.5)
+    result = await executor.aexecute("while True:\n    pass")
+    assert result.has_timed_out
+    assert not result.success
+    await executor.aclose()
+
+
+@pytest.mark.asyncio
+async def test_executor_still_usable_after_a_runaway_job():
+    executor = InProcPythonExecutor(timeout=0.5)
+    await executor.aexecute("while True:\n    pass")
+
+    result = await executor.aexecute("print(6 * 7)")
+    assert result.success
+    assert result.output == "42\n"
+    await executor.aclose()
+
+
+@pytest.mark.asyncio
+async def test_repl_state_survives_an_interrupt():
+    executor = InProcPythonExecutor(timeout=0.5)
+    await executor.aexecute("kept = 'before'")
+    await executor.aexecute("while True:\n    pass")
+
+    result = await executor.aexecute("print(kept)")
+    assert result.output == "before\n"
+    await executor.aclose()
+
+
+@pytest.mark.asyncio
+async def test_std_streams_restored_after_a_runaway_job():
+    """The redirect is process-wide, so a job that never unwinds silently eats
+    every later write in the whole process — progress bars, logs, tracebacks."""
+    # Snapshot rather than compare against sys.__stdout__: pytest's capture has
+    # already swapped the streams, and what matters is that we hand back
+    # whatever was in place before the job ran.
+    stdout_before, stderr_before = sys.stdout, sys.stderr
+    executor = InProcPythonExecutor(timeout=0.5)
+    await executor.aexecute("while True:\n    pass")
+
+    assert sys.stdout is stdout_before
+    assert sys.stderr is stderr_before
+    await executor.aclose()
+
+
+@pytest.mark.asyncio
+async def test_aclose_does_not_hang_on_a_runaway_job():
+    """``aclose`` used to join the worker unboundedly, so a runaway loop hung the
+    caller forever — the whole evaluation would freeze on teardown."""
+    executor = InProcPythonExecutor(timeout=0.5, close_timeout=2.0)
+    await executor.aexecute("while True:\n    pass")
+
+    await asyncio.wait_for(executor.aclose(), timeout=5.0)
+    assert not executor._thread.is_alive()
+
+
+@pytest.mark.asyncio
+async def test_aclose_is_bounded_even_while_code_is_still_running():
+    """Closing mid-execution must interrupt rather than wait it out."""
+    executor = InProcPythonExecutor(timeout=30.0, close_timeout=2.0)
+    task = asyncio.create_task(executor.aexecute("while True:\n    pass"))
+    await asyncio.sleep(0.2)  # let the job reach the worker thread
+
+    await asyncio.wait_for(executor.aclose(), timeout=5.0)
+    task.cancel()
+
+
+@pytest.mark.asyncio
+async def test_acancel_interrupts_running_code():
+    executor = InProcPythonExecutor(timeout=30.0)
+    task = asyncio.create_task(executor.aexecute("while True:\n    pass"))
+    await asyncio.sleep(0.2)
+
+    await executor.acancel()
+    result = await asyncio.wait_for(task, timeout=5.0)
+    assert result.has_cancelled
+    assert not result.success
+    await executor.aclose()
+
+
+@pytest.mark.asyncio
+async def test_interrupt_does_not_leak_into_the_next_statement():
+    """An interrupt landing just as its job finishes must not abort the next one."""
+    executor = InProcPythonExecutor(timeout=30.0)
+    for _ in range(20):
+        await executor.aexecute("y = 1")
+        await executor.acancel()  # races against the job that just completed
+
+    result = await executor.aexecute("print('still here')")
+    assert result.success
+    assert result.output == "still here\n"
+    await executor.aclose()

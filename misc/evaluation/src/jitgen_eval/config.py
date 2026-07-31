@@ -17,6 +17,13 @@ class EvaluationConfig(BaseSettings):
     # Timeout for test case execution in seconds
     test_case_timeout: float = 30.0
 
+    # Max seconds any single generated statement (incremental) or whole program
+    # (sequential) may run before the executor interrupts it.  Must stay well
+    # below test_case_timeout: otherwise a runaway loop is cut off by the
+    # harness's per-chunk timeout instead, which cancels the stream mid-flight
+    # rather than letting the executor report a clean timeout.
+    execution_timeout: float = 10.0
+
     # Maximum number of test cases to execute
     max_test_cases: int | None = None
 

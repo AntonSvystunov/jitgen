@@ -105,6 +105,30 @@ async def timeout_async_iterator(aiter, timeout, task_id=None, status=None):
                 )
 
 
+_JITGEN_ERROR_MARKER = "[JITGen error:"
+
+
+def _extract_inline_error(output: str) -> str | None:
+    """Pull the message out of a ``[JITGen error: ...]`` chunk, if present."""
+    start = output.find(_JITGEN_ERROR_MARKER)
+    if start == -1:
+        return None
+    start += len(_JITGEN_ERROR_MARKER)
+    end = output.find("]", start)
+    return output[start : end if end != -1 else len(output)].strip()
+
+
+def _looks_like_timeout(message: str) -> bool:
+    """Whether *message* describes a timeout.
+
+    Both arms surface timeouts only as text by the time they reach here, and the
+    wording differs between them, so match on either spelling rather than one
+    exact substring.
+    """
+    lowered = message.lower()
+    return "timed out" in lowered or "timeout" in lowered
+
+
 class TestCaseExecutionResult(BaseModel):
     success: bool
     has_timed_out: bool
@@ -173,18 +197,29 @@ async def execute_test_case_with_timeout(
         # A per-chunk timeout truncates the stream; don't report that as success.
         has_timed_out = has_timed_out or status.timed_out
 
+        # The incremental parser reports execution failures *in band*, as a
+        # "[JITGen error: ...]" chunk, instead of raising the way the sequential
+        # chain does.  Without picking that up here, a run whose code timed out
+        # or blew up still lands in the results as a clean success — and the two
+        # arms are not comparable on ErrorOccurred or HasTimedOut.
+        inline_error = _extract_inline_error(output)
+        if inline_error is not None:
+            has_timed_out = has_timed_out or _looks_like_timeout(inline_error)
+
         test_case = case_input["test_output"]
+        failed = has_timed_out or inline_error is not None
 
         return TestCaseExecutionResult(
-            success=not has_timed_out,
+            success=not failed,
             has_timed_out=has_timed_out,
+            error=inline_error,
             output=output,
             first_output_time=first_output_time - start_time
             if first_output_time
             else total_time,
             total_time=total_time,
             expected_output=test_case,
-            actual_output=output if not has_timed_out else None,
+            actual_output=output if not failed else None,
         )
     except Exception as e:
         total_time = time.perf_counter() - start_time
@@ -197,7 +232,7 @@ async def execute_test_case_with_timeout(
         logger.debug("Traceback for task %s", task_id, exc_info=True)
         return TestCaseExecutionResult(
             success=False,
-            has_timed_out="Timeout" in str(e),
+            has_timed_out=_looks_like_timeout(str(e)),
             error=str(e),
             output="",
             first_output_time=first_output_time - start_time

@@ -2,6 +2,7 @@ import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 
+from .config import config
 from .prompt import task_prompt, TaskInput
 
 from langchain_core.runnables import RunnableSerializable
@@ -42,7 +43,7 @@ def create_jitgen_chain(llm: BaseChatModel) -> ChainBundle:
         ChainBundle: The constructed chain and its teardown callback.
     """
 
-    executor = InProcPythonExecutor()
+    executor = InProcPythonExecutor(timeout=config.execution_timeout)
     session = create_python_jitgen(executor=executor)
     stripper = MarkerStripper(start="```python", end="```")
     parser = JITGenParser(session=session, stripper=stripper)
@@ -69,7 +70,7 @@ def create_sync_executor_chain(llm: BaseChatModel) -> ChainBundle:
         ChainBundle: The constructed chain and its teardown callback.
     """
 
-    executor = InProcPythonExecutor()
+    executor = InProcPythonExecutor(timeout=config.execution_timeout)
 
     async def _execute_python_code(text: str) -> str:
         code_block = re.search(r"```python\s+(.*?)```", text, re.DOTALL)
