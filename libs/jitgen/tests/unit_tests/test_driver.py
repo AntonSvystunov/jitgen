@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+
 from jitgen import ExecutionError, ExtractionError, Session, StreamDriver
 from jitgen.segmenters import markdown_code
 

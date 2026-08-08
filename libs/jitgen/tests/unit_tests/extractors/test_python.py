@@ -1,6 +1,7 @@
 import pytest
-from jitgen.extractors.python import PythonLarkExtractor
 from lark import Lark
+
+from jitgen.extractors.python import PythonLarkExtractor
 
 
 class _UnsealedExtractor(PythonLarkExtractor):

@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+
 from jitgen import ExecutionError, ExtractionError, Session, SessionStats
 from jitgen.session import _describe, _may_close_statement
 

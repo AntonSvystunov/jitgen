@@ -2,10 +2,11 @@ import asyncio
 from collections.abc import AsyncIterator
 
 import pytest
-from jitgen import ExecutionResult, PythonLarkExtractor, Session
-from jitgen.executors.base import ExecutorBase
 from lark import Lark
 from lark.indenter import PythonIndenter
+
+from jitgen import ExecutionResult, PythonLarkExtractor, Session
+from jitgen.executors.base import ExecutorBase
 
 
 class FakeExtractor:

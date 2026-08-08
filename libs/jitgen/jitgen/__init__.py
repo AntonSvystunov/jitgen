@@ -9,6 +9,7 @@ from .base import (
 from .driver import StreamDriver
 from .errors import ExecutionError, ExtractionError, JitGenError
 from .executors.base import ExecutorBase
+from .executors.python import InProcPythonExecutor
 from .extractors.lark import LarkStatementExtractor
 from .extractors.python import PythonLarkExtractor
 from .session import Session, SessionStats
@@ -21,6 +22,7 @@ __all__ = [
     "ExecutionResult",
     "ExecutorBase",
     "ExtractionError",
+    "InProcPythonExecutor",
     "JitGenError",
     "LarkStatementExtractor",
     "PythonLarkExtractor",
