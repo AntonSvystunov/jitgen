@@ -12,6 +12,7 @@ from .executors.base import ExecutorBase
 from .executors.python import InProcPythonExecutor
 from .extractors.lark import LarkStatementExtractor
 from .extractors.python import PythonLarkExtractor
+from .prebuilt.python import create_python_session, python_parser
 from .session import Session, SessionStats
 
 __all__ = [
@@ -31,4 +32,6 @@ __all__ = [
     "SourceCode",
     "StatementExtractor",
     "StreamDriver",
+    "create_python_session",
+    "python_parser",
 ]
