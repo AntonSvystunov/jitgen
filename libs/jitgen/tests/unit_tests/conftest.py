@@ -2,8 +2,10 @@ import asyncio
 from collections.abc import AsyncIterator
 
 import pytest
-from jitgen import ExecutionResult, Session
+from jitgen import ExecutionResult, PythonLarkExtractor, Session
 from jitgen.executors.base import ExecutorBase
+from lark import Lark
+from lark.indenter import PythonIndenter
 
 
 class FakeExtractor:
@@ -122,3 +124,24 @@ async def session(
         yield instance
     finally:
         await instance.aclose()
+
+
+@pytest.fixture(scope="session")
+def python_lark_parser() -> Lark:
+    # Session-scoped: building the LALR tables takes ~0.4s and the parser
+    # holds no per-parse state, so every test can safely share one instance.
+    return Lark.open_from_package(
+        "lark",
+        "python.lark",
+        ["grammars"],
+        parser="lalr",
+        postlex=PythonIndenter(),
+        start="file_input",
+        maybe_placeholders=False,
+        propagate_positions=True,
+    )
+
+
+@pytest.fixture
+def python_extractor(python_lark_parser: Lark) -> PythonLarkExtractor:
+    return PythonLarkExtractor(python_lark_parser)
