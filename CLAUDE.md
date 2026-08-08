@@ -12,7 +12,7 @@ The repo is a monorepo shell: currently the only package is `libs/jitgen`. `misc
 
 ## State of the code (read before assuming an API exists)
 
-What exists today is the **core protocol layer plus one concrete segmenter** — there is currently no bundled statement extractor (Lark-based Python grammar) or executor (in-process Python REPL) implementation; `jitgen/extractors/` and `jitgen/executors/` (besides the `ExecutorBase` ABC) are empty. Any `StatementExtractor` or `BaseExecutor` needed for a working end-to-end pipeline must be supplied by the caller against the protocols in `jitgen/base.py`. Do not assume a `create_python_session()`-style factory exists — check first. The two test files under `tests/unit_tests/` are currently empty stubs.
+What exists today is the **core protocol layer plus one concrete segmenter** — there is currently no bundled statement extractor (Lark-based Python grammar) or executor (in-process Python REPL) implementation; `jitgen/extractors/` and `jitgen/executors/` (besides the `ExecutorBase` ABC) are empty. Any `StatementExtractor` or `BaseExecutor` needed for a working end-to-end pipeline must be supplied by the caller against the protocols in `jitgen/base.py`. Do not assume a `create_python_session()`-style factory exists — check first. Because of this, `tests/unit_tests/test_session.py` and `test_driver.py` test `Session`/`StreamDriver` against small hand-written `StatementExtractor`/`BaseExecutor` doubles defined in `tests/unit_tests/conftest.py` (`FakeExtractor`, `FakeExecutor`), not a real grammar or interpreter — reuse those fixtures rather than inventing new doubles when extending these tests.
 
 ## Commands
 
@@ -28,9 +28,16 @@ uv run pytest --cov=jitgen   # with coverage (coverage config omits tests/*)
 
 Requires Python >=3.13. `pyproject.toml` sets `asyncio_mode = "auto"`, so async test functions run without needing `@pytest.mark.asyncio` — relevant here since the whole public surface (`Session`, `StreamDriver`, `ExecutorBase`) is async.
 
-**Known gap:** `pyproject.toml` has no `[build-system]` table, so `uv sync` treats `jitgen` as a virtual project (`source = { virtual = "." }` in `uv.lock`) and never installs it into `.venv` — verified: `uv pip list` shows no `jitgen` entry after `uv sync`. Any test file that does `import jitgen` currently fails collection with `ModuleNotFoundError` when run through `uv run pytest`; this is invisible today only because both existing test files are empty. If you add real tests, either add a `[build-system]`/`[tool.hatch.build]` section so the package installs in editable mode, or otherwise get `libs/jitgen` on `sys.path` — don't assume `import jitgen` just works.
+**Fragile bit:** `pyproject.toml` has no `[build-system]` table, so `uv sync` treats `jitgen` as a virtual project (`source = { virtual = "." }` in `uv.lock`) and never installs it into `.venv` — `uv pip list` shows no `jitgen` entry after `uv sync`. `import jitgen` inside tests works anyway, but only because `tests/__init__.py` *and* `tests/unit_tests/__init__.py` both exist: with that package chain in place, pytest's default (`prepend`) import mode inserts the directory *above* `tests/` — i.e. `libs/jitgen`, which also contains the `jitgen/` source — onto `sys.path`. Losing either `__init__.py`, or adding a test subdirectory without one, silently breaks `import jitgen` again (`ModuleNotFoundError`) without touching any application code. If that recurs, the durable fix is a `[build-system]`/`[tool.hatch.build]` section so the package installs properly instead of relying on this layout quirk.
 
-There is no lint/format command wired into the project's own dependencies — VS Code is configured (`.vscode/settings.json`) to run the `charliermarsh.ruff` extension's formatter/fixers on save, but `ruff` is not a declared dependency, so don't assume `uv run ruff` works in a fresh checkout.
+`ruff` is not a declared project dependency (`uv run ruff` fails), but it's the required linter/formatter — run it via `uvx` (downloads and runs it in an ephemeral environment, no project changes needed) after editing any Python file:
+
+```bash
+uvx ruff format .        # format
+uvx ruff check --fix .   # autofix (import ordering, etc.)
+```
+
+This matches what VS Code already does on save via the `charliermarsh.ruff` extension (`.vscode/settings.json`).
 
 ## Architecture
 
@@ -122,6 +129,7 @@ def send_email(to: str, msg: str, *, priority: str = "normal") -> bool:
     """
 ```
 
+- Do NOT add module-level docstrings (a `"""..."""` at the top of a file, before the imports). If a file needs framing that doesn't belong on a specific class/function, use a regular `#` comment instead.
 - Types go in function signatures, NOT in docstrings.
   - If a default is present, DO NOT repeat it in the docstring unless there is post-processing or it is set conditionally.
 - Focus on "why" rather than "what" in descriptions.
