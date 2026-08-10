@@ -1,41 +1,30 @@
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
-
-from pydantic import BaseModel, Field
 
 SourceCode = str
 
 
-class ExecutionResult(BaseModel):
+@dataclass
+class ExecutionResult:
     """Outcome of running one fragment of source code."""
 
-    success: bool = Field(description="Indicates if the execution was successful")
-    output: str | None = Field(
-        default=None, description="The output (stdout) of the execution, if any"
-    )
-    error: str | None = Field(
-        default=None,
-        description="Any error message (stderr) from the execution, if applicable",
-    )
-    has_timed_out: bool = Field(
-        default=False, description="Indicates if the execution timed out"
-    )
-    has_cancelled: bool = Field(
-        default=False,
-        description="Indicates if the execution was cancelled via acancel()",
-    )
+    success: bool
+    output: str | None = None
+    error: str | None = None
+    has_timed_out: bool = False
+    has_cancelled: bool = False
 
 
-class CodeSegment(BaseModel):
+@dataclass
+class CodeSegment:
     """A slice of code text extracted from the raw model stream.
 
     `end_of_block=True` means this segment closes a complete code block — the
     driver resolves the session and resets for whatever comes next.
     """
 
-    text: str = Field(description="Code text belonging to the current block.")
-    end_of_block: bool = Field(
-        default=False, description="Whether this segment closes the block."
-    )
+    text: str
+    end_of_block: bool = False
 
 
 @runtime_checkable
