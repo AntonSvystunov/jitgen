@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "jitgen",
+    "langsmith>=0.10.17",
     "openai>=2.53.0",
+    "python-dotenv>=1.2.2",
 ]
 
 [tool.uv.sources]
