@@ -1,6 +1,7 @@
 {
     "python.analysis.include": [
         "libs/**",
+        "examples/**",
     ],
     "python.analysis.exclude": [
         "**/node_modules",
