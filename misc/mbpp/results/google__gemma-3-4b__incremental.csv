@@ -1,0 +1,220 @@
+Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,511,0,0,42,2026-08-14T17:22:13.534852+00:00,ok,False,,,False,False,0.5732966000000488,0.4614235000003646,"192
+",192,15,False,301,97,0,398,96
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,511,1,1,42,2026-08-14T17:22:14.108297+00:00,ok,False,,,False,False,0.5555515000000923,0.3371533999998064,"3
+",3,2,False,299,50,0,349,49
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,512,0,2,42,2026-08-14T17:22:14.663972+00:00,ok,False,,,False,False,1.073859099999936,0.5132714999999735,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}
+","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,373,137,0,510,136
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,512,1,3,42,2026-08-14T17:22:15.738140+00:00,ok,False,,,False,False,0.9543825999999171,0.4746541999998044,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}
+","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,374,122,0,496,121
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,513,0,4,42,2026-08-14T17:22:16.692722+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.579331099999763,0.41734309999992547,,,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",False,,,,,52
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,513,1,5,42,2026-08-14T17:22:17.272158+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.5926578000003246,0.4307895000001736,,,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",False,,,,,57
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,514,0,6,42,2026-08-14T17:22:17.864905+00:00,ok,False,,,False,False,0.598715699999957,0.4330598999999893,"21
+",21,21,True,334,57,0,391,56
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,514,1,7,42,2026-08-14T17:22:18.463752+00:00,ok,False,,,False,False,0.6071789999996327,0.4437267999996948,"95
+",95,95,True,334,59,0,393,58
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,515,0,8,42,2026-08-14T17:22:19.071071+00:00,ok,False,,,False,False,1.2430262999996557,0.37455089999957636,"True
+",True,False,False,323,168,0,491,167
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,515,1,9,42,2026-08-14T17:22:20.314327+00:00,ok,False,,,False,False,1.2694810999996662,0.3693527999998878,"True
+",True,False,False,323,180,0,503,179
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,516,0,10,42,2026-08-14T17:22:21.584022+00:00,ok,False,,,False,False,1.41360880000002,0.43278289999989283,"[11, 2, 3, 7, 8, 9]
+","[11, 2, 3, 7, 8, 9]","[2, 3, 7, 8, 9, 11]",False,350,207,0,557,206
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,516,1,11,42,2026-08-14T17:22:22.997858+00:00,error,True,IndexError,IndexError: list assignment index out of range,False,True,1.85946260000037,0.4280952000003708,,,"[12, 24, 26, 29, 36]",False,,,,,296
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,517,0,12,42,2026-08-14T17:22:24.857414+00:00,ok,False,,,False,False,0.6346838999997999,0.4493390000002364,"6
+",6,6,True,319,58,0,377,57
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,517,1,13,42,2026-08-14T17:22:25.492210+00:00,ok,False,,,False,False,0.6265761999998176,0.3733444999998028,"1
+",1,1,True,315,57,0,372,56
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,520,0,14,42,2026-08-14T17:22:26.118924+00:00,ok,False,,,False,False,0.9034244000004037,0.3953053000000182,"24
+",24,24,True,322,112,0,434,111
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,520,1,15,42,2026-08-14T17:22:27.022505+00:00,ok,False,,,False,False,0.9170262000002367,0.4108824999998433,"120
+",120,120,True,326,116,0,442,115
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,522,0,16,42,2026-08-14T17:22:27.939681+00:00,ok,False,,,False,False,1.59627780000028,0.4936203000002024,"6
+",6,6,True,375,223,0,598,222
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,522,1,17,42,2026-08-14T17:22:29.536235+00:00,ok,False,,,False,False,1.4600122000001647,0.4868285000002288,"2
+",2,5,False,373,185,0,558,184
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,524,0,18,42,2026-08-14T17:22:30.996469+00:00,ok,False,,,False,False,1.33280300000024,0.4529552000003605,"22
+",22,22,True,340,175,0,515,174
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,524,1,19,42,2026-08-14T17:22:32.329494+00:00,ok,False,,,False,False,1.122397600000113,0.3400315000003502,"10
+",10,10,True,340,153,0,493,152
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,525,0,20,42,2026-08-14T17:22:33.452084+00:00,ok,False,,,False,False,1.0654252000003908,0.36143840000022465,"True
+",True,False,False,321,139,0,460,138
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,525,1,21,42,2026-08-14T17:22:34.517694+00:00,ok,False,,,False,False,0.9385759000001599,0.3607234999999491,"True
+",True,True,True,316,114,0,430,113
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,526,0,22,42,2026-08-14T17:22:35.456498+00:00,ok,False,,,False,False,1.0079627000000073,0.35982590000003256,"'BigdatA'
+",'BigdatA','BigdatA',True,308,130,0,438,129
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,526,1,23,42,2026-08-14T17:22:36.464675+00:00,ok,False,,,False,False,1.0400650999999925,0.35339269999985845,"'HadooP'
+",'HadooP','HadooP',True,308,130,0,438,129
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,527,0,24,42,2026-08-14T17:22:37.504912+00:00,ok,False,,,False,False,0.8128921000002265,0.40981860000010784,"1
+",1,2,False,337,84,0,421,83
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,527,1,25,42,2026-08-14T17:22:38.317939+00:00,ok,False,,,False,False,0.7858439000001454,0.3999021000004177,"0
+",0,6,False,337,84,0,421,83
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,529,0,26,42,2026-08-14T17:22:39.103932+00:00,ok,False,,,False,False,0.6359575000001314,0.33536929999991116,"5
+",5,5,True,300,59,0,359,58
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,529,1,27,42,2026-08-14T17:22:39.740029+00:00,ok,False,,,False,False,0.7980570999998235,0.3443581000001359,"5
+",5,17,False,300,93,0,393,92
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,532,0,28,42,2026-08-14T17:22:40.538218+00:00,ok,False,,,False,False,1.1655735999997887,0.3461081999998896,"False
+",False,False,True,309,154,0,463,153
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,532,1,29,42,2026-08-14T17:22:41.704018+00:00,ok,False,,,False,False,1.175933299999997,0.35699490000024525,"True
+",True,True,True,310,155,0,465,154
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,533,0,30,42,2026-08-14T17:22:42.880188+00:00,ok,False,,,False,False,0.7354068999998162,0.4430474000000686,"[7, 8, 9]
+","[7, 8, 9]","[7, 8, 9]",True,335,66,0,401,65
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,533,1,31,42,2026-08-14T17:22:43.615749+00:00,ok,False,,,False,False,0.6705874999997832,0.41564889999972365,"[7, 2]
+","[7, 2]","[7, 2]",True,339,70,0,409,69
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,537,0,32,42,2026-08-14T17:22:44.286468+00:00,ok,False,,,False,False,0.635241799999676,0.3567674999999326,,,'None',False,306,62,0,368,61
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,537,1,33,42,2026-08-14T17:22:44.921824+00:00,error,True,RuntimeError,RuntimeError: SystemExit: None,False,False,0.6328481999998985,0.3681415000000925,"'ca'
+",,'ca',False,,,,,64
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,538,0,34,42,2026-08-14T17:22:45.554761+00:00,ok,False,,,False,False,0.49178470000015295,0.37258890000020983,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,327,32,0,359,31
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,538,1,35,42,2026-08-14T17:22:46.046659+00:00,ok,False,,,False,False,0.5036329999998088,0.36505380000016885,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,326,31,0,357,30
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,540,0,36,42,2026-08-14T17:22:46.550407+00:00,ok,False,,,False,False,1.0211984000002303,0.4500935000000936,"3
+",3,3,True,340,119,0,459,118
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,540,1,37,42,2026-08-14T17:22:47.571781+00:00,ok,False,,,False,False,1.0458478000000468,0.4099895999997898,"0
+",0,0,True,330,117,0,447,116
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,541,0,38,42,2026-08-14T17:22:48.617800+00:00,ok,False,,,False,False,0.5402991000000839,0.3505376000002798,"True
+",True,False,False,299,45,0,344,44
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,541,1,39,42,2026-08-14T17:22:49.158221+00:00,ok,False,,,False,False,0.8765563000001748,0.3632361999998466,"True
+",True,True,True,299,92,0,391,91
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,542,0,40,42,2026-08-14T17:22:50.034980+00:00,ok,False,,,False,False,0.5587534000001142,0.33231940000041504,"'Stereo:Sound:Sweatproof'
+",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,329,49,0,378,48
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,542,1,41,42,2026-08-14T17:22:50.593856+00:00,ok,False,,,False,False,0.5026316000003135,0.32609320000028674,"'Probass:Curve:Audio'
+",'Probass:Curve:Audio','Probass:Curve:Audio',True,328,40,0,368,39
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,544,0,42,42,2026-08-14T17:22:51.096626+00:00,ok,False,,,False,False,0.7665953999999147,0.49978120000014314,"'2 3 4 6 9 3 2 2 11'
+",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,368,88,0,456,87
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,544,1,43,42,2026-08-14T17:22:51.863367+00:00,ok,False,,,False,False,0.8457274000002144,0.571537900000294,"'14 21 9 24 19 12 29 23 17'
+",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,375,95,0,470,94
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,545,0,44,42,2026-08-14T17:22:52.709228+00:00,ok,False,,,False,False,0.46540090000007694,0.3610316999997849,"1
+",1,6,False,301,29,0,330,28
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,545,1,45,42,2026-08-14T17:22:53.174731+00:00,ok,False,,,False,False,0.549693699999807,0.3417097999999896,"4
+",4,5,False,301,49,0,350,48
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,547,0,46,42,2026-08-14T17:22:53.724547+00:00,ok,False,,,False,False,0.7044233000001441,0.3525329999997666,"1
+",1,3,False,303,73,0,376,72
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,547,1,47,42,2026-08-14T17:22:54.429094+00:00,ok,False,,,False,False,0.8713779999998224,0.34378990000004706,"7
+",7,8,False,303,98,0,401,97
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,548,0,48,42,2026-08-14T17:22:55.300647+00:00,ok,False,,,False,False,1.265751899999941,0.4649311999996826,"3
+",3,3,True,345,153,0,498,152
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,548,1,49,42,2026-08-14T17:22:56.566630+00:00,ok,False,,,False,False,1.2111550999998144,0.4859421000001021,"4
+",4,4,True,350,153,0,503,152
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,549,0,50,42,2026-08-14T17:22:57.778013+00:00,ok,False,,,False,False,0.666287900000043,0.3377755999999863,"244
+",244,244,True,301,70,0,371,69
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,549,1,51,42,2026-08-14T17:22:58.444435+00:00,ok,False,,,False,False,0.6749724000001152,0.3457051999998839,"3369
+",3369,3369,True,301,70,0,371,69
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,550,0,52,42,2026-08-14T17:22:59.119536+00:00,ok,False,,,False,False,0.5819148999999015,0.4209940999999162,"1
+",1,5,False,323,42,0,365,41
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,550,1,53,42,2026-08-14T17:22:59.701576+00:00,ok,False,,,False,False,0.8809682000000976,0.3821994999998424,"3
+",3,3,True,319,92,0,411,91
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,552,0,54,42,2026-08-14T17:23:00.582703+00:00,ok,False,,,False,False,0.9079845999999634,0.37777139999980136,"'Linear Sequence'
+",'Linear Sequence','Linear Sequence',True,317,108,0,425,107
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,552,1,55,42,2026-08-14T17:23:01.490842+00:00,ok,False,,,False,False,0.7367493000001559,0.37765829999989364,"'Non-linear Sequence'
+",'Non-linear Sequence','Non Linear Sequence',False,317,79,0,396,78
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,553,0,56,42,2026-08-14T17:23:02.227761+00:00,ok,False,,,False,False,0.5191780999998628,0.3552209999998013,"32.6
+",32.6,7.256,False,313,40,0,353,39
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,553,1,57,42,2026-08-14T17:23:02.747049+00:00,ok,False,,,False,False,0.5103674000001774,0.3540002999998251,"131.0
+",131.0,8.123,False,313,37,0,350,36
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,554,0,58,42,2026-08-14T17:23:03.257528+00:00,ok,False,,,False,False,0.6883200000002034,0.4235042999998768,"[11, 13]
+","[11, 13]","[11, 13]",True,325,70,0,395,69
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,554,1,59,42,2026-08-14T17:23:03.945965+00:00,ok,False,,,False,False,0.6434957999999824,0.3857631000000765,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,321,63,0,384,62
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,555,0,60,42,2026-08-14T17:23:04.589594+00:00,ok,False,,,False,False,0.7820903000001636,0.3568551000003026,"210
+",210,210,True,310,85,0,395,84
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,555,1,61,42,2026-08-14T17:23:05.371873+00:00,ok,False,,,False,False,0.7777304999999615,0.3482990000002246,"6
+",6,6,True,310,85,0,395,84
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,556,0,62,42,2026-08-14T17:23:06.149737+00:00,ok,False,,,False,False,0.8121344000001045,0.4201594000001023,"12
+",12,12,True,324,97,0,421,96
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,556,1,63,42,2026-08-14T17:23:06.962017+00:00,ok,False,,,False,False,0.7963161000002401,0.38454730000012205,"2
+",2,2,True,315,93,0,408,92
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,558,0,64,42,2026-08-14T17:23:07.758481+00:00,ok,False,,,False,False,0.46950109999988854,0.3430793000002268,"33
+",33,6,False,302,33,0,335,32
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,558,1,65,42,2026-08-14T17:23:08.228083+00:00,ok,False,,,False,False,0.48174859999971886,0.3508686999998645,"133
+",133,7,False,304,35,0,339,34
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,559,0,66,42,2026-08-14T17:23:08.709950+00:00,ok,False,,,False,False,0.9702622999998312,0.46155880000014804,"8
+",8,8,True,348,128,0,476,127
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,559,1,67,42,2026-08-14T17:23:09.680370+00:00,ok,False,,,False,False,1.0743661999999858,0.4834542999997211,"10
+",10,10,True,348,128,0,476,127
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,560,0,68,42,2026-08-14T17:23:10.754946+00:00,ok,False,,,False,False,0.7350387999999839,0.3996442000002389,"(1, 2, 3, 4, 5, 6)
+","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,359,79,0,438,78
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,560,1,69,42,2026-08-14T17:23:11.490191+00:00,ok,False,,,False,False,0.8327075000001969,0.43142340000031254,"(11, 12, 13, 14, 15, 16, 17)
+","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,367,88,0,455,87
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,561,0,70,42,2026-08-14T17:23:12.323090+00:00,ok,False,,,False,False,1.0183670999999777,0.7736265000003186,"{6: [4], 4: [9], 9: [4, 5], 3: [8], 8: [], 5: []}
+","{6: [4], 4: [9], 9: [4, 5], 3: [8], 8: [], 5: []}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",True,395,104,0,499,103
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,561,1,71,42,2026-08-14T17:23:13.341674+00:00,ok,False,,,False,False,0.9828153000003113,0.7067304000001968,"{6: [2, 8], 2: [], 8: [], 4: [9, 9], 9: [], 3: [7], 7: []}
+","{6: [2, 8], 2: [], 8: [], 4: [9, 9], 9: [], 3: [7], 7: []}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",True,395,104,0,499,103
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,562,0,72,42,2026-08-14T17:23:14.324667+00:00,ok,False,,,False,False,0.7208063999996739,0.6593706999997266,"3
+",3,3,True,323,67,0,390,66
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,562,1,73,42,2026-08-14T17:23:15.045652+00:00,ok,False,,,False,False,0.9911784000000807,0.7252634000001308,"5
+",5,5,True,340,102,0,442,101
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,564,0,74,42,2026-08-14T17:23:16.036985+00:00,ok,False,,,False,False,0.7813562999999704,0.6632497999999032,"0
+",0,0,True,311,77,0,388,76
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,564,1,75,42,2026-08-14T17:23:16.818498+00:00,ok,False,,,False,False,0.8014509999998154,0.6737072999999327,"10
+",10,10,True,313,80,0,393,79
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,565,0,76,42,2026-08-14T17:23:17.620125+00:00,ok,False,,,False,False,0.6433772999998837,0.35754469999983485,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,312,25,0,337,24
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,565,1,77,42,2026-08-14T17:23:18.263615+00:00,ok,False,,,False,False,0.7689761000001454,0.4647013999997398,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,312,29,0,341,28
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,571,0,78,42,2026-08-14T17:23:19.032695+00:00,ok,False,,,False,False,1.10811509999985,0.7973066999998082,"0
+",0,25,False,355,110,0,465,109
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,571,1,79,42,2026-08-14T17:23:20.140998+00:00,ok,False,,,False,False,1.0730177000000367,0.8057208000000173,"6
+",6,21,False,356,104,0,460,103
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,572,0,80,42,2026-08-14T17:23:21.214190+00:00,ok,False,,,False,False,0.7788734999999178,0.7035255000000689,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 3, 4, 5]",False,330,78,0,408,77
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,572,1,81,42,2026-08-14T17:23:21.993219+00:00,ok,False,,,False,False,0.7241084000002047,0.7204768999999942,"[1, 3, 5]
+","[1, 3, 5]","[1, 2, 3, 4, 5]",False,328,51,0,379,50
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,573,0,82,42,2026-08-14T17:23:22.717466+00:00,ok,False,,,False,False,0.8170767000001433,0.5286608000001252,"6
+",6,6,True,348,56,0,404,55
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,573,1,83,42,2026-08-14T17:23:23.534677+00:00,ok,False,,,False,False,0.8329742999999326,0.8236269999997603,"0
+",0,0,True,354,62,0,416,61
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,575,0,84,42,2026-08-14T17:23:24.367784+00:00,ok,False,,,False,False,0.819156699999894,0.45493509999960224,"3
+",3,11,False,318,66,0,384,65
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,575,1,85,42,2026-08-14T17:23:25.187117+00:00,ok,False,,,False,False,0.7869809999997415,0.44260739999981524,"1
+",1,16,False,319,57,0,376,56
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,576,0,86,42,2026-08-14T17:23:25.974221+00:00,ok,False,,,False,False,0.8208392000001368,0.5161074000002372,"False
+",False,True,False,326,50,0,376,49
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,577,0,87,42,2026-08-14T17:23:26.795207+00:00,ok,False,,,False,False,0.8073966000001747,0.4595172999997885,"0
+",0,0,True,300,53,0,353,52
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,577,1,88,42,2026-08-14T17:23:27.602729+00:00,ok,False,,,False,False,0.7930056999998669,0.45517729999983203,"0
+",0,0,True,300,53,0,353,52
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,579,0,89,42,2026-08-14T17:23:28.395863+00:00,ok,False,,,False,False,0.8050536999999167,0.5145508000000518,"[1, 4, 7, 9]
+","[1, 4, 7, 9]","(1, 4, 7, 9)",False,354,66,0,420,65
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,579,1,90,42,2026-08-14T17:23:29.201090+00:00,ok,False,,,False,False,0.8539866999999504,0.7688720999999532,"[34, 36, 11, 25]
+","[34, 36, 11, 25]","(34, 36, 11, 25)",False,362,74,0,436,73
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,580,0,91,42,2026-08-14T17:23:30.055219+00:00,error,True,NameError,NameError: name 'even_elements_helper' is not defined,False,True,0.9937593999998171,0.7048612999997204,,,"(6, (8, (4, 8)))",False,,,,,104
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,580,1,92,42,2026-08-14T17:23:31.049103+00:00,ok,False,,,False,False,1.0495896000002176,0.6549103000002106,"[6, 8, 4, 6, 8, 10]
+","[6, 8, 4, 6, 8, 10]","(6, (8, (4, 6)), 8, 10)",False,359,119,0,478,118
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,581,0,93,42,2026-08-14T17:23:32.098957+00:00,ok,False,,,False,False,0.8994281999998748,0.3934444999999869,"89.03124237432849
+",89.03124237432849,56,False,302,92,0,394,91
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,581,1,94,42,2026-08-14T17:23:32.998550+00:00,ok,False,,,False,False,0.9164704999998321,0.43828419999999824,"8.47213595499958
+",8.47213595499958,5,False,302,85,0,387,84
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,584,0,95,42,2026-08-14T17:23:33.915185+00:00,ok,False,,,False,False,1.0166355999999723,0.4212016000001313,"['28-36: carefuly']
+",['28-36: carefuly'],'28-36: carefuly',False,323,101,0,424,100
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,584,1,96,42,2026-08-14T17:23:34.932062+00:00,ok,False,,,False,False,0.9323742999999922,0.34990109999989727,"['18-25: quickly']
+",['18-25: quickly'],'18-25: quickly',False,321,99,0,420,98
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,586,0,97,42,2026-08-14T17:23:35.864594+00:00,ok,False,,,False,False,0.7257176000002801,0.6993962000001375,"[2, 3, 4, 1]
+","[2, 3, 4, 1]","[2, 3, 4, 1]",True,348,65,0,413,64
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,586,1,98,42,2026-08-14T17:23:36.590508+00:00,ok,False,,,False,False,0.8751462000000174,0.8145684000000983,"[3, 4, 5, 6, 7, 0, 1, 2]
+","[3, 4, 5, 6, 7, 0, 1, 2]","[3, 4, 5, 6, 7, 0, 1, 2]",True,356,77,0,433,76
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,588,0,99,42,2026-08-14T17:23:37.465851+00:00,ok,False,,,False,False,0.7993986999999834,0.43608960000028674,"8
+",8,8,True,314,73,0,387,72
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,588,1,100,42,2026-08-14T17:23:38.265430+00:00,ok,False,,,False,False,0.814509000000271,0.44659309999997276,"7
+",7,7,True,313,72,0,385,71
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,591,0,101,42,2026-08-14T17:23:39.080108+00:00,ok,False,,,False,False,0.7501871999998002,0.4442414000000099,"[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,339,43,0,382,42
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,591,1,102,42,2026-08-14T17:23:39.830432+00:00,ok,False,,,False,False,0.803408500000387,0.5106201000003239,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,339,43,0,382,42
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,592,0,103,42,2026-08-14T17:23:40.633987+00:00,error,True,ZeroDivisionError,ZeroDivisionError: integer division or modulo by zero,False,True,0.8119722999999794,0.4698473000003105,,,56,False,,,,,56
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,592,1,104,42,2026-08-14T17:23:41.446038+00:00,error,True,NameError,NameError: name 'combinations' is not defined,False,False,0.8076398999996854,0.4560343999996803,,,1,False,,,,,53
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,595,0,105,42,2026-08-14T17:23:42.253766+00:00,ok,False,,,False,False,0.8298011000001679,0.4750290000001769,"6
+",6,'Not Possible',False,318,68,0,386,67
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,595,1,106,42,2026-08-14T17:23:43.083744+00:00,ok,False,,,False,False,0.7717576999998528,0.46060869999973875,"1
+",1,'Not Possible',False,318,59,0,377,58
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,596,0,107,42,2026-08-14T17:23:43.855637+00:00,ok,False,,,False,False,0.7644293999996989,0.7600310999996509,"6
+",6,88,False,334,48,0,382,47
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,596,1,108,42,2026-08-14T17:23:44.620227+00:00,ok,False,,,False,False,0.7739152999997714,0.7686804999998458,"4
+",4,72,False,337,55,0,392,54
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,597,0,109,42,2026-08-14T17:23:45.394308+00:00,ok,False,,,False,False,1.9208612000002177,0.7617040999998608,"None
+",None,256,False,396,249,0,645,248
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,597,1,110,42,2026-08-14T17:23:47.315465+00:00,ok,False,,,False,False,1.642340299999887,0.6938122999999905,"7
+",7,8,False,367,212,0,579,211
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,600,0,111,42,2026-08-14T17:23:48.958109+00:00,ok,False,,,False,False,0.7461530000000494,0.4661767000002328,"True
+",True,True,True,301,33,0,334,32
+google/gemma-3-4b,gemma-3-4b (lmstudio),lmstudio,incremental,600,1,112,42,2026-08-14T17:23:49.704383+00:00,ok,False,,,False,False,0.7679887000003873,0.45319100000006074,"False
+",False,False,True,301,37,0,338,36
