@@ -1,0 +1,11 @@
+Model,Paired Runs,Aborted Runs,Overall Savings (%),Aborted-Run Savings (%)
+gemma-3-4b (lmstudio),113,5,0.9,13.74
+gemma-4-e4b (lmstudio),113,0,0.0,N/A
+llama3.2 (ollama),113,9,0.82,7.33
+mistral-nemo-12b (ollama),113,10,1.6,15.24
+gpt-oss-20b (lmstudio),113,0,0.0,N/A
+Phi-4 (ollama),113,1,0.0,0.0
+qwen3-30b-a3b (ollama),113,0,0.21,N/A
+smollm2-1.7b (ollama),113,15,1.15,12.73
+codeact-mistral (ollama),113,13,2.4,15.98
+zephyr-7b (ollama),113,54,48.55,72.59

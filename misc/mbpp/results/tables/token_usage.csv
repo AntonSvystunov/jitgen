@@ -1,0 +1,21 @@
+Model,Strategy,N,Early Exits,Input Tokens Mean,Input Tokens Sum,Output Tokens Mean,Output Tokens Sum,Total Tokens Mean,Total Tokens Sum,Reasoning Tokens Mean,Reasoning Tokens Sum
+gemma-3-4b (lmstudio),Incremental,113,5,328.75,34847,88.48,9379,417.23,44226,0.0,0
+gemma-3-4b (lmstudio),Sequential,113,0,329.22,37202,89.89,10158,419.12,47360,0.0,0
+gemma-4-e4b (lmstudio),Incremental,113,0,334.47,37461,1263.38,141498,1597.85,178959,1125.1,126011
+gemma-4-e4b (lmstudio),Sequential,113,0,334.22,37767,1254.91,141805,1589.13,179572,1117.14,126237
+llama3.2 (ollama),Incremental,113,9,321.6,33446,60.35,6276,381.94,39722,N/A,N/A
+llama3.2 (ollama),Sequential,113,0,323.29,36532,62.54,7067,385.83,43599,N/A,N/A
+mistral-nemo-12b (ollama),Incremental,113,10,300.42,30943,56.24,5793,356.66,36736,N/A,N/A
+mistral-nemo-12b (ollama),Sequential,113,0,302.42,34173,57.38,6484,359.8,40657,N/A,N/A
+gpt-oss-20b (lmstudio),Incremental,113,0,370.3,41844,262.42,29654,632.73,71498,180.85,20436
+gpt-oss-20b (lmstudio),Sequential,113,0,370.3,41844,262.42,29654,632.73,71498,180.85,20436
+Phi-4 (ollama),Incremental,113,1,314.48,35222,77.4,8669,391.88,43891,N/A,N/A
+Phi-4 (ollama),Sequential,113,0,314.29,35515,77.2,8724,391.5,44239,N/A,N/A
+qwen3-30b-a3b (ollama),Incremental,113,0,317.9,35605,2538.05,284262,2855.96,319867,N/A,N/A
+qwen3-30b-a3b (ollama),Sequential,113,0,317.9,35605,2538.05,284262,2855.96,319867,N/A,N/A
+smollm2-1.7b (ollama),Incremental,113,15,341.26,32761,81.61,7835,422.88,40596,N/A,N/A
+smollm2-1.7b (ollama),Sequential,113,0,344.92,38631,85.82,9612,430.74,48243,N/A,N/A
+codeact-mistral (ollama),Incremental,113,13,362.75,36275,82.37,8237,445.12,44512,N/A,N/A
+codeact-mistral (ollama),Sequential,113,0,362.82,40999,85.75,9690,448.58,50689,N/A,N/A
+zephyr-7b (ollama),Incremental,113,54,379.43,21248,212.84,11919,592.27,33167,N/A,N/A
+zephyr-7b (ollama),Sequential,113,0,376.64,42184,249.88,27987,626.53,70171,N/A,N/A

@@ -1,0 +1,178 @@
+Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,511,0,0,42,2026-08-15T15:57:33.488914+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.5255584000005911,0.5168503999993845,,,15,False,,,,,71
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,511,1,1,42,2026-08-15T15:57:34.014601+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7149485999998433,0.41574669999863545,,,2,False,,,,,69
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,512,0,2,42,2026-08-15T15:57:34.729663+00:00,ok,False,,,False,False,1.783920500000022,0.5299242000000959,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}
+","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,420,232,,652,231
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,512,1,3,42,2026-08-15T15:57:36.513849+00:00,ok,False,,,False,False,1.5541254999989178,0.5294508999995742,"{7: 2, 8: 2, (7, 8): 1, 9: 1, (10, 11): 1, 10: 1, 11: 2}
+","{7: 2, 8: 2, (7, 8): 1, 9: 1, (10, 11): 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",False,421,196,,617,195
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,513,0,4,42,2026-08-15T15:57:38.068226+00:00,ok,False,,,False,False,0.8170573000006698,0.46293340000011085,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']
+","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",True,413,80,,493,79
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,513,1,5,42,2026-08-15T15:57:38.885434+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.8186506999991252,0.48331189999953494,,,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",False,,,,,84
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,514,0,6,42,2026-08-15T15:57:39.704187+00:00,ok,False,,,False,False,1.4507699000005232,0.4937091000010696,"21
+21
+",21,21,True,382,179,,561,178
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,514,1,7,42,2026-08-15T15:57:41.155199+00:00,ok,False,,,False,False,1.5717626000005112,0.47657080000135466,"95
+95
+",95,95,True,382,204,,586,203
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,515,0,8,42,2026-08-15T15:57:42.727177+00:00,error,True,SyntaxError,"SyntaxError: 'return' outside function (<string>, line 1)",False,True,1.6511940000000322,0.3994423000003735,,,False,False,,,,,212
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,515,1,9,42,2026-08-15T15:57:44.378448+00:00,ok,False,,,False,False,1.4891478999998071,0.3878621000003477,"False
+",False,False,True,370,191,,561,190
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,516,0,10,42,2026-08-15T15:57:45.867801+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.6640909999987343,1.4590130999986286,,,"[2, 3, 7, 8, 9, 11]",False,,,,,211
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,516,1,11,42,2026-08-15T15:57:47.531990+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.5585277999998652,1.3455820999988646,,,"[12, 24, 26, 29, 36]",False,,,,,199
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,517,0,12,42,2026-08-15T15:57:49.090622+00:00,ok,False,,,False,False,1.2601159999994707,0.47921970000061265,"6
+6
+",6,6,True,365,150,,515,149
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,517,1,13,42,2026-08-15T15:57:50.350903+00:00,ok,False,,,False,False,0.7315774999988207,0.4184695999992982,"1
+",1,1,True,361,71,,432,70
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,520,0,14,42,2026-08-15T15:57:51.082613+00:00,error,True,ZeroDivisionError,ZeroDivisionError: integer modulo by zero,False,True,0.8741167999996833,0.43518519999997807,,,24,False,,,,,92
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,520,1,15,42,2026-08-15T15:57:51.956817+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.1287228999990475,0.46415849999903,,,120,False,,,,,131
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,522,0,16,42,2026-08-15T15:57:53.085644+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,2.3013082000015856,0.5777703000003385,,,6,False,,,,,318
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,522,1,17,42,2026-08-15T15:57:55.387055+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,3.6602644000013242,0.46020560000033583,,,5,False,,,,,526
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,524,0,18,42,2026-08-15T15:57:59.047432+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.1990483999998105,0.39793960000133666,,,22,False,,,,,137
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,524,1,19,42,2026-08-15T15:58:00.246582+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.422045999999682,0.4291317000006529,,,10,False,,,,,179
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,525,0,20,42,2026-08-15T15:58:01.668724+00:00,ok,False,,,False,False,3.028612999998586,1.9002120999994077,"Not Parallel
+",Not Parallel,False,False,367,424,,791,423
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,525,1,21,42,2026-08-15T15:58:04.697674+00:00,error,True,ZeroDivisionError,ZeroDivisionError: division by zero,False,True,1.3899265000000014,1.1277465000002849,,,True,False,,,,,173
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,526,0,22,42,2026-08-15T15:58:06.087704+00:00,error,True,TypeError,"TypeError: replace() argument 2 must be str, not function",False,True,0.7947149999999965,0.37708679999923334,,,'BigdatA',False,,,,,77
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,526,1,23,42,2026-08-15T15:58:06.882542+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.2141006999991077,0.3934116999989783,,,'HadooP',False,,,,,148
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,527,0,24,42,2026-08-15T15:58:08.096732+00:00,error,True,NameError,NameError: name 'I' is not defined,False,False,1.5546426000000793,0.430877300001157,,,2,False,,,,,195
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,527,1,25,42,2026-08-15T15:58:09.651467+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7943128000006254,0.40678440000010596,,,6,False,,,,,79
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,529,0,26,42,2026-08-15T15:58:10.445881+00:00,ok,False,,,False,False,2.382051999999021,0.45030819999919913,"1
+",1,5,False,350,327,,677,326
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,529,1,27,42,2026-08-15T15:58:12.828396+00:00,ok,False,,,False,False,2.7078712999991694,0.46211140000013984,"5
+",5,17,False,350,376,,726,375
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,532,0,28,42,2026-08-15T15:58:15.536644+00:00,ok,False,,,False,False,1.9637402000007569,0.39887180000005173,"False
+False
+",False,False,True,358,264,,622,263
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,532,1,29,42,2026-08-15T15:58:17.500685+00:00,ok,False,,,False,False,2.02799369999957,0.3931505999989895,"True
+True
+",True,True,True,361,275,,636,274
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,533,0,30,42,2026-08-15T15:58:19.528969+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7513756999996986,0.4529834999993909,,,"[7, 8, 9]",False,,,,,71
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,533,1,31,42,2026-08-15T15:58:20.280413+00:00,ok,False,,,False,False,0.6421192000016163,0.4550079000000551,"[1.1, 2.2]
+","[1.1, 2.2]","[7, 2]",False,385,52,,437,51
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,537,0,32,42,2026-08-15T15:58:20.922662+00:00,error,True,NameError,NameError: name 'i' is not defined,False,False,0.7210441999995965,0.36975600000005215,,,'None',False,,,,,67
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,537,1,33,42,2026-08-15T15:58:21.643810+00:00,error,True,NameError,NameError: name 'i' is not defined,False,False,0.7351882999992085,0.40828250000049593,,,'ca',False,,,,,70
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,538,0,34,42,2026-08-15T15:58:22.379103+00:00,ok,False,,,False,False,1.6274026999999478,0.39786170000115817,"('b',)
+","('b',)","('b', 'i', 'g', 'd', 'a', 't', 'a')",False,374,203,,577,202
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,538,1,35,42,2026-08-15T15:58:24.006767+00:00,ok,False,,,False,False,1.4332895999996254,0.3770628000002034,"('l',)
+","('l',)","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",False,373,181,,554,180
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,540,0,36,42,2026-08-15T15:58:25.440280+00:00,ok,False,,,False,False,1.1622310999991896,0.5362303999991127,"-4
+",-4,3,False,386,135,,521,134
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,540,1,37,42,2026-08-15T15:58:26.602715+00:00,error,True,ValueError,ValueError: max() iterable argument is empty,False,True,0.9159572000007756,0.42992080000112765,,,0,False,,,,,99
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,541,0,38,42,2026-08-15T15:58:27.518781+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.6773503999993409,0.43065310000019963,,,False,False,,,,,56
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,541,1,39,42,2026-08-15T15:58:28.196242+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.6648543999999674,0.3653591999991477,,,True,False,,,,,57
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,542,0,40,42,2026-08-15T15:58:28.861214+00:00,ok,False,,,False,False,0.7441596999997273,0.35228359999928216,"Stereo:Sound:Sweatproof
+",Stereo:Sound:Sweatproof,'Stereo:Sound:Sweatproof',False,391,72,,463,71
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,542,1,41,42,2026-08-15T15:58:29.605528+00:00,ok,False,,,False,False,0.7256006999996316,0.3564430000005814,"Probass:Curve:Audio
+",Probass:Curve:Audio,'Probass:Curve:Audio',False,389,67,,456,66
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,544,0,42,42,2026-08-15T15:58:30.331256+00:00,ok,False,,,False,False,0.9940473999995447,0.5555977999993047,"2 3 4 6 9 3 2 2 11
+",2 3 4 6 9 3 2 2 11,'2 3 4 6 9 3 2 2 11',False,417,110,,527,109
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,544,1,43,42,2026-08-15T15:58:31.325457+00:00,ok,False,,,False,False,1.0957806999995228,0.6124579000006634,"14 21 9 24 19 12 29 23 17
+",14 21 9 24 19 12 29 23 17,'14 21 9 24 19 12 29 23 17',False,424,124,,548,123
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,545,0,44,42,2026-08-15T15:58:32.421404+00:00,ok,False,,,False,False,1.880399400000897,0.378999800001111,"16399
+",16399,6,False,348,245,,593,240
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,545,1,45,42,2026-08-15T15:58:34.302061+00:00,ok,False,,,False,False,2.511214899999686,0.3784940000005008,"16
+",16,5,False,348,350,,698,349
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,547,0,46,42,2026-08-15T15:58:36.813683+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.729368300000715,0.3883368999995582,,,3,False,,,,,67
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,547,1,47,42,2026-08-15T15:58:37.543170+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.6991854000007152,0.3578925000001618,,,8,False,,,,,61
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,548,0,48,42,2026-08-15T15:58:38.242426+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.1410419999992882,0.521223399999144,,,3,False,,,,,130
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,548,1,49,42,2026-08-15T15:58:39.383595+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.2247359000011784,0.5479900000009366,,,4,False,,,,,145
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,549,0,50,42,2026-08-15T15:58:40.608452+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.5780317999997351,0.36593619999985094,,,244,False,,,,,41
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,549,1,51,42,2026-08-15T15:58:41.186585+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.5644623000007414,0.36212479999994684,,,3369,False,,,,,41
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,550,0,52,42,2026-08-15T15:58:41.751164+00:00,error,True,SyntaxError,"SyntaxError: 'return' outside function (<string>, line 4)",False,True,1.152955600000496,0.45629290000033507,,,5,False,,,,,135
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,550,1,53,42,2026-08-15T15:58:42.904219+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.1838792999988073,0.40875429999869084,,,3,False,,,,,140
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,552,0,54,42,2026-08-15T15:58:44.088208+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7417260000001988,0.38824250000106986,,,'Linear Sequence',False,,,,,72
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,552,1,55,42,2026-08-15T15:58:44.830013+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7829785000012635,0.41548880000118515,,,'Non Linear Sequence',False,,,,,78
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,553,0,56,42,2026-08-15T15:58:45.613085+00:00,ok,False,,,False,False,1.5298192000009294,0.4091091999998753,"9.56
+9.56
+",9.56,7.256,False,359,196,,555,195
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,553,1,57,42,2026-08-15T15:58:47.143140+00:00,ok,False,,,False,False,1.712977499999397,0.38988959999915096,"9.23
+",9.23,8.123,False,359,229,,588,228
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,554,0,58,42,2026-08-15T15:58:48.856367+00:00,ok,False,,,False,False,0.6403508000003058,0.44908509999913804,"[11, 13]
+","[11, 13]","[11, 13]",True,371,52,,423,51
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,554,1,59,42,2026-08-15T15:58:49.496843+00:00,ok,False,,,False,False,0.6146682999988116,0.41669029999866325,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,367,48,,415,47
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,555,0,60,42,2026-08-15T15:58:50.111620+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7252824000006513,0.3625363999999536,,,210,False,,,,,71
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,555,1,61,42,2026-08-15T15:58:50.836991+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7100282000010338,0.3637244000001374,,,6,False,,,,,63
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,556,0,62,42,2026-08-15T15:58:51.547094+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.357829500000662,0.3894428000003245,,,12,False,,,,,163
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,556,1,63,42,2026-08-15T15:58:52.905032+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.8980342000013479,0.43484650000027614,,,2,False,,,,,94
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,558,0,64,42,2026-08-15T15:58:53.803178+00:00,ok,False,,,False,False,1.8200665000003937,0.4207107999991422,"6
+",6,6,True,349,243,,592,242
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,558,1,65,42,2026-08-15T15:58:55.623479+00:00,ok,False,,,False,False,1.91887990000032,0.43479490000027,"7
+",7,7,True,351,253,,604,252
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,559,0,66,42,2026-08-15T15:58:57.542629+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.8346291000016208,0.40264160000151605,,,8,False,,,,,79
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,559,1,67,42,2026-08-15T15:58:58.377369+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.029022000000623,0.4858593999997538,,,10,False,,,,,116
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,560,0,68,42,2026-08-15T15:58:59.406460+00:00,ok,False,,,False,False,1.4677999000014097,0.4168299000011757,"[1, 2, 3, 4, 5, 6]
+[1, 2, 3, 4, 5, 6]
+","[1, 2, 3, 4, 5, 6]","(1, 2, 3, 4, 5, 6)",False,409,188,,597,187
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,560,1,69,42,2026-08-15T15:59:00.874476+00:00,ok,False,,,False,False,1.8196709000003466,0.46823050000057265,"[11, 12, 13, 14, 15, 16, 17]
+[11, 12, 13, 14, 15, 16, 17]
+","[11, 12, 13, 14, 15, 16, 17]","(11, 12, 13, 14, 15, 16, 17)",False,417,233,,650,232
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,561,0,70,42,2026-08-15T15:59:02.694413+00:00,ok,False,,,False,False,1.3442462000002706,0.581208700001298,"{6: [4], 4: [6, 9, 9], 9: [4, 4, 5], 3: [8], 8: [3], 5: [9]}
+","{6: [4], 4: [6, 9, 9], 9: [4, 4, 5], 3: [8], 8: [3], 5: [9]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,445,162,,607,161
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,561,1,71,42,2026-08-15T15:59:04.038867+00:00,ok,False,,,False,False,2.5422137000005023,0.5560717999996996,"{6: [2, 8], 2: [6], 8: [6], 4: [9, 9], 9: [4, 4], 3: [7], 7: [3]}
+","{6: [2, 8], 2: [6], 8: [6], 4: [9, 9], 9: [4, 4], 3: [7], 7: [3]}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",False,445,353,,798,352
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,562,0,72,42,2026-08-15T15:59:06.581455+00:00,ok,False,,,False,False,0.9244607999989967,0.5728640999986965,"3
+",3,3,True,373,86,,459,85
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,562,1,73,42,2026-08-15T15:59:07.506057+00:00,ok,False,,,False,False,0.9343004999991535,0.5827899999985675,"5
+",5,5,True,391,98,,489,97
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,564,0,74,42,2026-08-15T15:59:08.440508+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7249627000001055,0.3999609000002238,,,0,False,,,,,69
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,564,1,75,42,2026-08-15T15:59:09.165586+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.7495431999996072,0.42079820000071777,,,10,False,,,,,73
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,565,0,76,42,2026-08-15T15:59:09.915228+00:00,ok,False,,,False,False,0.4643617000001541,0.36870189999899594,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,359,25,,384,24
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,565,1,77,42,2026-08-15T15:59:10.379680+00:00,ok,False,,,False,False,0.45281900000009045,0.36937140000009094,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,359,25,,384,24
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,571,0,78,42,2026-08-15T15:59:10.832585+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.3211900000005699,0.44752650000009453,,,25,False,,,,,159
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,571,1,79,42,2026-08-15T15:59:12.153873+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.5262129999991885,0.48275590000048396,,,21,False,,,,,186
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,572,0,80,42,2026-08-15T15:59:13.680176+00:00,ok,False,,,False,False,2.024896999999328,0.9560877999992954,"[[1, 2, 3, 4, 5], [6, 7, 8, 5, 4], [9, 10, 8, 7, 6, 5]]
+","[[1, 2, 3, 4, 5], [6, 7, 8, 5, 4], [9, 10, 8, 7, 6, 5]]","[1, 3, 4, 5]",False,376,266,,642,265
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,572,1,81,42,2026-08-15T15:59:15.705352+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.064194000000498,0.443408900000577,,,"[1, 2, 3, 4, 5]",False,,,,,120
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,573,0,82,42,2026-08-15T15:59:16.769628+00:00,ok,False,,,False,False,1.908184900001288,0.44755300000178977,"6
+",6,6,True,396,252,,648,251
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,573,1,83,42,2026-08-15T15:59:18.678102+00:00,ok,False,,,False,False,2.072408500000165,0.4473643000001175,"0
+",0,0,True,401,279,,680,278
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,575,0,84,42,2026-08-15T15:59:20.750828+00:00,ok,False,,,False,False,2.16653419999966,0.45112329999938083,"4
+",4,11,False,365,292,,657,291
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,575,1,85,42,2026-08-15T15:59:22.917663+00:00,ok,False,,,False,False,1.8400646999998571,0.4531678000003012,"5
+",5,16,False,366,239,,605,238
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,576,0,86,42,2026-08-15T15:59:24.757999+00:00,error,True,SyntaxError,"SyntaxError: 'return' outside function (<string>, line 4)",False,True,1.3458781999997882,0.4189982999996573,,,True,False,,,,,160
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,577,0,87,42,2026-08-15T15:59:26.103984+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.6378270000004704,0.42953990000023623,,,0,False,,,,,51
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,577,1,88,42,2026-08-15T15:59:26.741912+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.5938253000003897,0.41112280000015744,,,0,False,,,,,47
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,579,0,89,42,2026-08-15T15:59:27.335952+00:00,ok,False,,,False,False,1.6117178999993484,0.5500082999988081,"[1, 4, 9, 7]
+","[1, 4, 9, 7]","(1, 4, 7, 9)",False,403,203,,606,202
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,579,1,90,42,2026-08-15T15:59:28.947904+00:00,ok,False,,,False,False,1.8389838000002783,0.5929157999999006,"[34, 36, 11, 25]
+","[34, 36, 11, 25]","(34, 36, 11, 25)",False,411,235,,646,234
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,580,0,91,42,2026-08-15T15:59:30.787191+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for %: 'tuple' and 'int',False,True,0.9332623999998759,0.49820980000004056,,,"(6, (8, (4, 8)))",False,,,,,97
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,580,1,92,42,2026-08-15T15:59:31.720527+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for %: 'tuple' and 'int',False,True,0.9129543999988528,0.4850923999983934,,,"(6, (8, (4, 6)), 8, 10)",False,,,,,98
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,581,0,93,42,2026-08-15T15:59:32.633560+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.6154699999988225,0.3685031999993953,,,56,False,,,,,52
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,581,1,94,42,2026-08-15T15:59:33.249181+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.6433594999998604,0.3696414000005461,,,5,False,,,,,52
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,584,0,95,42,2026-08-15T15:59:33.892623+00:00,ok,False,,,False,False,13.132307600000786,,,,'28-36: carefuly',False,373,1981,,2354,1977
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,584,1,96,42,2026-08-15T15:59:47.026536+00:00,ok,False,,,False,False,1.0864202000011574,,,,'18-25: quickly',False,370,115,,485,114
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,586,0,97,42,2026-08-15T15:59:48.113144+00:00,ok,False,,,False,False,1.6853783000005933,0.4590690999993967,"[1, 2, 3, 4]
+","[1, 2, 3, 4]","[2, 3, 4, 1]",False,395,219,,614,218
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,586,1,98,42,2026-08-15T15:59:49.798778+00:00,error,True,NameError,NameError: name 'k' is not defined,False,True,0.6339325999997527,0.5075854000006075,,,"[3, 4, 5, 6, 7, 0, 1, 2]",False,,,,,54
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,588,0,99,42,2026-08-15T15:59:50.432819+00:00,ok,False,,,False,False,0.6523077999991074,0.4203489999999874,"8
+",8,8,True,360,52,,412,51
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,588,1,100,42,2026-08-15T15:59:51.085444+00:00,ok,False,,,False,False,0.7804498999994394,0.3813140999991447,"7
+",7,7,True,359,76,,435,74
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,591,0,101,42,2026-08-15T15:59:51.866052+00:00,ok,False,,,False,False,1.161772600000404,0.4103293999996822,"[3, 2, 1]
+[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,386,135,,521,134
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,591,1,102,42,2026-08-15T15:59:53.028038+00:00,ok,False,,,False,False,0.7540587000003143,0.4057403999995586,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,386,75,,461,74
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,592,0,103,42,2026-08-15T15:59:53.782222+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,0.8276829999995243,0.40517630000067584,,,56,False,,,,,84
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,592,1,104,42,2026-08-15T15:59:54.610013+00:00,ok,False,,,False,False,2.56450760000007,0.8636019000005035,"13
+1
+",1,1,True,348,355,,703,354
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,595,0,105,42,2026-08-15T15:59:57.175009+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.489746200000809,0.456231399999524,,,'Not Possible',False,,,,,185
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,595,1,106,42,2026-08-15T15:59:58.664864+00:00,error,True,NameError,NameError: name 'i' is not defined,False,True,1.3603113000008307,0.4308032999997522,,,'Not Possible',False,,,,,167
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,596,0,107,42,2026-08-15T16:00:00.025260+00:00,ok,False,,,False,False,0.6315379999996367,0.4974925999995321,"6
+",6,88,False,382,56,,438,54
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,596,1,108,42,2026-08-15T16:00:00.656928+00:00,ok,False,,,False,False,0.6604127000009612,0.5441258000009839,"4
+",4,72,False,388,55,,443,54
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,597,0,109,42,2026-08-15T16:00:01.317476+00:00,error,True,NameError,NameError: name 'I1' is not defined,False,True,1.7264083999998547,0.5270239999990736,,,256,False,,,,,220
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,597,1,110,42,2026-08-15T16:00:03.043968+00:00,error,True,NameError,NameError: name 'I' is not defined,False,True,1.4672047999993083,0.46927359999972396,,,8,False,,,,,181
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,600,0,111,42,2026-08-15T16:00:04.511318+00:00,ok,False,,,False,False,2.043811800000185,0.37179009999999835,"True
+",True,True,True,347,271,,618,270
+zephyr:7b,zephyr-7b (ollama),ollama,incremental,600,1,112,42,2026-08-15T16:00:06.555379+00:00,ok,False,,,False,False,0.7266326000008121,0.36151630000131263,"False
+",False,False,True,347,64,,411,63

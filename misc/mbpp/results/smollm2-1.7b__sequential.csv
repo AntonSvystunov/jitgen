@@ -1,0 +1,216 @@
+Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,511,0,0,42,2026-08-15T15:34:14.385792+00:00,ok,False,,,False,False,0.30992150000020047,0.30989649999901303,"192
+",192,15,False,316,75,,391,74
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,511,1,1,42,2026-08-15T15:34:14.695828+00:00,ok,False,,,False,False,0.6139755999993213,0.6139499999990221,"3
+",3,2,False,314,85,,399,84
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,512,0,2,42,2026-08-15T15:34:15.309927+00:00,error,True,AttributeError,AttributeError: 'tuple' object has no attribute 'pop',False,False,0.6121062000001984,0.6120890000001964,,,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",False,389,91,,480,90
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,512,1,3,42,2026-08-15T15:34:15.922109+00:00,ok,False,,,False,False,0.726180600000589,0.7261199000004126,"{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}
+","{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",False,390,129,,519,128
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,513,0,4,42,2026-08-15T15:34:16.648444+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,False,0.5161872000007861,0.5161709000003611,,,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",False,382,63,,445,61
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,513,1,5,42,2026-08-15T15:34:17.164700+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,False,0.5221811999999773,0.522165499998664,,,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",False,388,69,,457,67
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,514,0,6,42,2026-08-15T15:34:17.686960+00:00,ok,False,,,False,False,0.49870990000090387,0.4986858000011125,"42
+",42,21,False,350,57,,407,55
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,514,1,7,42,2026-08-15T15:34:18.185784+00:00,ok,False,,,False,False,0.4725426000004518,0.47251539999888337,"42
+",42,95,False,350,55,,405,53
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,515,0,8,42,2026-08-15T15:34:18.658458+00:00,ok,False,,,False,False,0.9696476999997685,0.969623999999385,"False
+",False,False,True,338,204,,542,202
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,515,1,9,42,2026-08-15T15:34:19.628333+00:00,ok,False,,,False,False,0.9822019000002911,0.982176100000288,"False
+",False,False,True,338,204,,542,202
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,516,0,10,42,2026-08-15T15:34:20.610778+00:00,ok,False,,,False,False,0.8487664000003861,0.8487279999990278,"[2, 3, 7, 8, 9, 11]
+","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,366,161,,527,159
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,516,1,11,42,2026-08-15T15:34:21.459757+00:00,ok,False,,,False,False,0.8550016999997752,0.8549628000000666,"[12, 24, 26, 29, 36]
+","[12, 24, 26, 29, 36]","[12, 24, 26, 29, 36]",True,367,162,,529,160
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,517,0,12,42,2026-08-15T15:34:22.314955+00:00,ok,False,,,False,False,0.5367113000011159,0.5366841000013665,"4
+6
+",6,6,True,334,71,,405,69
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,517,1,13,42,2026-08-15T15:34:22.851795+00:00,ok,False,,,False,False,0.45535089999975753,0.4553218000000925,"1
+",1,1,True,330,41,,371,40
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,520,0,14,42,2026-08-15T15:34:23.307256+00:00,ok,False,,,False,False,0.6860044000004564,0.685976099999607,"24
+",24,24,True,338,112,,450,111
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,520,1,15,42,2026-08-15T15:34:23.993413+00:00,ok,False,,,False,False,0.6702041999997164,0.6701797000005172,"120
+",120,120,True,342,116,,458,115
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,522,0,16,42,2026-08-15T15:34:24.663770+00:00,ok,False,,,False,False,0.9617350000007718,0.9617104999997537,"1
+",1,6,False,391,195,,586,194
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,522,1,17,42,2026-08-15T15:34:25.625698+00:00,ok,False,,,False,False,0.9423210000004474,0.9422919000007823,"1
+",1,5,False,389,193,,582,192
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,524,0,18,42,2026-08-15T15:34:26.568248+00:00,error,True,TypeError,TypeError: max_increasing_subsequence() takes 1 positional argument but 2 were given,False,False,0.724063900001056,0.724047800000335,,,22,False,356,119,,475,118
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,524,1,19,42,2026-08-15T15:34:27.292391+00:00,error,True,TypeError,TypeError: max_increasing_subsequence() takes 1 positional argument but 2 were given,False,False,0.6980870999996114,0.6980714999990596,,,10,False,356,119,,475,118
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,525,0,20,42,2026-08-15T15:34:27.990533+00:00,ok,False,,,False,False,0.5602574999993521,0.5602320999987569,"False
+",False,False,True,336,73,,409,71
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,525,1,21,42,2026-08-15T15:34:28.550904+00:00,ok,False,,,False,False,0.5385451000001922,0.5385191000004852,"False
+",False,True,False,331,68,,399,66
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,526,0,22,42,2026-08-15T15:34:29.089582+00:00,ok,False,,,False,False,0.433451500000956,0.4334130000006553,"Bigdata
+",Bigdata,'BigdatA',False,324,39,,363,38
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,526,1,23,42,2026-08-15T15:34:29.523137+00:00,ok,False,,,False,False,0.4575359999998909,0.45750330000009853,"Hadoop
+",Hadoop,'HadooP',False,324,43,,367,42
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,527,0,24,42,2026-08-15T15:34:29.980775+00:00,ok,False,,,False,False,0.6661986999988585,0.6661756999983481,"2
+",2,2,True,352,110,,462,109
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,527,1,25,42,2026-08-15T15:34:30.647063+00:00,error,True,TypeError,TypeError: find_pairs() takes 2 positional arguments but 3 were given,False,False,0.7712587000005442,0.7712434999994002,"2
+",,6,False,352,136,,488,135
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,529,0,26,42,2026-08-15T15:34:31.418385+00:00,ok,False,,,False,False,0.5432383000006666,0.5432123999999021,"3
+",3,5,False,319,68,,387,67
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,529,1,27,42,2026-08-15T15:34:31.961783+00:00,ok,False,,,False,False,0.5452413999992132,0.5452148999993369,"17
+",17,17,True,319,68,,387,67
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,532,0,28,42,2026-08-15T15:34:32.507150+00:00,ok,False,,,False,False,0.4801021999992372,0.4800751999991917,"False
+",False,False,True,326,47,,373,46
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,532,1,29,42,2026-08-15T15:34:32.987367+00:00,ok,False,,,False,False,0.4782305999997334,0.47820449999926495,"True
+",True,True,True,327,48,,375,47
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,533,0,30,42,2026-08-15T15:34:33.465699+00:00,ok,False,,,False,False,0.5252185000008467,0.5251805000007153,"['SR']
+",['SR'],"[7, 8, 9]",False,350,63,,413,61
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,533,1,31,42,2026-08-15T15:34:33.991040+00:00,ok,False,,,False,False,0.5267693999994663,0.5267344000003504,"[1.1, 2.2]
+","[1.1, 2.2]","[7, 2]",False,354,66,,420,64
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,537,0,32,42,2026-08-15T15:34:34.517931+00:00,ok,False,,,False,False,0.556306599999516,0.55627529999947,"None
+",None,'None',False,321,72,,393,71
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,537,1,33,42,2026-08-15T15:34:35.074389+00:00,ok,False,,,False,False,0.5603071999994427,0.5602741999991849,"ca
+",ca,'ca',False,324,75,,399,74
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,538,0,34,42,2026-08-15T15:34:35.634792+00:00,ok,False,,,False,False,0.42431179999948654,0.4242677000002004,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,343,32,,375,31
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,538,1,35,42,2026-08-15T15:34:36.059220+00:00,ok,False,,,False,False,0.41281770000023243,0.4127723000001424,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,342,31,,373,30
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,540,0,36,42,2026-08-15T15:34:36.472157+00:00,ok,False,,,False,False,0.7752947000008135,0.7752710000004299,"2
+3
+",3,3,True,355,134,,489,133
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,540,1,37,42,2026-08-15T15:34:37.247594+00:00,ok,False,,,False,False,0.6403219000003446,0.6402954000004684,"0
+",0,0,True,345,110,,455,109
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,541,0,38,42,2026-08-15T15:34:37.888075+00:00,ok,False,,,False,False,0.4920785000012984,0.4920512000007875,"False
+",False,False,True,314,54,,368,53
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,541,1,39,42,2026-08-15T15:34:38.380278+00:00,ok,False,,,False,False,0.4720144999992044,0.47198430000025837,"True
+",True,True,True,314,54,,368,53
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,542,0,40,42,2026-08-15T15:34:38.852413+00:00,ok,False,,,False,False,0.5618565999993734,0.561821900000723,"Stereo Sound Sweatproof
+",Stereo Sound Sweatproof,'Stereo:Sound:Sweatproof',False,348,74,,422,73
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,542,1,41,42,2026-08-15T15:34:39.414390+00:00,ok,False,,,False,False,0.5284317999994528,0.5283960999986448,"Probass Curve Audio
+",Probass Curve Audio,'Probass:Curve:Audio',False,345,71,,416,70
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,544,0,42,42,2026-08-15T15:34:39.942954+00:00,ok,False,,,False,False,0.5513036999982432,0.5512657999988733,"2 3 4 6 9 3 2 2 11
+",2 3 4 6 9 3 2 2 11,'2 3 4 6 9 3 2 2 11',False,382,71,,453,70
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,544,1,43,42,2026-08-15T15:34:40.494398+00:00,ok,False,,,False,False,0.5232176999998046,0.5231717999995453,"('14', '21', '9') ('24', '19') ('12', '29') ('23', '17')
+","('14', '21', '9') ('24', '19') ('12', '29') ('23', '17')",'14 21 9 24 19 12 29 23 17',False,389,69,,458,68
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,545,0,44,42,2026-08-15T15:34:41.017746+00:00,ok,False,,,False,False,0.3986891000004107,0.39865959999951883,"15
+",15,6,False,317,27,,344,26
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,545,1,45,42,2026-08-15T15:34:41.416534+00:00,ok,False,,,False,False,0.45651360000010754,0.45648960000107763,"24
+",24,5,False,317,51,,368,50
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,547,0,46,42,2026-08-15T15:34:41.873146+00:00,ok,False,,,False,False,0.5742599999994127,0.5742365999994945,"1
+",1,3,False,319,79,,398,78
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,547,1,47,42,2026-08-15T15:34:42.447542+00:00,ok,False,,,False,False,0.5194608999991033,0.5194303999996919,"5
+",5,8,False,319,71,,390,70
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,548,0,48,42,2026-08-15T15:34:42.967134+00:00,ok,False,,,False,False,0.7173953000001347,0.7173727000008512,"3
+",3,3,True,361,121,,482,120
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,548,1,49,42,2026-08-15T15:34:43.684681+00:00,ok,False,,,False,False,0.7320945000010397,0.7320656000010786,"4
+",4,4,True,366,126,,492,125
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,549,0,50,42,2026-08-15T15:34:44.416949+00:00,ok,False,,,False,False,0.4301474000003509,0.43011870000009367,"21
+",21,244,False,316,43,,359,42
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,549,1,51,42,2026-08-15T15:34:44.847213+00:00,ok,False,,,False,False,0.5135054999991553,0.5134777000002941,"1875
+",1875,3369,False,316,61,,377,60
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,550,0,52,42,2026-08-15T15:34:45.360839+00:00,ok,False,,,False,False,0.7319986000002245,0.7319708000013634,"5
+",5,5,True,338,133,,471,130
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,550,1,53,42,2026-08-15T15:34:46.093009+00:00,ok,False,,,False,False,0.7458875000011176,0.7458624000009877,"1
+",1,3,False,334,132,,466,130
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,552,0,54,42,2026-08-15T15:34:46.839051+00:00,ok,False,,,False,False,0.5510767999985546,0.5510494999998627,"True
+True
+",True,'Linear Sequence',False,332,73,,405,72
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,552,1,55,42,2026-08-15T15:34:47.390266+00:00,ok,False,,,False,False,0.5293099999998958,0.5292845000003581,"True
+True
+",True,'Non Linear Sequence',False,332,76,,408,75
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,553,0,56,42,2026-08-15T15:34:47.919684+00:00,ok,False,,,False,False,0.42961730000024545,0.42959030000019993,"263.0
+",263.0,7.256,False,328,38,,366,37
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,553,1,57,42,2026-08-15T15:34:48.349399+00:00,ok,False,,,False,False,0.4277296000000206,0.427702799999679,"131.0
+",131.0,8.123,False,328,38,,366,37
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,554,0,58,42,2026-08-15T15:34:48.777217+00:00,ok,False,,,False,False,0.5201500000002852,0.5201159999996889,"[11, 13]
+","[11, 13]","[11, 13]",True,340,63,,403,61
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,554,1,59,42,2026-08-15T15:34:49.297488+00:00,ok,False,,,False,False,0.4958927000006952,0.4958516000006057,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,336,59,,395,57
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,555,0,60,42,2026-08-15T15:34:49.793518+00:00,ok,False,,,False,False,0.5642306999998254,0.5642050999995263,"210
+",210,210,True,325,75,,400,74
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,555,1,61,42,2026-08-15T15:34:50.357864+00:00,ok,False,,,False,False,0.5605133000008209,0.5604858000006061,"2
+",2,6,False,325,82,,407,81
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,556,0,62,42,2026-08-15T15:34:50.918513+00:00,ok,False,,,False,False,0.6921092000011413,0.6920798999999533,"2
+",2,12,False,339,115,,454,114
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,556,1,63,42,2026-08-15T15:34:51.610786+00:00,ok,False,,,False,False,0.6414178000013635,0.6413926000004722,"1
+",1,2,False,330,102,,432,101
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,558,0,64,42,2026-08-15T15:34:52.252344+00:00,ok,False,,,False,False,0.4388118000006216,0.4387860000006185,"33
+",33,6,False,317,39,,356,38
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,558,1,65,42,2026-08-15T15:34:52.691260+00:00,ok,False,,,False,False,0.437968299998829,0.4379443999987416,"133
+",133,7,False,319,41,,360,40
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,559,0,66,42,2026-08-15T15:34:53.129336+00:00,error,True,TypeError,TypeError: max_subarray_sum() takes 1 positional argument but 2 were given,False,False,0.6718698000004224,0.671853399999236,,,8,False,364,110,,474,109
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,559,1,67,42,2026-08-15T15:34:53.801272+00:00,error,True,TypeError,TypeError: max_subarray_sum() takes 1 positional argument but 2 were given,False,False,0.6995174999992742,0.6995005999997375,,,10,False,364,110,,474,109
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,560,0,68,42,2026-08-15T15:34:54.500854+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for |: 'tuple' and 'tuple',False,False,0.5528525000008813,0.5528367000006256,,,"(1, 2, 3, 4, 5, 6)",False,375,78,,453,77
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,560,1,69,42,2026-08-15T15:34:55.053774+00:00,ok,False,,,False,False,0.5792588000003889,0.5792180000007647,"(3, 4, 5, 6, 7, 10)
+","(3, 4, 5, 6, 7, 10)","(11, 12, 13, 14, 15, 16, 17)",False,383,79,,462,78
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,561,0,70,42,2026-08-15T15:34:55.633167+00:00,ok,False,,,False,False,0.6760219000007055,0.6759579999998095,"{6: [4], 9: [4, 5], 3: [8], 4: [9]}
+","{6: [4], 9: [4, 5], 3: [8], 4: [9]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,411,110,,521,109
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,561,1,71,42,2026-08-15T15:34:56.309336+00:00,ok,False,,,False,False,0.7848714000010659,0.7847816000012244,"{6: [6], 4: [4]}
+","{6: [6], 4: [4]}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",False,411,149,,560,148
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,562,0,72,42,2026-08-15T15:34:57.094513+00:00,ok,False,,,False,False,0.6785767000001215,0.6785404000002018,"3
+",3,3,True,338,104,,442,103
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,562,1,73,42,2026-08-15T15:34:57.773271+00:00,ok,False,,,False,False,0.8307811000013317,0.8307527000015398,"3
+4
+",4,5,False,355,158,,513,157
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,564,0,74,42,2026-08-15T15:34:58.604267+00:00,ok,False,,,False,False,0.6362121000001935,0.6361870000000636,"0
+",0,0,True,326,102,,428,101
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,564,1,75,42,2026-08-15T15:34:59.240620+00:00,ok,False,,,False,False,0.6757832000002963,0.6757593999991514,"14
+",14,10,False,328,108,,436,107
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,565,0,76,42,2026-08-15T15:34:59.916550+00:00,ok,False,,,False,False,0.3983208999998169,0.3982643999988795,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,327,25,,352,24
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,565,1,77,42,2026-08-15T15:35:00.314971+00:00,ok,False,,,False,False,0.3972579000001133,0.39721389999976964,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,327,29,,356,28
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,571,0,78,42,2026-08-15T15:35:00.712323+00:00,error,True,IndexError,IndexError: list index out of range,False,False,0.632501100000809,0.6324856999999611,,,25,False,371,99,,470,98
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,571,1,79,42,2026-08-15T15:35:01.344903+00:00,ok,False,,,False,False,0.6459319000005053,0.6459049000004597,"6
+",6,21,False,372,100,,472,99
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,572,0,80,42,2026-08-15T15:35:01.990979+00:00,ok,False,,,False,False,0.6006741000001057,0.6006390000002284,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 3, 4, 5]",False,345,88,,433,86
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,572,1,81,42,2026-08-15T15:35:02.591770+00:00,ok,False,,,False,False,0.5726334999999381,0.5725895000014134,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,343,88,,431,86
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,573,0,82,42,2026-08-15T15:35:03.164539+00:00,ok,False,,,False,False,0.4988183999994362,0.4987736999992194,"6
+",6,6,True,364,53,,417,52
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,573,1,83,42,2026-08-15T15:35:03.663881+00:00,ok,False,,,False,False,0.5261335000013787,0.5261093000008259,"0
+",0,0,True,369,73,,442,72
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,575,0,84,42,2026-08-15T15:35:04.190131+00:00,error,True,IndexError,IndexError: list index out of range,False,False,0.5673930000011751,0.5673767000007501,,,11,False,334,75,,409,74
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,575,1,85,42,2026-08-15T15:35:04.757587+00:00,ok,False,,,False,False,0.5555241000001843,0.5554946000011114,"5
+",5,16,False,335,80,,415,79
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,576,0,86,42,2026-08-15T15:35:05.313232+00:00,error,True,TypeError,TypeError: is_subarray() takes 3 positional arguments but 4 were given,False,False,0.7000712000008207,0.7000549000003957,,,True,False,342,116,,458,112
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,577,0,87,42,2026-08-15T15:35:06.013359+00:00,ok,False,,,False,False,0.40127810000012687,0.40124720000130765,"21
+",21,0,False,316,26,,342,25
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,577,1,88,42,2026-08-15T15:35:06.414763+00:00,ok,False,,,False,False,0.48342330000014044,0.483397199999672,"0
+",0,0,True,316,50,,366,49
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,579,0,89,42,2026-08-15T15:35:06.898299+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for ^: 'tuple' and 'tuple',False,False,0.5476899999994203,0.5476719999987836,,,"(1, 4, 7, 9)",False,369,71,,440,69
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,579,1,90,42,2026-08-15T15:35:07.446065+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for ^: 'tuple' and 'tuple',False,False,0.5612621000000217,0.5612456999988353,,,"(34, 36, 11, 25)",False,377,71,,448,69
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,580,0,91,42,2026-08-15T15:35:08.007391+00:00,ok,False,,,False,False,0.6458830999999918,0.6458313000002818,"[6, 8, 4, 8]
+","[6, 8, 4, 8]","(6, (8, (4, 8)))",False,373,97,,470,96
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,580,1,92,42,2026-08-15T15:35:08.653438+00:00,ok,False,,,False,False,0.6358947000007902,0.6357167000005575,"[6, 8, 4, 6, 8, 10]
+","[6, 8, 4, 6, 8, 10]","(6, (8, (4, 6)), 8, 10)",False,374,104,,478,103
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,581,0,93,42,2026-08-15T15:35:09.289577+00:00,ok,False,,,False,False,0.5192549000003055,0.519221300000936,"91.22499389946279
+",91.22499389946279,56,False,317,62,,379,61
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,581,1,94,42,2026-08-15T15:35:09.808984+00:00,ok,False,,,False,False,0.5978617000000668,0.597834200001671,"3.3094010767585034
+",3.3094010767585034,5,False,317,91,,408,90
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,584,0,95,42,2026-08-15T15:35:10.406993+00:00,error,True,PatternError,PatternError: unbalanced parenthesis at position 70,False,False,1.0588762999996106,1.0588607999998203,,,'28-36: carefuly',False,339,228,,567,226
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,584,1,96,42,2026-08-15T15:35:11.465938+00:00,stalled,False,TimeoutError,case exceeded 60.0s,True,False,60.01663329999974,,,,'18-25: quickly',False,,,,,13076
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,586,0,97,42,2026-08-15T15:36:11.492733+00:00,ok,False,,,False,False,0.7187587000007625,0.7187210000010964,"[1, 2, 3, 4]
+","[1, 2, 3, 4]","[2, 3, 4, 1]",False,363,88,,451,87
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,586,1,98,42,2026-08-15T15:36:12.211634+00:00,ok,False,,,False,False,0.6371172000017395,0.6370712000007188,"[0, 1, 2, 3, 4, 5, 6, 7]
+","[0, 1, 2, 3, 4, 5, 6, 7]","[3, 4, 5, 6, 7, 0, 1, 2]",False,371,100,,471,99
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,588,0,99,42,2026-08-15T15:36:12.848904+00:00,ok,False,,,False,False,0.43280419999973674,0.43277280000074825,"8
+",8,8,True,329,39,,368,38
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,588,1,100,42,2026-08-15T15:36:13.281819+00:00,ok,False,,,False,False,0.4471688000012364,0.4471441000005143,"7
+",7,7,True,328,38,,366,37
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,591,0,101,42,2026-08-15T15:36:13.729088+00:00,ok,False,,,False,False,0.46967010000116716,0.46963420000065526,"[3, 1, 2]
+","[3, 1, 2]","[3, 2, 1]",False,355,48,,403,47
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,591,1,102,42,2026-08-15T15:36:14.198868+00:00,ok,False,,,False,False,0.46516020000126446,0.4651181000008364,"[6, 4, 5]
+","[6, 4, 5]","[6, 5, 4]",False,355,48,,403,47
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,592,0,103,42,2026-08-15T15:36:14.664154+00:00,ok,False,,,False,False,0.3957436000000598,0.3957159000001411,"10
+",10,56,False,315,31,,346,30
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,592,1,104,42,2026-08-15T15:36:15.059988+00:00,ok,False,,,False,False,0.401634699999704,0.4016087999989395,"1
+",1,1,True,315,25,,340,24
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,595,0,105,42,2026-08-15T15:36:15.461710+00:00,ok,False,,,False,False,0.562186399998609,0.5621572999989439,"-3
+",-3,'Not Possible',False,334,83,,417,82
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,595,1,106,42,2026-08-15T15:36:16.024010+00:00,ok,False,,,False,False,0.759004500001538,0.7589711000000534,"Not possible
+",Not possible,'Not Possible',False,334,135,,469,134
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,596,0,107,42,2026-08-15T15:36:16.783182+00:00,ok,False,,,False,False,0.5145855999999185,0.5145544999995764,"6
+",6,88,False,352,60,,412,58
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,596,1,108,42,2026-08-15T15:36:17.297903+00:00,ok,False,,,False,False,0.5247454000000289,0.5247201000001951,"4
+",4,72,False,357,64,,421,63
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,597,0,109,42,2026-08-15T15:36:17.822771+00:00,error,True,TypeError,TypeError: find_kth_element() takes 3 positional arguments but 5 were given,False,False,1.0865656999994826,1.0865495999987616,,,256,False,412,222,,634,216
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,597,1,110,42,2026-08-15T15:36:18.909399+00:00,ok,False,,,False,False,1.0136951000004046,1.0136636999995972,"7
+",7,8,False,383,206,,589,200
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,600,0,111,42,2026-08-15T15:36:19.923321+00:00,ok,False,,,False,False,0.4072524000002886,0.407223399999566,"0
+",0,True,False,316,24,,340,23
+smollm2:1.7b,smollm2-1.7b (ollama),ollama,sequential,600,1,112,42,2026-08-15T15:36:20.330810+00:00,ok,False,,,False,False,0.3867370000007213,0.38670599999932165,"3
+",3,False,False,316,25,,341,24

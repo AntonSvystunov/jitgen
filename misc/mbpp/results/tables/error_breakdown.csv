@@ -1,0 +1,21 @@
+Model,Strategy,Success,Harness Error,Generation Error,Timeout,AttributeError,ExtractionError,ImportError,IndexError,KeyError,NameError,PatternError,RuntimeError,SyntaxError,TypeError,ValueError,ZeroDivisionError,Other Error
+gemma-3-4b (lmstudio),Incremental,106,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0
+gemma-3-4b (lmstudio),Sequential,106,0,0,0,0,0,0,1,0,2,0,1,0,2,0,1,0
+gemma-4-e4b (lmstudio),Incremental,112,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+gemma-4-e4b (lmstudio),Sequential,112,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+llama3.2 (ollama),Incremental,104,0,0,0,0,0,0,1,0,0,0,3,0,5,0,0,0
+llama3.2 (ollama),Sequential,104,0,0,0,0,0,0,1,0,0,0,3,0,5,0,0,0
+mistral-nemo-12b (ollama),Incremental,103,0,0,0,0,3,0,1,2,1,0,0,0,2,1,0,0
+mistral-nemo-12b (ollama),Sequential,104,0,0,0,0,0,0,1,2,1,0,0,2,2,1,0,0
+gpt-oss-20b (lmstudio),Incremental,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+gpt-oss-20b (lmstudio),Sequential,112,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+Phi-4 (ollama),Incremental,112,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+Phi-4 (ollama),Sequential,112,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+qwen3-30b-a3b (ollama),Incremental,112,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+qwen3-30b-a3b (ollama),Sequential,112,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+smollm2-1.7b (ollama),Incremental,96,0,0,1,1,0,0,2,0,0,1,0,0,12,0,0,0
+smollm2-1.7b (ollama),Sequential,96,0,0,1,1,0,0,2,0,0,1,0,0,12,0,0,0
+codeact-mistral (ollama),Incremental,100,0,0,0,2,1,0,3,0,4,0,0,0,3,0,0,0
+codeact-mistral (ollama),Sequential,100,0,0,0,2,0,0,3,0,4,0,0,1,3,0,0,0
+zephyr-7b (ollama),Incremental,56,0,0,0,0,0,0,3,0,44,0,0,3,4,1,2,0
+zephyr-7b (ollama),Sequential,54,0,0,1,0,0,2,3,0,41,0,0,3,5,3,1,0
