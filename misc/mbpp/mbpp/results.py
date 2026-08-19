@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING
 from mbpp.models import ModelSpec
 
 if TYPE_CHECKING:
-    # Only for type hints: `main.py` imports Strategy from *here*, so a
+    # Only for type hints: `run_types.py` imports Strategy from *here*, so a
     # real (non-TYPE_CHECKING) import of RunResult would form a cycle.
-    from mbpp.main import RunResult
+    from mbpp.run_types import RunResult
 
 
 # Lives here, not in main.py: `assert_unique_csv_stems` needs to enumerate

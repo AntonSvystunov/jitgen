@@ -268,13 +268,56 @@ def build_timing_summary(
     return summary
 
 
+def _no_code_generated(frame: pd.DataFrame | pd.Series) -> pd.Series | bool:
+    """True where an incremental run finished `ok` without ever executing a statement.
+
+    Mirrors sequential's harness-level `GenerationError` (`_extract_code_block`
+    finding no ` ```python ` fence anywhere in the response, `execution.py`):
+    incremental has no equivalent exception for that case -- a response with
+    no code just yields zero dispatched statements, which reads as an empty,
+    otherwise-unremarkable `ok` run unless specifically checked for here.
+    `FirstExecutedStatement` being unset is the unambiguous signal, not blank
+    `ExecutionOutput`: a block that genuinely executes but never prints
+    anything also has blank `ExecutionOutput`, but *does* have a
+    `FirstExecutedStatement` timestamp, since the executor still ran
+    something. Used both to fold these rows into "failed" for the pass rate
+    and to classify them as `"Generation Error"` in the breakdown table, so
+    they line up with sequential's identical-concept failures instead of
+    silently inflating incremental's numbers.
+
+    Args:
+        frame: Either the full combined `DataFrame` (vectorized use) or a
+            single row `Series` (from `df.apply(..., axis=1)`) -- `pd.isna`
+            handles both shapes uniformly, unlike the `.isna()` method, which
+            only exists on the `DataFrame`/`Series` shape, not on the bare
+            scalar a row's `FirstExecutedStatement` lookup produces.
+
+    Returns:
+        A boolean `Series` for a `DataFrame` input, or a plain `bool` for a
+        row `Series` input.
+    """
+    return (
+        (frame["Strategy"] == "incremental")
+        & (frame["Outcome"] == "ok")
+        & pd.isna(frame["FirstExecutedStatement"])
+    )
+
+
 def build_pass_correctness(
     df: pd.DataFrame, tables_dir: Path = TABLES_DIR
 ) -> pd.DataFrame:
     """Compute pass/correctness/timeout rates by model x strategy.
 
-    "Pass" (didn't error) and "correct" (produced the right output) are kept
-    as separate rates -- a run can execute cleanly and still be wrong.
+    "Pass" (didn't error, didn't time out, and -- for incremental -- actually
+    ran some generated code) and "correct" (produced the right output) are
+    kept as separate rates -- a run can execute cleanly and still be wrong.
+    A timeout counts as a failure here even though `ErrorOccurred` alone
+    wouldn't flag it (`results.py`'s `ErrorOccurred` is `status == "error"`
+    specifically, with `HasTimedOut` a separate column for `status ==
+    "timeout"`) -- a stalled run is not a pass. Incremental's silent
+    "no code, zero statements executed" success (see `_no_code_generated`)
+    is folded in the same way, so it counts as a failure exactly like
+    sequential's `GenerationError` for the identical underlying response.
 
     Args:
         df: Combined result rows, as returned by `load_results()`.
@@ -284,9 +327,12 @@ def build_pass_correctness(
         One row per (`ModelLabel`, `Strategy`) with the run count and the
         pass/correctness/timeout rates, as percentages.
     """
-    summary = df.groupby(["ModelLabel", "Strategy"], sort=False).agg(
-        Count=("ErrorOccurred", "size"),
-        PassRate=("ErrorOccurred", lambda s: (1 - s.mean()) * 100),
+    working = df.assign(
+        Failed=df["ErrorOccurred"] | df["HasTimedOut"] | _no_code_generated(df)
+    )
+    summary = working.groupby(["ModelLabel", "Strategy"], sort=False).agg(
+        Count=("Failed", "size"),
+        PassRate=("Failed", lambda s: (1 - s.mean()) * 100),
         CorrectnessRate=("CorrectOutput", lambda s: s.mean() * 100),
         TimeoutRate=("HasTimedOut", lambda s: s.mean() * 100),
     )
@@ -321,9 +367,9 @@ def _paired_wide(df: pd.DataFrame, model_label: str, metric: str) -> pd.DataFram
 
     Returns:
         `incremental`/`sequential` columns indexed by `DatasetRow`, for tasks
-        where both strategies have a value for `metric` -- `DatasetRow` is
-        what `mbpp.main._by_row` also pairs on, since each dataset row maps
-        to exactly one case per strategy.
+        where both strategies have a value for `metric` -- pairing on
+        `DatasetRow` is valid since each dataset row maps to exactly one
+        case per strategy.
     """
     subset = df.loc[df["ModelLabel"] == model_label, ["DatasetRow", "Strategy", metric]]
     wide = subset.pivot_table(
@@ -636,33 +682,78 @@ def build_token_usage(
     return usage, saving
 
 
-_HARNESS_OUTCOME_CATEGORIES = {
-    "ok": "Success",
-    "harness_error": "Harness Error",
-    "generation_error": "Generation Error",
+# Keyed off `mbpp.results._OUTCOME_LABELS`'s actual vocabulary
+# (`{"ok": "ok", "timeout": "stalled", "error": "error"}`) -- not the
+# harness-internal status names -- since that's what's literally written to
+# the CSV's `Outcome` column.
+_HARNESS_OUTCOME_CATEGORIES = {"ok": "Success", "stalled": "Timeout"}
+_ERROR_CATEGORIES = ["Timeout", "Generation Error", "SyntaxError", "RuntimeError"]
+
+# Both sides classify "the model generated syntactically invalid Python" the
+# same way conceptually, but under different `ErrorType` strings depending on
+# which layer caught it: incremental's grammar-level rejection surfaces as
+# `jitgen.errors.ExtractionError` (`mbpp.main._run_case`'s `except
+# JitGenError` branch falls back to `type(exc).__name__` since an
+# `ExtractionError`'s message has no `"ClassName: "` prefix to parse), while a
+# syntax failure caught later -- by `compile`/`exec` inside
+# `InProcPythonExecutor`, which happens for either strategy whenever code is
+# grammar-valid-per-Lark but rejected by CPython (e.g. `return` outside a
+# function) -- is a real `SyntaxError`, reported with that prefix and so
+# already `ErrorType == "SyntaxError"` verbatim. Both are aliased here to the
+# same `"SyntaxError"` category so one column covers both instead of
+# splitting an identical failure mode across strategies -- `"SyntaxError"`
+# needs its own identity entry despite already being spelled correctly,
+# since `_classify_error`'s `.get(error_type, "RuntimeError")` would
+# otherwise treat an unrecognized key (including its own eventual output
+# value) as a miss and collapse it into `"RuntimeError"`. `GenerationError`
+# is sequential's `ErrorType` for the harness-level "nothing to run" failure
+# (`mbpp.main._run_case`'s `except ValueError` branch, for
+# `_extract_code_block` finding no fenced code at all) -- not a model-code
+# exception, so it's routed to the fixed `"Generation Error"` category rather
+# than sitting in its own exception-shaped column. Incremental has no
+# exception for the identical case (a response with no opening fence just
+# yields zero dispatched statements, reported as an otherwise-unremarkable
+# `ok` run) -- `_classify_error` special-cases that via `_no_code_generated`
+# before falling through to `ErrorType` at all, so both strategies land in
+# `"Generation Error"` for the same underlying "model never produced code"
+# response. Every other exception class name (`AttributeError`, `KeyError`,
+# `ValueError`, ...) is collapsed into one `"RuntimeError"` bucket rather
+# than kept as its own column -- the breakdown table only distinguishes
+# error *phase* (compile-time vs. run-time vs. harness-level), not exact
+# exception type.
+_ERROR_TYPE_ALIASES = {
+    "ExtractionError": "SyntaxError",
+    "SyntaxError": "SyntaxError",
+    "GenerationError": "Generation Error",
 }
-_FIXED_ERROR_CATEGORIES = ["Success", "Harness Error", "Generation Error", "Timeout"]
 
 
 def _classify_error(row: pd.Series) -> str:
-    """Map one run's `Outcome`/`HasTimedOut`/`ErrorType` to a single error category.
+    """Map one run's `Outcome`/`ErrorType` to a single error category.
 
     Args:
-        row: One row of the combined results, with `Outcome`, `HasTimedOut`,
-            and `ErrorType` columns.
+        row: One row of the combined results, with `Outcome`, `ErrorType`,
+            `Strategy`, and `FirstExecutedStatement` columns.
 
     Returns:
-        `"Success"`/`"Harness Error"`/`"Generation Error"` for a matching
-        harness-level `Outcome`; otherwise `"Timeout"` if `HasTimedOut`, else
-        the run's `ErrorType`, or `"Other Error"` if none was recorded.
+        `"Generation Error"` for incremental's silent no-code-generated `ok`
+        run (`_no_code_generated`), checked first since it would otherwise be
+        misread as a plain `"Success"`; `"Success"`/`"Timeout"` for a
+        matching harness-level `Outcome`; `"Generation Error"`/`"SyntaxError"`
+        for their respective `ErrorType`s (aliased via
+        `_ERROR_TYPE_ALIASES`); otherwise `"RuntimeError"`, collapsing every
+        other exception class -- and any run with a missing `ErrorType` --
+        into one runtime-failure bucket.
     """
+    if _no_code_generated(row):
+        return "Generation Error"
     category = _HARNESS_OUTCOME_CATEGORIES.get(row["Outcome"])
     if category is not None:
         return category
-    if row["HasTimedOut"]:
-        return "Timeout"
     error_type = row["ErrorType"]
-    return error_type if isinstance(error_type, str) else "Other Error"
+    if not isinstance(error_type, str):
+        return "RuntimeError"
+    return _ERROR_TYPE_ALIASES.get(error_type, "RuntimeError")
 
 
 def build_error_breakdown(
@@ -678,12 +769,24 @@ def build_error_breakdown(
         df: Combined result rows, as returned by `load_results()`.
         tables_dir: Directory the breakdown CSV is written into.
 
+    Note: `Generation Error` means "the model never produced any code to
+    run" for both strategies, but they detect it differently. Sequential
+    detects it as `_extract_code_block` raising `ValueError` after collecting
+    the whole response and finding no fenced block at all. Incremental has no
+    equivalent exception -- a response with no opening fence just yields zero
+    dispatched statements and finishes as a plain `ok` run -- so
+    `_classify_error` recognizes that shape via `_no_code_generated` and
+    routes it to the same category explicitly, rather than letting it fall
+    through to `Success`.
+
     Returns:
-        One row per (`ModelLabel`, `Strategy`) with a count column per error
-        category, 0-filled where a model/strategy had none. Fixed columns
-        (`Success`, `Harness Error`, `Generation Error`, `Timeout`) come
-        first, then one column per distinct exception class name seen in
-        `ErrorType`, then `Other Error` last.
+        One row per (`ModelLabel`, `Strategy`) with a count column for each
+        of `Timeout`, `Generation Error`, `SyntaxError`, and `RuntimeError`
+        (`_ERROR_CATEGORIES`), 0-filled where a model/strategy had none.
+        `RuntimeError` collapses every exception class other than
+        `SyntaxError` into one runtime-failure bucket. `Success` runs are
+        classified internally (so they aren't miscounted as `RuntimeError`)
+        but are not reported as a column here.
     """
     categories = df.apply(_classify_error, axis=1)
     counts = (
@@ -693,17 +796,11 @@ def build_error_breakdown(
         .unstack("ErrorCategory", fill_value=0)
     )
 
-    exception_columns = sorted(
-        column
-        for column in counts.columns
-        if column not in _FIXED_ERROR_CATEGORIES and column != "Other Error"
-    )
-    ordered_columns = [*_FIXED_ERROR_CATEGORIES, *exception_columns, "Other Error"]
-    for column in ordered_columns:
+    for column in _ERROR_CATEGORIES:
         if column not in counts.columns:
             counts[column] = 0
 
-    breakdown = counts[ordered_columns].astype(int).reset_index()
+    breakdown = counts[_ERROR_CATEGORIES].astype(int).reset_index()
     breakdown["Strategy"] = breakdown["Strategy"].str.capitalize()
     breakdown = breakdown.rename(columns={"ModelLabel": "Model"})
 

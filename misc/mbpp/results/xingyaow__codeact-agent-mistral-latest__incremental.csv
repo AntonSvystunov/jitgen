@@ -1,224 +1,219 @@
 Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,511,0,0,42,2026-08-14T16:57:52.877171+00:00,ok,False,,,False,False,0.7179050999998253,0.5040469999999004,"192
-",192,15,False,333,71,,404,70
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,511,1,1,42,2026-08-14T16:57:53.595201+00:00,ok,False,,,False,False,0.9869228000000021,0.38734629999999015,"3
-",3,2,False,331,73,,404,72
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,512,0,2,42,2026-08-14T16:57:54.582242+00:00,ok,False,,,False,False,1.5355749999998807,0.6170926999998301,"{6: 1, 7: 1, (6, 7): 1, 8: 1, (9, 10): 1, 10: 1}
-","{6: 1, 7: 1, (6, 7): 1, 8: 1, (9, 10): 1, 10: 1}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",False,406,133,,539,132
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,512,1,3,42,2026-08-14T16:57:56.117975+00:00,ok,False,,,False,False,1.5464357000000746,0.6268261000000166,"{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}
-","{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",False,407,134,,541,133
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,513,0,4,42,2026-08-14T16:57:57.664567+00:00,ok,False,,,False,False,0.9903461999999763,0.49330989999998565,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']
-","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",True,399,75,,474,74
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,513,1,5,42,2026-08-14T16:57:58.655032+00:00,ok,False,,,False,False,1.0496843999999328,0.5443405999999413,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']
-","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",True,405,81,,486,80
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,514,0,6,42,2026-08-14T16:57:59.704836+00:00,ok,False,,,False,False,0.8215887999999723,0.5309720999998717,"21
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,511,0,0,42,2026-08-16T10:29:28.557676+00:00,ok,False,,,False,False,1.1196152999909827,0.4112452999979723,"192
+",192,15,False,333,75,,408,74
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,511,1,1,42,2026-08-16T10:29:29.677393+00:00,ok,False,,,False,False,1.0446730999974534,0.40166959998896345,"3
+",3,2,False,331,69,,400,68
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,512,0,2,42,2026-08-16T10:29:30.722156+00:00,ok,False,,,False,False,1.6469649999926332,0.6948469999915687,"{6: 1, 7: 1, (6, 7): 1, 8: 1, (9, 10): 1, 10: 1}
+","{6: 1, 7: 1, (6, 7): 1, 8: 1, (9, 10): 1, 10: 1}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",False,406,126,,532,125
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,512,1,3,42,2026-08-16T10:29:32.369274+00:00,ok,False,,,False,False,1.601143799998681,0.6411716000002343,"{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}
+","{7: 1, 8: 1, (7, 8): 1, 9: 1, (10, 11): 1, 11: 1}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",False,407,127,,534,126
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,513,0,4,42,2026-08-16T10:29:33.970534+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.9634596999967471,0.5309974999981932,,,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",False,,,,,65
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,513,1,5,42,2026-08-16T10:29:34.934081+00:00,ok,False,,,False,False,1.1317198999895481,0.5836016999965068,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']
+","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",True,405,80,,485,79
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,514,0,6,42,2026-08-16T10:29:36.065910+00:00,ok,False,,,False,False,0.8803846999944653,0.5764749999943888,"21
 ",21,21,True,368,57,,425,56
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,514,1,7,42,2026-08-14T16:58:00.526525+00:00,ok,False,,,False,False,0.9256570000000011,0.5600599000001694,"95
-",95,95,True,368,68,,436,67
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,515,0,8,42,2026-08-14T16:58:01.452309+00:00,ok,False,,,False,False,1.5527274000000943,0.43105470000000423,"True
-",True,False,False,356,134,,490,133
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,515,1,9,42,2026-08-14T16:58:03.005245+00:00,ok,False,,,False,False,1.5583040000001347,0.417355999999927,"True
-",True,False,False,356,136,,492,135
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,516,0,10,42,2026-08-14T16:58:04.563708+00:00,ok,False,,,False,False,1.4702391999999236,0.5542227000000821,"[2, 3, 7, 8, 9, 11]
-","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,383,126,,509,125
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,516,1,11,42,2026-08-14T16:58:06.034104+00:00,ok,False,,,False,False,1.4843077999998968,0.5676824999998189,"[12, 24, 26, 29, 36]
-","[12, 24, 26, 29, 36]","[12, 24, 26, 29, 36]",True,384,127,,511,126
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,517,0,12,42,2026-08-14T16:58:07.518583+00:00,ok,False,,,False,False,0.7872519000000011,0.5337663999998767,"6
-",6,6,True,351,53,,404,52
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,517,1,13,42,2026-08-14T16:58:08.305928+00:00,ok,False,,,False,False,0.6973273999999492,0.48129820000008294,"1
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,514,1,7,42,2026-08-16T10:29:36.946398+00:00,ok,False,,,False,False,0.8809622000117088,0.5979051000031177,"95
+",95,95,True,368,57,,425,56
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,515,0,8,42,2026-08-16T10:29:37.827453+00:00,ok,False,,,False,False,1.2808413000020664,0.44446400000015274,"True
+True
+False
+",False,False,True,356,94,,450,93
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,515,1,9,42,2026-08-16T10:29:39.108387+00:00,ok,False,,,False,False,1.3302801000099862,0.44271640000806656,"True
+True
+",True,False,False,356,98,,454,97
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,516,0,10,42,2026-08-16T10:29:40.438915+00:00,ok,False,,,False,False,1.7589806000032695,0.5711676000064472,"[2, 3, 7, 8, 9, 11]
+","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,383,140,,523,139
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,516,1,11,42,2026-08-16T10:29:42.197908+00:00,ok,False,,,False,False,2.3923756000003777,0.607630300000892,"[36, 12, 24, 26, 29]
+","[36, 12, 24, 26, 29]","[12, 24, 26, 29, 36]",False,384,197,,581,196
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,517,0,12,42,2026-08-16T10:29:44.590420+00:00,ok,False,,,False,False,0.7967166000016732,0.5490833000076236,"6
+",6,6,True,351,49,,400,48
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,517,1,13,42,2026-08-16T10:29:45.387246+00:00,ok,False,,,False,False,0.7180440000083763,0.4911997000017436,"1
 ",1,1,True,347,43,,390,42
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,520,0,14,42,2026-08-14T16:58:09.003349+00:00,ok,False,,,False,False,1.0472405999998955,0.3638061999999991,"24
-",24,24,True,355,80,,435,79
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,520,1,15,42,2026-08-14T16:58:10.050731+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.9543893000000025,0.5059754000001249,,,120,False,,,,,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,522,0,16,42,2026-08-14T16:58:11.005248+00:00,error,True,TypeError,"TypeError: can only concatenate list (not ""int"") to list",False,True,2.6540666000000783,0.5991968000000725,,,6,False,,,,,252
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,522,1,17,42,2026-08-14T16:58:13.659386+00:00,ok,False,,,False,False,2.5151828999998997,0.5720702999999503,"1
-",1,5,False,406,238,,644,237
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,524,0,18,42,2026-08-14T16:58:16.174775+00:00,ok,False,,,False,False,1.3147616999999627,0.4915834000000814,"22
-",22,22,True,373,108,,481,106
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,524,1,19,42,2026-08-14T16:58:17.489671+00:00,ok,False,,,False,False,1.3311856999998781,0.4703228000000763,"22
-",22,10,False,373,112,,485,111
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,525,0,20,42,2026-08-14T16:58:18.820977+00:00,ok,False,,,False,False,1.3085097000000587,0.4482387000000472,"False
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,520,0,14,42,2026-08-16T10:29:46.105393+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.9793981999973767,0.502275799997733,,,24,False,,,,,66
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,520,1,15,42,2026-08-16T10:29:47.084858+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,1.022441399996751,0.543630200001644,,,120,False,,,,,70
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,522,0,16,42,2026-08-16T10:29:48.107393+00:00,ok,False,,,False,False,2.8262225999933435,0.6494203999900492,"4
+",4,6,False,408,238,,646,236
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,522,1,17,42,2026-08-16T10:29:50.933760+00:00,ok,False,,,False,False,3.0065156999917235,0.63755119999405,"1
+",1,5,False,406,252,,658,250
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,524,0,18,42,2026-08-16T10:29:53.940439+00:00,ok,False,,,False,False,1.4262980000057723,0.528626900006202,"22
+",22,22,True,373,106,,479,104
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,524,1,19,42,2026-08-16T10:29:55.366860+00:00,ok,False,,,False,False,1.9295516999991378,0.5071950999990804,"10
+",10,10,True,373,157,,530,156
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,525,0,20,42,2026-08-16T10:29:57.296542+00:00,ok,False,,,False,False,1.4598107000056189,0.478130700008478,"False
 ",False,False,True,353,109,,462,108
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,525,1,21,42,2026-08-14T16:58:20.129622+00:00,error,True,IndexError,IndexError: list index out of range,False,True,0.799859799999922,0.41686490000006415,,,True,False,,,,,55
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,526,0,22,42,2026-08-14T16:58:20.929579+00:00,ok,False,,,False,False,1.29419740000003,0.4146795000001475,"'BigdatAdata'
-",'BigdatAdata','BigdatA',False,341,107,,448,106
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,526,1,23,42,2026-08-14T16:58:22.223941+00:00,ok,False,,,False,False,0.833324599999969,0.401843000000099,"HadoopP
-",HadoopP,'HadooP',False,342,58,,400,57
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,527,0,24,42,2026-08-14T16:58:23.057363+00:00,ok,False,,,False,False,1.2028656999998475,0.46350940000002083,"[[5, -1]]
-","[[5, -1]]",2,False,369,98,,467,97
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,527,1,25,42,2026-08-14T16:58:24.260383+00:00,ok,False,,,False,False,1.1398229999999785,0.4752049999999599,"[]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,525,1,21,42,2026-08-16T10:29:58.756475+00:00,error,True,IndexError,IndexError: list index out of range,False,True,0.8735294999933103,0.41521589999319986,,,True,False,,,,,55
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,526,0,22,42,2026-08-16T10:29:59.630060+00:00,ok,False,,,False,False,1.5564731000049505,0.4193717000016477,"'BigdatA'
+",'BigdatA','BigdatA',True,341,123,,464,122
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,526,1,23,42,2026-08-16T10:30:01.186669+00:00,error,True,TypeError,TypeError: str.capitalize() takes no arguments (1 given),False,True,0.8333614000002854,0.4209387000009883,,,'HadooP',False,,,,,49
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,527,0,24,42,2026-08-16T10:30:02.020108+00:00,ok,False,,,False,False,1.3026995999971405,0.49965149999479763,"1
+",1,2,False,369,96,,465,95
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,527,1,25,42,2026-08-16T10:30:03.322924+00:00,ok,False,,,False,False,1.257051100008539,0.5019056000019191,"[]
 ",[],6,False,369,90,,459,89
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,529,0,26,42,2026-08-14T16:58:25.400315+00:00,ok,False,,,False,False,0.7430233000000044,0.425283699999909,"2
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,529,0,26,42,2026-08-16T10:30:04.580077+00:00,ok,False,,,False,False,0.7864751000015531,0.45172850000381004,"2
 ",2,5,False,336,48,,384,47
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,529,1,27,42,2026-08-14T16:58:26.143435+00:00,ok,False,,,False,False,0.6925318000000971,0.4107991000000766,"5
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,529,1,27,42,2026-08-16T10:30:05.366631+00:00,ok,False,,,False,False,0.7519693999929586,0.4339334999967832,"5
 ",5,17,False,336,44,,380,43
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,532,0,28,42,2026-08-14T16:58:26.836062+00:00,ok,False,,,False,False,1.0010939000001144,0.39269949999993514,"False
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,532,0,28,42,2026-08-16T10:30:06.118684+00:00,ok,False,,,False,False,1.1164544000057504,0.41782180000154767,"False
 ",False,False,True,344,76,,420,75
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,532,1,29,42,2026-08-14T16:58:27.837252+00:00,ok,False,,,False,False,1.0229022999999415,0.4050102999999581,"True
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,532,1,29,42,2026-08-16T10:30:07.235232+00:00,ok,False,,,False,False,1.1081210000120336,0.4235499000060372,"True
 ",True,True,True,347,79,,426,78
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,533,0,30,42,2026-08-14T16:58:28.860258+00:00,ok,False,,,False,False,0.7292595999999776,0.46636320000015985,"['SR']
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,533,0,30,42,2026-08-16T10:30:08.343475+00:00,ok,False,,,False,False,0.8002698000054806,0.5034868999937316,"['SR']
 ",['SR'],"[7, 8, 9]",False,367,47,,414,46
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,533,1,31,42,2026-08-14T16:58:29.589608+00:00,ok,False,,,False,False,0.7952147999999397,0.5045703999999205,"[1.1, 2.2]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,533,1,31,42,2026-08-16T10:30:09.143837+00:00,ok,False,,,False,False,0.8888809000054607,0.548480199999176,"[1.1, 2.2]
 ","[1.1, 2.2]","[7, 2]",False,371,54,,425,53
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,537,0,32,42,2026-08-14T16:58:30.384921+00:00,ok,False,,,False,False,0.9379558000000543,0.4015598000000864,"''
-",'','None',False,338,69,,407,68
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,537,1,33,42,2026-08-14T16:58:31.323030+00:00,ok,False,,,False,False,0.9698282000001655,0.4357296000000588,"'ab'
-",'ab','ca',False,341,72,,413,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,538,0,34,42,2026-08-14T16:58:32.292976+00:00,ok,False,,,False,False,0.6415644999999586,0.4152294999998958,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,537,0,32,42,2026-08-16T10:30:10.032807+00:00,ok,False,,,False,False,0.8966092000046046,0.42422020000230987,"ab
+",ab,'None',False,338,54,,392,53
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,537,1,33,42,2026-08-16T10:30:10.929536+00:00,ok,False,,,False,False,0.9122304999909829,0.448249199995189,"abca
+",abca,'ca',False,341,58,,399,57
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,538,0,34,42,2026-08-16T10:30:11.841859+00:00,ok,False,,,False,False,0.661020900006406,0.41523749999760184,"('b', 'i', 'g', 'd', 'a', 't', 'a')
 ","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,360,37,,397,36
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,538,1,35,42,2026-08-14T16:58:32.934638+00:00,ok,False,,,False,False,0.6240353999999115,0.39809700000000703,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,538,1,35,42,2026-08-16T10:30:12.502968+00:00,ok,False,,,False,False,0.680705399994622,0.4236168999923393,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
 ","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,359,36,,395,35
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,540,0,36,42,2026-08-14T16:58:33.558765+00:00,ok,False,,,False,False,1.3914746000000378,0.606231600000001,"3
-",3,3,True,372,118,,490,117
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,540,1,37,42,2026-08-14T16:58:34.950374+00:00,ok,False,,,False,False,1.2454674000000523,0.4599872999999661,"0
-",0,0,True,362,103,,465,102
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,541,0,38,42,2026-08-14T16:58:36.195953+00:00,ok,False,,,False,False,0.956711999999925,0.3761782999999923,"True
-",True,False,False,332,72,,404,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,541,1,39,42,2026-08-14T16:58:37.152791+00:00,ok,False,,,False,False,0.96437909999986,0.38367479999988063,"True
-",True,True,True,332,72,,404,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,542,0,40,42,2026-08-14T16:58:38.117273+00:00,ok,False,,,False,False,0.8316763000000265,0.362888600000133,"'Stereo:Sound:Sweatproof'
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,540,0,36,42,2026-08-16T10:30:13.183761+00:00,ok,False,,,False,False,1.399841499995091,0.6726313999970444,"4
+",4,3,False,372,104,,476,103
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,540,1,37,42,2026-08-16T10:30:14.583718+00:00,ok,False,,,False,False,1.591815100007807,0.4893274000060046,"0
+",0,0,True,362,124,,486,123
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,541,0,38,42,2026-08-16T10:30:16.175649+00:00,ok,False,,,False,False,1.300903199997265,0.4044587000098545,"False
+",False,False,True,332,96,,428,95
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,541,1,39,42,2026-08-16T10:30:17.476675+00:00,ok,False,,,False,False,1.6796923999936553,0.3994700000039302,"True
+",True,True,True,332,130,,462,128
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,542,0,40,42,2026-08-16T10:30:19.156476+00:00,ok,False,,,False,False,0.9175313000014285,0.3762826999882236,"'Stereo:Sound:Sweatproof'
 ",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,377,57,,434,56
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,542,1,41,42,2026-08-14T16:58:38.949052+00:00,ok,False,,,False,False,0.8004554999999982,0.3504714000000604,"'Probass:Curve:Audio'
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,542,1,41,42,2026-08-16T10:30:20.074108+00:00,ok,False,,,False,False,0.8980545999947935,0.3610513999883551,"'Probass:Curve:Audio'
 ",'Probass:Curve:Audio','Probass:Curve:Audio',True,375,55,,430,54
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,544,0,42,42,2026-08-14T16:58:39.749602+00:00,ok,False,,,False,False,1.0177312000000711,0.6621056999999837,"'2 3 4 6 9 3 2 2 11'
-",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,403,77,,480,76
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,544,1,43,42,2026-08-14T16:58:40.767445+00:00,ok,False,,,False,False,1.0726675999999316,0.7169925999999123,"'14 21 9 24 19 12 29 23 17'
-",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,410,84,,494,83
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,545,0,44,42,2026-08-14T16:58:41.840206+00:00,ok,False,,,False,False,0.7582314999999653,0.38302550000003066,"46
-",46,6,False,334,50,,384,49
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,545,1,45,42,2026-08-14T16:58:42.598526+00:00,ok,False,,,False,False,0.7426501999998436,0.3857983000000331,"22
-",22,5,False,334,48,,382,45
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,547,0,46,42,2026-08-14T16:58:43.341268+00:00,error,True,NameError,NameError: name 'hamming_distance' is not defined,False,True,0.8812966999998935,0.3671634999998332,,,3,False,,,,,64
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,547,1,47,42,2026-08-14T16:58:44.222646+00:00,error,True,NameError,NameError: name 'hamming_distance' is not defined,False,True,0.8815265999999156,0.3678284000000076,,,8,False,,,,,64
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,548,0,48,42,2026-08-14T16:58:45.104256+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.1791915000001154,0.5160355000000436,,,3,False,,,,,95
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,548,1,49,42,2026-08-14T16:58:46.283564+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.2232714000001579,0.5603534000001673,,,4,False,,,,,100
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,549,0,50,42,2026-08-14T16:58:47.506933+00:00,ok,False,,,False,False,0.7743692999999894,0.3803846999999223,"1
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,544,0,42,42,2026-08-16T10:30:20.972265+00:00,ok,False,,,False,False,1.2510031999991043,0.6882275000098161,"2 3 4 6 9 3 2 2 11
+",2 3 4 6 9 3 2 2 11,'2 3 4 6 9 3 2 2 11',False,403,89,,492,88
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,544,1,43,42,2026-08-16T10:30:22.223376+00:00,ok,False,,,False,False,1.4464615000033518,0.8167056999955093,"14 21 9 24 19 12 29 23 17
+",14 21 9 24 19 12 29 23 17,'14 21 9 24 19 12 29 23 17',False,410,106,,516,105
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,545,0,44,42,2026-08-16T10:30:23.669909+00:00,ok,False,,,False,False,0.8004025999980513,0.4071350000012899,"12
+",12,6,False,334,49,,383,46
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,545,1,45,42,2026-08-16T10:30:24.470393+00:00,ok,False,,,False,False,0.8354475000087405,0.40089290001196787,"20
+",20,5,False,334,50,,384,47
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,547,0,46,42,2026-08-16T10:30:25.305943+00:00,error,True,NameError,NameError: name 'hamming_distance' is not defined,False,True,0.9086511000059545,0.3873438000009628,,,3,False,,,,,56
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,547,1,47,42,2026-08-16T10:30:26.214662+00:00,error,True,NameError,NameError: name 'hamming_distance' is not defined,False,True,0.9927766000037082,0.37646090000635013,,,8,False,,,,,66
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,548,0,48,42,2026-08-16T10:30:27.207519+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.3197535000072094,0.5559783000062453,,,3,False,,,,,95
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,548,1,49,42,2026-08-16T10:30:28.527314+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.3560856000112835,0.6173247000115225,,,4,False,,,,,100
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,549,0,50,42,2026-08-16T10:30:29.883430+00:00,ok,False,,,False,False,0.8132105999975465,0.3854923999897437,"1
 ",1,244,False,333,51,,384,50
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,549,1,51,42,2026-08-14T16:58:48.281405+00:00,ok,False,,,False,False,0.7587402999999995,0.36453050000000076,"244
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,549,1,51,42,2026-08-16T10:30:30.696749+00:00,ok,False,,,False,False,0.8160077999928035,0.3810666999925161,"244
 ",244,3369,False,333,51,,384,50
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,550,0,52,42,2026-08-14T16:58:49.040241+00:00,ok,False,,,False,False,1.918204600000081,0.4943968000000041,"5
-",5,5,True,356,174,,530,172
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,550,1,53,42,2026-08-14T16:58:50.958623+00:00,ok,False,,,False,False,0.9681889999999385,0.43442879999997785,"3
-",3,3,True,352,73,,425,72
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,552,0,54,42,2026-08-14T16:58:51.926936+00:00,error,True,TypeError,TypeError: 'bool' object is not iterable,False,True,1.0237260000001243,0.4351323000000775,,,'Linear Sequence',False,,,,,79
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,552,1,55,42,2026-08-14T16:58:52.950744+00:00,error,True,TypeError,TypeError: 'bool' object is not iterable,False,True,1.0048871000001327,0.43508040000006076,,,'Non Linear Sequence',False,,,,,77
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,553,0,56,42,2026-08-14T16:58:53.955720+00:00,ok,False,,,False,False,0.7334362999999939,0.43307450000020253,"9.56
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,550,0,52,42,2026-08-16T10:30:31.512852+00:00,error,True,SyntaxError,"SyntaxError: 'return' outside function (<string>, line 2)",False,True,1.8730210999929113,0.5302569999912521,,,5,False,,,,,149
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,550,1,53,42,2026-08-16T10:30:33.385911+00:00,ok,False,,,False,False,1.1516335000051185,0.4629836000094656,"3
+",3,3,True,352,79,,431,78
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,552,0,54,42,2026-08-16T10:30:34.537633+00:00,ok,False,,,False,False,1.3689948999963235,0.4590858000010485,"Linear Sequence
+",Linear Sequence,'Linear Sequence',False,350,103,,453,102
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,552,1,55,42,2026-08-16T10:30:35.906712+00:00,ok,False,,,False,False,1.3695587999973213,0.45847800000046846,"Not a Linear Sequence
+",Not a Linear Sequence,'Non Linear Sequence',False,350,103,,453,102
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,553,0,56,42,2026-08-16T10:30:37.276388+00:00,ok,False,,,False,False,0.7763955000118585,0.4309281000023475,"9.56
 ",9.56,7.256,False,345,47,,392,46
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,553,1,57,42,2026-08-14T16:58:54.689248+00:00,ok,False,,,False,False,0.7301910000001044,0.430001700000048,"9.23
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,553,1,57,42,2026-08-16T10:30:38.052869+00:00,ok,False,,,False,False,0.7642489999998361,0.44695140000840183,"9.23
 ",9.23,8.123,False,345,47,,392,46
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,554,0,58,42,2026-08-14T16:58:55.419537+00:00,ok,False,,,False,False,0.9508338000000549,0.49177720000011504,"[11, 13]
-","[11, 13]","[11, 13]",True,357,70,,427,69
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,554,1,59,42,2026-08-14T16:58:56.370459+00:00,ok,False,,,False,False,0.8505784999999833,0.44746120000013434,"[7, 9, 1]
-","[7, 9, 1]","[7, 9, 1]",True,353,60,,413,59
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,555,0,60,42,2026-08-14T16:58:57.221155+00:00,ok,False,,,False,False,1.189664300000004,0.3665859000000182,"210
-",210,210,True,343,97,,440,96
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,555,1,61,42,2026-08-14T16:58:58.410955+00:00,ok,False,,,False,False,0.9445261999999275,0.3735971999999492,"6
-",6,6,True,343,70,,413,69
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,556,0,62,42,2026-08-14T16:58:59.355607+00:00,ok,False,,,False,False,1.2579431999999997,0.5555096000000503,"12
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,554,0,58,42,2026-08-16T10:30:38.817212+00:00,ok,False,,,False,False,1.054420400003437,0.5286830999975791,"[11, 13]
+","[11, 13]","[11, 13]",True,357,72,,429,71
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,554,1,59,42,2026-08-16T10:30:39.871733+00:00,ok,False,,,False,False,0.8901764999900479,0.48283229999651667,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,353,57,,410,56
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,555,0,60,42,2026-08-16T10:30:40.762030+00:00,ok,False,,,False,False,1.4582372000004398,0.3850442999973893,"210
+",210,210,True,343,111,,454,110
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,555,1,61,42,2026-08-16T10:30:42.220393+00:00,ok,False,,,False,False,1.4600811999989673,0.3789097999979276,"6
+",6,6,True,343,111,,454,110
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,556,0,62,42,2026-08-16T10:30:43.680561+00:00,ok,False,,,False,False,1.400953499993193,0.6148142000020016,"12
 ",12,12,True,356,104,,460,103
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,556,1,63,42,2026-08-14T16:59:00.613689+00:00,ok,False,,,False,False,1.136385799999971,0.43442350000009355,"2
-",2,2,True,347,91,,438,90
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,558,0,64,42,2026-08-14T16:59:01.750206+00:00,ok,False,,,False,False,1.3549325999999837,0.3914255999998204,"2
-",2,6,False,335,114,,449,113
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,558,1,65,42,2026-08-14T16:59:03.105283+00:00,ok,False,,,False,False,1.3071491999999125,0.39982019999979457,"7
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,556,1,63,42,2026-08-16T10:30:45.081640+00:00,ok,False,,,False,False,1.2106818999891402,0.4631512999912957,"2
+",2,2,True,347,88,,435,87
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,558,0,64,42,2026-08-16T10:30:46.292423+00:00,ok,False,,,False,False,1.3980404999892926,0.38881239999318495,"6
+",6,6,True,335,107,,442,106
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,558,1,65,42,2026-08-16T10:30:47.690561+00:00,ok,False,,,False,False,1.4300144000008004,0.4154885000025388,"7
 ",7,7,True,337,109,,446,108
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,559,0,66,42,2026-08-14T16:59:04.412567+00:00,ok,False,,,False,False,1.6504520999999386,0.5811237000000347,"8
-",8,8,True,383,145,,528,144
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,559,1,67,42,2026-08-14T16:59:06.063206+00:00,ok,False,,,False,False,1.6505191999999624,0.5817159999999149,"10
-",10,10,True,383,145,,528,144
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,560,0,68,42,2026-08-14T16:59:07.713882+00:00,ok,False,,,False,False,1.0767117000000326,0.47741709999991144,"(1, 2, 3, 4, 5, 6)
-","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,395,84,,479,83
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,560,1,69,42,2026-08-14T16:59:08.790719+00:00,ok,False,,,False,False,1.1686166000001776,0.5132078000001457,"(11, 12, 13, 14, 15, 16, 17)
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,559,0,66,42,2026-08-16T10:30:49.120674+00:00,ok,False,,,False,False,1.814012900009402,0.6130853000067873,"8
+",8,8,True,383,146,,529,144
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,559,1,67,42,2026-08-16T10:30:50.934794+00:00,ok,False,,,False,False,1.8332030000019586,0.6360979000019142,"10
+",10,10,True,383,146,,529,144
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,560,0,68,42,2026-08-16T10:30:52.768100+00:00,ok,False,,,False,False,1.2194013999978779,0.5214567999937572,"(1, 2, 3, 4, 5, 6)
+","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,395,86,,481,85
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,560,1,69,42,2026-08-16T10:30:53.987610+00:00,ok,False,,,False,False,1.2737609000032535,0.5466179999930318,"(11, 12, 13, 14, 15, 16, 17)
 ","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,403,94,,497,93
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,561,0,70,42,2026-08-14T16:59:09.959466+00:00,ok,False,,,False,False,1.3197270000000572,0.6615123999999923,"{6: [4], 9: [4, 5], 3: [8], 4: [9]}
-","{6: [4], 9: [4, 5], 3: [8], 4: [9]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,431,109,,540,108
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,561,1,71,42,2026-08-14T16:59:11.279326+00:00,ok,False,,,False,False,1.2344622000000527,0.6606286999999611,"{6: [2, 8], 4: [9, 9], 3: [7]}
-","{6: [2, 8], 4: [9, 9], 3: [7]}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",False,431,100,,531,99
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,562,0,72,42,2026-08-14T16:59:12.513930+00:00,ok,False,,,False,False,1.0880537999998978,0.53583720000006,"3
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,561,0,70,42,2026-08-16T10:30:55.261473+00:00,ok,False,,,False,False,1.3668352000095183,0.6858204000018304,"{6: [4], 9: [4, 5], 3: [8], 4: [9]}
+","{6: [4], 9: [4, 5], 3: [8], 4: [9]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,431,102,,533,101
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,561,1,71,42,2026-08-16T10:30:56.628416+00:00,ok,False,,,False,False,1.6233567000017501,0.7102948999963701,"{6: [2, 8], 4: [9, 9], 3: [7]}
+","{6: [2, 8], 4: [9, 9], 3: [7]}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",False,431,126,,557,125
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,562,0,72,42,2026-08-16T10:30:58.251896+00:00,ok,False,,,False,False,1.1769578999956138,0.5559077000070829,"3
 ",3,3,True,359,85,,444,84
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,562,1,73,42,2026-08-14T16:59:13.602099+00:00,ok,False,,,False,False,1.2630381999999827,0.711225499999955,"5
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,562,1,73,42,2026-08-16T10:30:59.428959+00:00,ok,False,,,False,False,1.3757127999997465,0.7495862000068882,"5
 ",5,5,True,377,104,,481,103
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,564,0,74,42,2026-08-14T16:59:14.865263+00:00,ok,False,,,False,False,0.9903848999999809,0.4379897000001165,"0
-",0,0,True,344,75,,419,74
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,564,1,75,42,2026-08-14T16:59:15.855773+00:00,ok,False,,,False,False,1.0219967000000452,0.4976687999999285,"10
-",10,10,True,346,78,,424,77
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,565,0,76,42,2026-08-14T16:59:16.877880+00:00,ok,False,,,False,False,0.568383699999913,0.3799518999999236,"['N', 'a', 'm', 'e']
-","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,345,30,,375,29
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,565,1,77,42,2026-08-14T16:59:17.446355+00:00,ok,False,,,False,False,0.5863722999999936,0.3987557000000379,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,564,0,74,42,2026-08-16T10:31:00.804784+00:00,ok,False,,,False,False,1.17926350000198,0.5100058999960311,"0
+",0,0,True,344,82,,426,81
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,564,1,75,42,2026-08-16T10:31:01.984146+00:00,ok,False,,,False,False,1.141662299996824,0.5438728999870364,"10
+",10,10,True,346,80,,426,79
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,565,0,76,42,2026-08-16T10:31:03.125902+00:00,ok,False,,,False,False,0.6003396000014618,0.4086064000002807,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,345,27,,372,26
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,565,1,77,42,2026-08-16T10:31:03.726322+00:00,ok,False,,,False,False,0.6330276999942726,0.41652759999851696,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
 ","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,345,32,,377,31
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,571,0,78,42,2026-08-14T16:59:18.032832+00:00,ok,False,,,False,False,1.5375607000000855,0.5153747000001658,"0
-",0,25,False,389,132,,521,131
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,571,1,79,42,2026-08-14T16:59:19.570562+00:00,ok,False,,,False,False,2.2227457999999842,0.5156888999999865,"0
-",0,21,False,390,207,,597,205
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,572,0,80,42,2026-08-14T16:59:21.793535+00:00,ok,False,,,False,False,1.0081272999998419,0.5119606999999178,"[1, 2, 3, 4]
-","[1, 2, 3, 4]","[1, 3, 4, 5]",False,362,76,,438,75
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,572,1,81,42,2026-08-14T16:59:22.801772+00:00,ok,False,,,False,False,0.9899815999999646,0.5030827999999019,"[1, 2, 3, 4, 5]
-","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,360,75,,435,74
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,573,0,82,42,2026-08-14T16:59:23.791864+00:00,ok,False,,,False,False,0.8703981000001022,0.4861496000000898,"6
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,571,0,78,42,2026-08-16T10:31:04.359425+00:00,ok,False,,,False,False,1.6827972999890335,0.5243964999972377,"0
+",0,25,False,389,134,,523,133
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,571,1,79,42,2026-08-16T10:31:06.042343+00:00,ok,False,,,False,False,1.8307503999967594,0.5595466999948258,"6
+",6,21,False,390,146,,536,145
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,572,0,80,42,2026-08-16T10:31:07.873228+00:00,ok,False,,,False,False,1.0917436000017915,0.590102600006503,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 3, 4, 5]",False,362,74,,436,73
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,572,1,81,42,2026-08-16T10:31:08.965054+00:00,ok,False,,,False,False,1.1180457000009483,0.5532103000005009,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,360,77,,437,76
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,573,0,82,42,2026-08-16T10:31:10.083211+00:00,ok,False,,,False,False,0.9385367000068072,0.5197786000062479,"6
 ",6,6,True,382,61,,443,60
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,573,1,83,42,2026-08-14T16:59:24.662374+00:00,ok,False,,,False,False,0.9239109000000099,0.5398594000000685,"0
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,573,1,83,42,2026-08-16T10:31:11.021840+00:00,ok,False,,,False,False,0.990360600000713,0.5705824999895412,"0
 ",0,0,True,387,67,,454,66
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,575,0,84,42,2026-08-14T16:59:25.586409+00:00,ok,False,,,False,False,0.8730278999998973,0.4793033999999352,"3
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,575,0,84,42,2026-08-16T10:31:12.012299+00:00,ok,False,,,False,False,0.9639542000077199,0.5201847999996971,"3
 ",3,11,False,351,62,,413,61
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,575,1,85,42,2026-08-14T16:59:26.459541+00:00,ok,False,,,False,False,0.9597383999998783,0.48198739999997997,"5
-",5,16,False,352,72,,424,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,576,0,86,42,2026-08-14T16:59:27.419379+00:00,ok,False,,,False,False,1.0842408999999407,0.4572464000000309,"True
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,575,1,85,42,2026-08-16T10:31:12.976325+00:00,ok,False,,,False,False,1.4042093000025488,0.5357899999944493,"20
+",20,16,False,352,102,,454,101
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,576,0,86,42,2026-08-16T10:31:14.380635+00:00,ok,False,,,False,False,1.1869358999974793,0.4903914000024088,"True
 ",True,True,True,361,84,,445,83
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,577,0,87,42,2026-08-14T16:59:28.503749+00:00,ok,False,,,False,False,0.7025057000000743,0.383391999999958,"0
-",0,0,True,333,44,,377,43
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,577,1,88,42,2026-08-14T16:59:29.206352+00:00,ok,False,,,False,False,0.6999139000001833,0.37958739999999125,"0
-",0,0,True,333,44,,377,43
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,579,0,89,42,2026-08-14T16:59:29.906365+00:00,ok,False,,,False,False,1.0424884000001384,0.48123000000009597,"[1, 4, 7, 9]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,577,0,87,42,2026-08-16T10:31:15.567660+00:00,ok,False,,,False,False,0.806042999989586,0.38699719999567606,"0
+",0,0,True,333,51,,384,50
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,577,1,88,42,2026-08-16T10:31:16.373791+00:00,ok,False,,,False,False,0.8046903999929782,0.3922448999946937,"0
+",0,0,True,333,51,,384,50
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,579,0,89,42,2026-08-16T10:31:17.178598+00:00,ok,False,,,False,False,1.1327982999937376,0.5138910999958171,"[1, 4, 7, 9]
 ","[1, 4, 7, 9]","(1, 4, 7, 9)",False,389,80,,469,79
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,579,1,90,42,2026-08-14T16:59:30.948991+00:00,ok,False,,,False,False,1.1117950000000292,0.513408199999958,"[11, 25, 34, 36]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,579,1,90,42,2026-08-16T10:31:18.311498+00:00,ok,False,,,False,False,1.228260499992757,0.5529162000020733,"[11, 25, 34, 36]
 ","[11, 25, 34, 36]","(34, 36, 11, 25)",False,397,88,,485,87
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,580,0,91,42,2026-08-14T16:59:32.060913+00:00,error,True,AttributeError,AttributeError: 'generator' object has no attribute 'tuple',False,True,1.0511814999999842,0.5938516999999592,,,"(6, (8, (4, 8)))",False,,,,,82
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,580,1,92,42,2026-08-14T16:59:33.112164+00:00,error,True,AttributeError,AttributeError: 'generator' object has no attribute 'tuple',False,True,1.0612855000001673,0.6036983000001328,,,"(6, (8, (4, 6)), 8, 10)",False,,,,,83
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,581,0,93,42,2026-08-14T16:59:34.173524+00:00,ok,False,,,False,False,0.8092517000000043,0.38748020000002725,"72
-",72,56,False,336,56,,392,55
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,581,1,94,42,2026-08-14T16:59:34.982892+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.7500726000000668,0.36679739999999583,,,5,False,,,,,50
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,584,0,95,42,2026-08-14T16:59:35.733067+00:00,ok,False,,,False,False,1.6448680999999397,0.3618329000000813,"carefuly- 33: arefu
-",carefuly- 33: arefu,'28-36: carefuly',False,359,144,,503,143
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,584,1,96,42,2026-08-14T16:59:37.378127+00:00,error,True,ExtractionError,"Unexpected token Token('RBRACE', '}') at line 3, column 28.
-Expected one of: 
-	* EQUAL
-	* ASYNC
-	* RPAR
-	* FOR
-	* COMMA
-",False,True,1.570250900000019,0.35480100000017956,,,'18-25: quickly',False,,,,,137
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,586,0,97,42,2026-08-14T16:59:38.948557+00:00,ok,False,,,False,False,0.9698032000001149,0.473597300000165,"[1, 2, 3, 4]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,580,0,91,42,2026-08-16T10:31:19.539866+00:00,error,True,TypeError,TypeError: 'tuple' object does not support item assignment,False,True,1.552603199990699,0.6223461999907158,,,"(6, (8, (4, 8)))",False,,,,,121
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,580,1,92,42,2026-08-16T10:31:21.092503+00:00,error,True,TypeError,TypeError: 'tuple' object does not support item assignment,False,True,1.5324433000059798,0.6698684000002686,,,"(6, (8, (4, 6)), 8, 10)",False,,,,,116
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,581,0,93,42,2026-08-16T10:31:22.625006+00:00,ok,False,,,False,False,0.9261697000038112,0.4114109000074677,"192
+",192,56,False,336,61,,397,60
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,581,1,94,42,2026-08-16T10:31:23.551264+00:00,error,True,NameError,NameError: name 'math' is not defined,False,True,0.8989835999964271,0.4049371000000974,,,5,False,,,,,60
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,584,0,95,42,2026-08-16T10:31:24.450297+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.399778700011666,0.36744020000332966,,,'28-36: carefuly',False,,,,,105
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,584,1,96,42,2026-08-16T10:31:25.850117+00:00,ok,False,,,False,False,1.4035959000029834,0.3503832999995211,"(0, 7): quickly
+","(0, 7): quickly",'18-25: quickly',False,356,105,,461,104
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,586,0,97,42,2026-08-16T10:31:27.253838+00:00,ok,False,,,False,False,1.042769200008479,0.498451000006753,"[1, 2, 3, 4]
 ","[1, 2, 3, 4]","[2, 3, 4, 1]",False,381,72,,453,71
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,586,1,98,42,2026-08-14T16:59:39.918492+00:00,ok,False,,,False,False,0.9772464000000127,0.5092866999998478,"[0, 1, 2, 3, 4, 5, 6, 7]
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,586,1,98,42,2026-08-16T10:31:28.296719+00:00,ok,False,,,False,False,1.0756932999938726,0.5558132000005571,"[0, 1, 2, 3, 4, 5, 6, 7]
 ","[0, 1, 2, 3, 4, 5, 6, 7]","[3, 4, 5, 6, 7, 0, 1, 2]",False,389,74,,463,73
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,588,0,99,42,2026-08-14T16:59:40.895852+00:00,ok,False,,,False,False,0.7774825999999848,0.4490576000000601,"8
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,588,0,99,42,2026-08-16T10:31:29.372509+00:00,ok,False,,,False,False,0.841532799997367,0.475684299992281,"8
 ",8,8,True,346,52,,398,51
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,588,1,100,42,2026-08-14T16:59:41.673436+00:00,ok,False,,,False,False,0.7653980000000047,0.43703489999984413,"7
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,588,1,100,42,2026-08-16T10:31:30.214134+00:00,ok,False,,,False,False,0.8390538999956334,0.46050349999859463,"7
 ",7,7,True,345,51,,396,50
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,591,0,101,42,2026-08-14T16:59:42.438937+00:00,ok,False,,,False,False,0.986703400000124,0.45880959999999504,"[3, 2, 1]
-","[3, 2, 1]","[3, 2, 1]",True,372,74,,446,73
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,591,1,102,42,2026-08-14T16:59:43.425768+00:00,ok,False,,,False,False,0.9741023999999925,0.4500464000000193,"[6, 5, 4]
-","[6, 5, 4]","[6, 5, 4]",True,372,74,,446,73
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,592,0,103,42,2026-08-14T16:59:44.399983+00:00,ok,False,,,False,False,0.8502194999998665,0.37257449999992787,"70
-",70,56,False,334,60,,394,59
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,592,1,104,42,2026-08-14T16:59:45.250305+00:00,ok,False,,,False,False,0.9842644000000291,0.3562360000000808,"2
-",2,1,False,334,74,,408,73
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,595,0,105,42,2026-08-14T16:59:46.234692+00:00,ok,False,,,False,False,0.8805035000000316,0.40247739999995247,"3
-",3,'Not Possible',False,351,63,,414,62
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,595,1,106,42,2026-08-14T16:59:47.115309+00:00,ok,False,,,False,False,0.8865131000000019,0.40896599999996397,"1
-",1,'Not Possible',False,351,63,,414,62
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,596,0,107,42,2026-08-14T16:59:48.001931+00:00,ok,False,,,False,False,0.7858375000000706,0.5978832000000693,"6
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,591,0,101,42,2026-08-16T10:31:31.053327+00:00,ok,False,,,False,False,1.0990473999991082,0.48996140000235755,"[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,372,75,,447,74
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,591,1,102,42,2026-08-16T10:31:32.152468+00:00,ok,False,,,False,False,1.0775013000093168,0.47775479999836534,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,372,75,,447,74
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,592,0,103,42,2026-08-16T10:31:33.230069+00:00,ok,False,,,False,False,0.9302394000114873,0.3932193000073312,"32
+",32,56,False,334,59,,393,58
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,592,1,104,42,2026-08-16T10:31:34.160413+00:00,ok,False,,,False,False,1.127980799996294,0.37107219999597874,"1
+",1,1,True,334,78,,412,77
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,595,0,105,42,2026-08-16T10:31:35.288484+00:00,ok,False,,,False,False,1.9226003999938257,0.4236028999875998,"9
+",9,'Not Possible',False,351,154,,505,153
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,595,1,106,42,2026-08-16T10:31:37.211214+00:00,ok,False,,,False,False,1.4183553000038955,0.41901640000287443,"1
+",1,'Not Possible',False,351,106,,457,104
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,596,0,107,42,2026-08-16T10:31:38.629675+00:00,ok,False,,,False,False,0.840253100002883,0.6413884999928996,"6
 ",6,88,False,368,52,,420,51
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,596,1,108,42,2026-08-14T16:59:48.787866+00:00,ok,False,,,False,False,0.8897787999999309,0.6366249000000153,"8
-",8,72,False,374,64,,438,63
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,597,0,109,42,2026-08-14T16:59:49.677759+00:00,ok,False,,,False,False,1.4484630000001744,0.6031732000001284,"113
-",113,256,False,429,123,,552,122
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,597,1,110,42,2026-08-14T16:59:51.126363+00:00,ok,False,,,False,False,1.5383398999999827,0.5160869999999704,"9
-9
-10
-12
-",12,8,False,400,133,,533,132
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,600,0,111,42,2026-08-14T16:59:52.664844+00:00,ok,False,,,False,False,0.6512116000001242,0.37866090000011354,"True
-",True,True,True,333,38,,371,37
-xingyaow/codeact-agent-mistral:latest,codeact-mistral (ollama),ollama,incremental,600,1,112,42,2026-08-14T16:59:53.316147+00:00,ok,False,,,False,False,0.5749267000001055,0.37791500000003,"False
-",False,False,True,333,30,,363,29
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,596,1,108,42,2026-08-16T10:31:39.470023+00:00,ok,False,,,False,False,0.9805984999984503,0.698270799999591,"8
+",8,72,False,374,66,,440,65
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,597,0,109,42,2026-08-16T10:31:40.450721+00:00,ok,False,,,False,False,1.4752805000025546,0.6546574000094552,"113
+",113,256,False,429,112,,541,111
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,597,1,110,42,2026-08-16T10:31:41.926078+00:00,ok,False,,,False,False,1.8085322000115411,0.5212594000040554,"2
+2
+2
+2
+",2,8,False,400,144,,544,143
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,600,0,111,42,2026-08-16T10:31:43.734742+00:00,ok,False,,,False,False,0.6548481999925571,0.3918629999971017,"True
+",True,True,True,333,35,,368,34
+xingyaow/codeact-agent-mistral:latest,codeact-agent-mistral-latest (ollama),ollama,incremental,600,1,112,42,2026-08-16T10:31:44.389663+00:00,ok,False,,,False,False,0.6771474999986822,0.3847815999906743,"False
+",False,False,True,333,35,,368,34

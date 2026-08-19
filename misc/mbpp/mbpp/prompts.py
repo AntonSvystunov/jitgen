@@ -1,5 +1,3 @@
-import hashlib
-
 from mbpp.dataset import MbppExample
 
 SYSTEM_PROMPT = """
@@ -39,14 +37,6 @@ Example — input: {example_test_input} -> output: {example_test_output}
 
 Solve it for this input: {test_input}
 """.strip()
-
-# Fingerprint of the template pair actually in force, independent of any
-# per-case content. Recorded alongside timing results so a template edit
-# between runs is visible as a version change instead of silently producing
-# incomparable data.
-PROMPT_VERSION = hashlib.sha256(
-    f"{SYSTEM_PROMPT}\0{HUMAN_PROMPT}".encode()
-).hexdigest()[:12]
 
 
 def render(case: MbppExample) -> list[dict[str, str]]:

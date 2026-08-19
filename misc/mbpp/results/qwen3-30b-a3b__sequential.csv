@@ -1,226 +1,227 @@
 Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,511,0,0,42,2026-08-14T19:29:46.097283+00:00,ok,False,,,False,False,7.2618822000004,7.261855300001116,"15
-",15,15,True,290,1563,,1853,1560
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,511,1,1,42,2026-08-14T19:29:53.360494+00:00,ok,False,,,False,False,6.722796100000778,6.722770200000014,"2
-",2,2,True,288,1384,,1672,1381
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,512,0,2,42,2026-08-14T19:30:00.084515+00:00,ok,False,,,False,False,13.184700699999667,13.184650400000464,"{10: 2, 9: 1, 8: 1, 7: 2, 6: 2}
-","{10: 2, 9: 1, 8: 1, 7: 2, 6: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,362,2750,,3112,2747
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,512,1,3,42,2026-08-14T19:30:13.271507+00:00,ok,False,,,False,False,11.255358599999454,11.255307499999617,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}
-","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,363,2340,,2703,2337
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,513,0,4,42,2026-08-14T19:30:24.528833+00:00,ok,False,,,False,False,8.957058300000426,8.957009399999151,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']
-","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",True,355,1852,,2207,1849
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,513,1,5,42,2026-08-14T19:30:33.487531+00:00,ok,False,,,False,False,7.644492699999319,7.644442200000412,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']
-","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",True,361,1581,,1942,1578
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,514,0,6,42,2026-08-14T19:30:41.133363+00:00,ok,False,,,False,False,4.589625099999466,4.589599399998406,"21
-",21,21,True,324,912,,1236,909
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,514,1,7,42,2026-08-14T19:30:45.723774+00:00,ok,False,,,False,False,4.863747299999886,4.863718900000094,"95
-",95,95,True,324,975,,1299,972
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,515,0,8,42,2026-08-14T19:30:50.588430+00:00,ok,False,,,False,False,19.373510800000076,19.373480300000665,"True
-",True,False,False,312,4013,,4325,4010
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,515,1,9,42,2026-08-14T19:31:09.965054+00:00,ok,False,,,False,False,20.940848800000822,20.940822900000057,"False
-",False,False,True,312,4317,,4629,4313
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,516,0,10,42,2026-08-14T19:31:30.909186+00:00,ok,False,,,False,False,16.94790269999976,16.94786380000005,"[2, 3, 7, 8, 9, 11]
-","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,338,3530,,3868,3527
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,516,1,11,42,2026-08-14T19:31:47.859971+00:00,ok,False,,,False,False,14.325844799999686,14.325806400000147,"[12, 24, 26, 29, 36]
-","[12, 24, 26, 29, 36]","[12, 24, 26, 29, 36]",True,339,2988,,3327,2985
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,517,0,12,42,2026-08-14T19:32:02.188173+00:00,ok,False,,,False,False,4.718540200001371,4.718513600000733,"6
-",6,6,True,308,948,,1256,945
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,517,1,13,42,2026-08-14T19:32:06.907528+00:00,ok,False,,,False,False,4.787663999999495,4.787635999999111,"1
-",1,1,True,304,963,,1267,960
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,520,0,14,42,2026-08-14T19:32:11.696098+00:00,ok,False,,,False,False,11.696176799998284,11.696150299998408,"24
-",24,24,True,311,2454,,2765,2451
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,520,1,15,42,2026-08-14T19:32:23.394304+00:00,ok,False,,,False,False,15.204001199999766,15.203975600001286,"120
-",120,120,True,315,3171,,3486,3168
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,522,0,16,42,2026-08-14T19:32:38.600864+00:00,ok,False,,,False,False,31.273895899999843,31.273869200000263,"6
-",6,6,True,365,6243,,6608,6156
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,522,1,17,42,2026-08-14T19:33:09.880401+00:00,ok,False,,,False,False,34.34347220000018,34.34344609999971,"5
-",5,5,True,363,6842,,7205,6809
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,524,0,18,42,2026-08-14T19:33:44.229363+00:00,ok,False,,,False,False,15.017870899999252,15.017840799999249,"22
-",22,22,True,330,3096,,3426,3073
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,524,1,19,42,2026-08-14T19:33:59.249722+00:00,ok,False,,,False,False,15.861536200000046,15.86151179999979,"10
-",10,10,True,330,3332,,3662,3292
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,525,0,20,42,2026-08-14T19:34:15.113910+00:00,ok,False,,,False,False,10.1309796000005,10.130947899999228,"False
-",False,False,True,310,2145,,2455,2142
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,525,1,21,42,2026-08-14T19:34:25.246603+00:00,ok,False,,,False,False,12.432263200000307,12.432237300001361,"True
-",True,True,True,305,2634,,2939,2631
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,526,0,22,42,2026-08-14T19:34:37.681026+00:00,ok,False,,,False,False,8.167237799998475,8.16721189999953,"'BigdatA'
-",'BigdatA','BigdatA',True,297,1725,,2022,1722
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,526,1,23,42,2026-08-14T19:34:45.849696+00:00,ok,False,,,False,False,12.458726999999271,12.458696300000156,"'HadooP'
-",'HadooP','HadooP',True,297,2641,,2938,2638
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,527,0,24,42,2026-08-14T19:34:58.310578+00:00,ok,False,,,False,False,18.569475800000873,18.56944889999977,"2
-",2,2,True,326,3873,,4199,3869
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,527,1,25,42,2026-08-14T19:35:16.883121+00:00,ok,False,,,False,False,22.882942000000185,22.88291610000124,"6
-",6,6,True,326,4722,,5048,4714
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,529,0,26,42,2026-08-14T19:35:39.769651+00:00,ok,False,,,False,False,15.227369700000054,15.227343399999882,"5
-",5,5,True,289,3204,,3493,3201
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,529,1,27,42,2026-08-14T19:35:54.999506+00:00,ok,False,,,False,False,7.70020040000054,7.700174900001002,"17
-",17,17,True,289,1623,,1912,1620
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,532,0,28,42,2026-08-14T19:36:02.700996+00:00,ok,False,,,False,False,4.840339700000186,4.84031320000031,"False
-",False,False,True,297,998,,1295,995
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,532,1,29,42,2026-08-14T19:36:07.542209+00:00,ok,False,,,False,False,5.221005500001411,5.220980500000223,"True
-",True,True,True,298,1088,,1386,1085
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,533,0,30,42,2026-08-14T19:36:12.764193+00:00,ok,False,,,False,False,11.091930000000502,11.091894999999568,"[7, 8, 9]
-","[7, 8, 9]","[7, 8, 9]",True,323,2351,,2674,2348
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,533,1,31,42,2026-08-14T19:36:23.858086+00:00,ok,False,,,False,False,11.038818799999717,11.038784700000178,"[7, 2]
-","[7, 2]","[7, 2]",True,327,2338,,2665,2335
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,537,0,32,42,2026-08-14T19:36:34.898840+00:00,ok,False,,,False,False,13.0295088999992,13.029482300000382,"None
-",None,'None',False,294,2763,,3057,2760
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,537,1,33,42,2026-08-14T19:36:47.930586+00:00,ok,False,,,False,False,7.293800600000395,7.2937751000008575,"'ca'
-",'ca','ca',True,297,1537,,1834,1534
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,538,0,34,42,2026-08-14T19:36:55.225338+00:00,ok,False,,,False,False,5.122947899999417,5.122900099999242,"('b', 'i', 'g', 'd', 'a', 't', 'a')
-","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,315,1062,,1377,1059
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,538,1,35,42,2026-08-14T19:37:00.349099+00:00,ok,False,,,False,False,6.640958699999828,6.640914399999019,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
-","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,314,1395,,1709,1392
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,540,0,36,42,2026-08-14T19:37:06.991209+00:00,ok,False,,,False,False,9.913702899999407,9.913677200000166,"3
-",3,3,True,329,2102,,2431,2099
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,540,1,37,42,2026-08-14T19:37:16.906643+00:00,ok,False,,,False,False,8.779865900000004,8.779840999999578,"0
-",0,0,True,319,1855,,2174,1852
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,541,0,38,42,2026-08-14T19:37:25.688014+00:00,ok,False,,,False,False,7.53262629999881,7.532597899999018,"False
-",False,False,True,288,1595,,1883,1590
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,541,1,39,42,2026-08-14T19:37:33.222084+00:00,ok,False,,,False,False,5.242770300001212,5.242744600000151,"True
-",True,True,True,288,1091,,1379,1088
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,542,0,40,42,2026-08-14T19:37:38.465752+00:00,ok,False,,,False,False,9.982426900000064,9.98240050000095,"'Stereo:Sound:Sweatproof'
-",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,321,2120,,2441,2117
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,542,1,41,42,2026-08-14T19:37:48.449893+00:00,ok,False,,,False,False,7.499377000000095,7.499351899999965,"'Probass:Curve:Audio'
-",'Probass:Curve:Audio','Probass:Curve:Audio',True,320,1577,,1897,1574
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,544,0,42,42,2026-08-14T19:37:55.950616+00:00,ok,False,,,False,False,6.073660800000653,6.0736352000003535,"'2 3 4 6 9 3 2 2 11'
-",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,354,1271,,1625,1268
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,544,1,43,42,2026-08-14T19:38:02.025335+00:00,ok,False,,,False,False,8.056226600001537,8.056200600000011,"'14 21 9 24 19 12 29 23 17'
-",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,361,1702,,2063,1699
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,545,0,44,42,2026-08-14T19:38:10.082903+00:00,ok,False,,,False,False,8.52694419999898,8.526917999999569,"6
-",6,6,True,290,1809,,2099,1798
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,545,1,45,42,2026-08-14T19:38:18.611364+00:00,ok,False,,,False,False,12.635974599999827,12.635938200000965,"5
-",5,5,True,290,2679,,2969,2656
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,547,0,46,42,2026-08-14T19:38:31.249551+00:00,ok,False,,,False,False,8.731175599999915,8.731149399998685,"3
-",3,3,True,293,1845,,2138,1842
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,547,1,47,42,2026-08-14T19:38:39.982208+00:00,ok,False,,,False,False,28.8115942000004,28.81156799999917,"8
-",8,8,True,293,5886,,6179,5883
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,548,0,48,42,2026-08-14T19:39:08.797930+00:00,ok,False,,,False,False,11.967199699998673,11.967171299998881,"3
-",3,3,True,335,2496,,2831,2482
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,548,1,49,42,2026-08-14T19:39:20.767089+00:00,ok,False,,,False,False,14.124046199998702,14.124020699999164,"4
-",4,4,True,340,2971,,3311,2946
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,549,0,50,42,2026-08-14T19:39:34.893184+00:00,ok,False,,,False,False,6.759099400000196,6.7590751000007,"244
-",244,244,True,290,1424,,1714,1421
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,549,1,51,42,2026-08-14T19:39:41.653327+00:00,ok,False,,,False,False,7.4944837000002735,7.494458000001032,"3369
-",3369,3369,True,290,1585,,1875,1582
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,550,0,52,42,2026-08-14T19:39:49.149078+00:00,ok,False,,,False,False,15.877041499999905,15.877016000000367,"5
-",5,5,True,312,3348,,3660,3331
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,550,1,53,42,2026-08-14T19:40:05.028741+00:00,ok,False,,,False,False,9.006509099999676,9.006482799999503,"3
-",3,3,True,308,1897,,2205,1894
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,552,0,54,42,2026-08-14T19:40:14.036875+00:00,ok,False,,,False,False,9.876786900000297,9.876761200001056,"'Linear Sequence'
-",'Linear Sequence','Linear Sequence',True,305,2092,,2397,2089
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,552,1,55,42,2026-08-14T19:40:23.915356+00:00,ok,False,,,False,False,11.190612000000328,11.190587400000368,"'Not Linear Sequence'
-",'Not Linear Sequence','Non Linear Sequence',False,305,2377,,2682,2372
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,553,0,56,42,2026-08-14T19:40:35.107873+00:00,ok,False,,,False,False,9.790779999999359,9.790748999999778,"7.256
-",7.256,7.256,True,301,2072,,2373,2069
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,553,1,57,42,2026-08-14T19:40:44.900377+00:00,ok,False,,,False,False,9.8559194999998,9.855890900000304,"8.123
-",8.123,8.123,True,301,2094,,2395,2091
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,554,0,58,42,2026-08-14T19:40:54.758058+00:00,ok,False,,,False,False,5.3459390999996685,5.3458991999996215,"[11, 13]
-","[11, 13]","[11, 13]",True,313,1108,,1421,1105
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,554,1,59,42,2026-08-14T19:41:00.104922+00:00,ok,False,,,False,False,5.054574499999944,5.054535600000236,"[7, 9, 1]
-","[7, 9, 1]","[7, 9, 1]",True,309,1052,,1361,1049
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,555,0,60,42,2026-08-14T19:41:05.160416+00:00,ok,False,,,False,False,4.829490199999782,4.829464899999948,"210
-",210,210,True,299,1000,,1299,997
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,555,1,61,42,2026-08-14T19:41:09.990783+00:00,ok,False,,,False,False,8.660199699999794,8.660174200000256,"6
-",6,6,True,299,1841,,2140,1838
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,556,0,62,42,2026-08-14T19:41:18.652255+00:00,ok,False,,,False,False,10.347172400001,10.347148500000912,"12
-",12,12,True,312,2202,,2514,2199
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,556,1,63,42,2026-08-14T19:41:29.001272+00:00,ok,False,,,False,False,6.1643512999999075,6.1643253000002005,"2
-",2,2,True,303,1285,,1588,1282
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,558,0,64,42,2026-08-14T19:41:35.166687+00:00,ok,False,,,False,False,9.40271759999996,9.402692400000888,"6
-",6,6,True,291,2000,,2291,1997
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,558,1,65,42,2026-08-14T19:41:44.570887+00:00,ok,False,,,False,False,8.666773700000704,8.6667479000007,"7
-",7,7,True,293,1836,,2129,1833
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,559,0,66,42,2026-08-14T19:41:53.239179+00:00,ok,False,,,False,False,11.361343500000658,11.361314899999343,"8
-",8,8,True,338,2410,,2748,2407
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,559,1,67,42,2026-08-14T19:42:04.602589+00:00,ok,False,,,False,False,17.007449999999153,17.007423299999573,"10
-",10,10,True,338,3576,,3914,3573
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,560,0,68,42,2026-08-14T19:42:21.612735+00:00,ok,False,,,False,False,8.322468899999876,8.322426499998983,"(1, 2, 3, 4, 5, 6)
-","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,348,1751,,2099,1748
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,560,1,69,42,2026-08-14T19:42:29.936593+00:00,ok,False,,,False,False,8.814238099999784,8.814187299998594,"(11, 12, 13, 14, 15, 16, 17)
-","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,356,1864,,2220,1861
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,561,0,70,42,2026-08-14T19:42:38.752399+00:00,ok,False,,,False,False,33.499462399999175,33.499396699999124,"{6: [4], 9: [4, 5], 3: [8], 4: [9], 5: [], 8: []}
-","{6: [4], 9: [4, 5], 3: [8], 4: [9], 5: [], 8: []}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",True,384,6733,,7117,6730
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,561,1,71,42,2026-08-14T19:43:12.256818+00:00,ok,False,,,False,False,24.028328300000794,24.028258899999855,"{6: [2, 8], 4: [9, 9], 3: [7], 2: [], 7: [], 8: [], 9: []}
-","{6: [2, 8], 4: [9, 9], 3: [7], 2: [], 7: [], 8: [], 9: []}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",True,384,4944,,5328,4941
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,562,0,72,42,2026-08-14T19:43:36.289131+00:00,ok,False,,,False,False,5.8191477000000305,5.81912310000007,"3
-",3,3,True,311,1210,,1521,1207
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,562,1,73,42,2026-08-14T19:43:42.109277+00:00,ok,False,,,False,False,5.6785904999997,5.678565599999274,"5
-",5,5,True,328,1188,,1516,1185
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,564,0,74,42,2026-08-14T19:43:47.788758+00:00,ok,False,,,False,False,9.696451899999374,9.696425399999498,"0
-",0,0,True,300,2056,,2356,2052
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,564,1,75,42,2026-08-14T19:43:57.487058+00:00,ok,False,,,False,False,12.218301499999143,12.218275900000663,"10
-",10,10,True,302,2595,,2897,2592
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,565,0,76,42,2026-08-14T19:44:09.707150+00:00,ok,False,,,False,False,4.610988300000827,4.610951600001499,"['N', 'a', 'm', 'e']
-","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,300,949,,1249,946
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,565,1,77,42,2026-08-14T19:44:14.318976+00:00,ok,False,,,False,False,3.2280244000012317,3.2279821000010998,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
-","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,300,643,,943,640
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,571,0,78,42,2026-08-14T19:44:17.547611+00:00,stalled,False,TimeoutError,case exceeded 60.0s,True,False,60.01480339999944,,,,25,False,,,,,11608
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,571,1,79,42,2026-08-14T19:45:17.571005+00:00,ok,False,,,False,False,30.275408999999854,30.275383500000316,"12
-",12,21,False,345,6128,,6473,6118
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,572,0,80,42,2026-08-14T19:45:47.851056+00:00,ok,False,,,False,False,11.440688599999703,11.440647499999614,"[1, 3, 4, 5]
-","[1, 3, 4, 5]","[1, 3, 4, 5]",True,318,2418,,2736,2415
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,572,1,81,42,2026-08-14T19:45:59.293386+00:00,ok,False,,,False,False,9.934143399999812,9.934105300000738,"[1, 2, 3, 4, 5]
-","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,316,2107,,2423,2104
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,573,0,82,42,2026-08-14T19:46:09.229245+00:00,ok,False,,,False,False,6.825523899999098,6.825498099999095,"6
-",6,6,True,338,1433,,1771,1430
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,573,1,83,42,2026-08-14T19:46:16.055933+00:00,ok,False,,,False,False,7.923106199999893,7.923080499998832,"0
-",0,0,True,343,1679,,2022,1676
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,575,0,84,42,2026-08-14T19:46:23.980474+00:00,ok,False,,,False,False,24.841434500000105,24.84140750000006,"11
-",11,11,True,307,5134,,5441,5124
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,575,1,85,42,2026-08-14T19:46:48.825462+00:00,ok,False,,,False,False,24.815061600000263,24.81502780000119,"5
-",5,16,False,308,5119,,5427,5115
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,576,0,86,42,2026-08-14T19:47:13.644478+00:00,ok,False,,,False,False,13.988188100000116,13.988164499998675,"True
-",True,True,True,316,2953,,3269,2950
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,577,0,87,42,2026-08-14T19:47:27.634902+00:00,ok,False,,,False,False,7.114883199999895,7.114856100000907,"0
-",0,0,True,289,1500,,1789,1497
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,577,1,88,42,2026-08-14T19:47:34.751066+00:00,ok,False,,,False,False,7.28439040000012,7.284365700001217,"0
-",0,0,True,289,1542,,1831,1539
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,579,0,89,42,2026-08-14T19:47:42.036658+00:00,ok,False,,,False,False,8.20895980000023,8.20892350000031,"(1, 4, 7, 9)
-","(1, 4, 7, 9)","(1, 4, 7, 9)",True,343,1735,,2078,1732
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,579,1,90,42,2026-08-14T19:47:50.247063+00:00,ok,False,,,False,False,9.761608999999225,9.761568800000532,"(11, 25, 34, 36)
-","(11, 25, 34, 36)","(34, 36, 11, 25)",False,351,2072,,2423,2069
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,580,0,91,42,2026-08-14T19:48:00.010682+00:00,ok,False,,,False,False,22.468994400000156,22.468950700000278,"(6, (8, (4, 8)))
-","(6, (8, (4, 8)))","(6, (8, (4, 8)))",True,346,4665,,5011,4662
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,580,1,92,42,2026-08-14T19:48:22.483196+00:00,ok,False,,,False,False,17.006479800000307,17.00642920000064,"(6, (8, (4, 6)), 8, 10)
-","(6, (8, (4, 6)), 8, 10)","(6, (8, (4, 6)), 8, 10)",True,347,3562,,3909,3559
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,581,0,93,42,2026-08-14T19:48:39.492416+00:00,ok,False,,,False,False,5.88078619999942,5.88075949999984,"56
-",56,56,True,291,1229,,1520,1226
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,581,1,94,42,2026-08-14T19:48:45.374104+00:00,ok,False,,,False,False,14.720606200000475,14.720581300000049,"5
-",5,5,True,291,3122,,3413,3119
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,584,0,95,42,2026-08-14T19:49:00.097182+00:00,ok,False,,,False,False,35.001980099999855,35.001953899998625,"'28-36: carefuly'
-",'28-36: carefuly','28-36: carefuly',True,311,7040,,7351,7037
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,584,1,96,42,2026-08-14T19:49:35.103765+00:00,ok,False,,,False,False,20.167992400000003,20.16796350000004,"'18-25: quickly'
-",'18-25: quickly','18-25: quickly',True,309,4200,,4509,4197
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,586,0,97,42,2026-08-14T19:49:55.275085+00:00,ok,False,,,False,False,9.252031300000453,9.251994000000195,"[2, 3, 4, 1]
-","[2, 3, 4, 1]","[2, 3, 4, 1]",True,336,1950,,2286,1947
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,586,1,98,42,2026-08-14T19:50:04.528825+00:00,ok,False,,,False,False,9.762706200001048,9.762662900000578,"[3, 4, 5, 6, 7, 0, 1, 2]
-","[3, 4, 5, 6, 7, 0, 1, 2]","[3, 4, 5, 6, 7, 0, 1, 2]",True,344,2071,,2415,2068
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,588,0,99,42,2026-08-14T19:50:14.293253+00:00,ok,False,,,False,False,3.3907985000005283,3.3907723000011174,"8
-",8,8,True,303,678,,981,675
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,588,1,100,42,2026-08-14T19:50:17.684654+00:00,ok,False,,,False,False,3.4568472000009933,3.4568211999994674,"7
-",7,7,True,302,700,,1002,697
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,591,0,101,42,2026-08-14T19:50:21.142142+00:00,ok,False,,,False,False,6.950972000000547,6.950932300000204,"[3, 2, 1]
-","[3, 2, 1]","[3, 2, 1]",True,328,1467,,1795,1464
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,591,1,102,42,2026-08-14T19:50:28.094375+00:00,ok,False,,,False,False,4.4192738000001555,4.419239900000321,"[6, 5, 4]
-","[6, 5, 4]","[6, 5, 4]",True,328,910,,1238,907
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,592,0,103,42,2026-08-14T19:50:32.514434+00:00,ok,False,,,False,False,18.67359530000067,18.673569800001133,"56
-",56,56,True,289,3928,,4217,3925
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,592,1,104,42,2026-08-14T19:50:51.190964+00:00,ok,False,,,False,False,14.439390200001071,14.439363700001195,"1
-",1,1,True,289,3043,,3332,3040
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,595,0,105,42,2026-08-14T19:51:05.632550+00:00,ok,False,,,False,False,28.619268700000248,28.61923879999995,"-1
-",-1,'Not Possible',False,307,5853,,6160,5850
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,595,1,106,42,2026-08-14T19:51:34.255830+00:00,ok,False,,,False,False,33.38159919999998,33.38157040000078,"1
-",1,'Not Possible',False,307,6742,,7049,6739
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,596,0,107,42,2026-08-14T19:52:07.642652+00:00,ok,False,,,False,False,33.18048099999942,33.18045560000064,"88
-",88,88,True,325,6691,,7016,6687
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,596,1,108,42,2026-08-14T19:52:40.827881+00:00,ok,False,,,False,False,16.27894820000074,16.278919000000315,"72
-",72,72,True,329,3416,,3745,3411
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,597,0,109,42,2026-08-14T19:52:57.109381+00:00,ok,False,,,False,False,15.832693800000925,15.832669200000964,"256
-",256,256,True,386,3327,,3713,3324
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,597,1,110,42,2026-08-14T19:53:12.944631+00:00,ok,False,,,False,False,13.455463300000702,13.45543809999981,"8
-",8,8,True,357,2843,,3200,2840
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,600,0,111,42,2026-08-14T19:53:26.402326+00:00,ok,False,,,False,False,3.351607700000386,3.3515824999994948,"True
-",True,True,True,289,664,,953,661
-qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,600,1,112,42,2026-08-14T19:53:29.754589+00:00,ok,False,,,False,False,4.151950899999065,4.151925599999231,"False
-",False,False,True,289,857,,1146,854
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,511,0,0,42,2026-08-16T12:13:18.144458+00:00,ok,False,,,False,False,7.906417000005604,7.9063850000093225,"15
+",15,15,True,290,1705,,1995,1702
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,511,1,1,42,2026-08-16T12:13:26.052310+00:00,ok,False,,,False,False,12.625412699999288,12.625381200006814,"2
+",2,2,True,288,2725,,3013,2722
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,512,0,2,42,2026-08-16T12:13:38.680256+00:00,ok,False,,,False,False,12.493877299988526,12.493820999996387,"{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}
+","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,362,2680,,3042,2677
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,512,1,3,42,2026-08-16T12:13:51.176249+00:00,ok,False,,,False,False,8.989228100006585,8.989181400000234,"{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}
+","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,363,1929,,2292,1926
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,513,0,4,42,2026-08-16T12:14:00.167048+00:00,ok,False,,,False,False,7.020209599999362,7.020156499987934,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']
+","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",True,355,1496,,1851,1493
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,513,1,5,42,2026-08-16T12:14:07.188475+00:00,ok,False,,,False,False,7.892731200001435,7.892682000005152,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']
+","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",True,361,1694,,2055,1691
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,514,0,6,42,2026-08-16T12:14:15.082620+00:00,ok,False,,,False,False,3.895906300007482,3.8958819000108633,"21
+",21,21,True,324,803,,1127,800
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,514,1,7,42,2026-08-16T12:14:18.979215+00:00,ok,False,,,False,False,9.264020699993125,9.263993100001244,"95
+",95,95,True,324,2005,,2329,2002
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,515,0,8,42,2026-08-16T12:14:28.244829+00:00,ok,False,,,False,False,13.478040099987993,13.478015599990613,"True
+",True,False,False,312,2904,,3216,2901
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,515,1,9,42,2026-08-16T12:14:41.724748+00:00,ok,False,,,False,False,16.350451699996484,16.350422100003925,"True
+",True,False,False,312,3505,,3817,3492
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,516,0,10,42,2026-08-16T12:14:58.077608+00:00,ok,False,,,False,False,14.87221889999637,14.872175600001356,"[2, 3, 7, 8, 9, 11]
+","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,338,3189,,3527,3186
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,516,1,11,42,2026-08-16T12:15:12.952185+00:00,ok,False,,,False,False,16.332698099999106,16.33265470000333,"[12, 24, 26, 29, 36]
+","[12, 24, 26, 29, 36]","[12, 24, 26, 29, 36]",True,339,3500,,3839,3497
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,517,0,12,42,2026-08-16T12:15:29.287735+00:00,ok,False,,,False,False,4.732703100002254,4.732678100001067,"6
+",6,6,True,308,988,,1296,985
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,517,1,13,42,2026-08-16T12:15:34.021290+00:00,ok,False,,,False,False,4.4916239000012865,4.491598699998576,"1
+",1,1,True,304,938,,1242,935
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,520,0,14,42,2026-08-16T12:15:38.513781+00:00,ok,False,,,False,False,17.363801399988006,17.363772499986226,"24
+",24,24,True,311,3697,,4008,3694
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,520,1,15,42,2026-08-16T12:15:55.880543+00:00,ok,False,,,False,False,14.305346699999063,14.305321500010905,"120
+",120,120,True,315,3063,,3378,3060
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,522,0,16,42,2026-08-16T12:16:10.188189+00:00,ok,False,,,False,False,28.82956670000567,28.829536000004737,"6
+",6,6,True,365,5970,,6335,5903
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,522,1,17,42,2026-08-16T12:16:39.022590+00:00,ok,False,,,False,False,36.192378399995505,36.19234939999296,"5
+",5,5,True,363,7314,,7677,7262
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,524,0,18,42,2026-08-16T12:17:15.220294+00:00,ok,False,,,False,False,16.50695569999516,16.506926999994903,"22
+",22,22,True,330,3500,,3830,3476
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,524,1,19,42,2026-08-16T12:17:31.729985+00:00,ok,False,,,False,False,12.87159770001017,12.871569000009913,"10
+",10,10,True,330,2763,,3093,2751
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,525,0,20,42,2026-08-16T12:17:44.603773+00:00,ok,False,,,False,False,12.180112700007157,12.180076000004192,"False
+",False,False,True,310,2620,,2930,2617
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,525,1,21,42,2026-08-16T12:17:56.786095+00:00,ok,False,,,False,False,8.932335399993462,8.93230789998779,"True
+",True,True,True,305,1919,,2224,1916
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,526,0,22,42,2026-08-16T12:18:05.720030+00:00,ok,False,,,False,False,10.244007400004193,10.243981400009943,"'BigdatA'
+",'BigdatA','BigdatA',True,297,2208,,2505,2205
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,526,1,23,42,2026-08-16T12:18:15.965956+00:00,ok,False,,,False,False,13.05784069999936,13.057815599997411,"'HadooP'
+",'HadooP','HadooP',True,297,2812,,3109,2809
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,527,0,24,42,2026-08-16T12:18:29.025979+00:00,ok,False,,,False,False,21.26313820001087,21.26311350001197,"2
+",2,2,True,326,4472,,4798,4468
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,527,1,25,42,2026-08-16T12:18:50.292375+00:00,ok,False,,,False,False,20.019562600005884,20.019534699997166,"6
+",6,6,True,326,4241,,4567,4235
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,529,0,26,42,2026-08-16T12:19:10.315072+00:00,ok,False,,,False,False,19.459915100000217,19.459890300000552,"5
+",5,5,True,289,4120,,4409,4117
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,529,1,27,42,2026-08-16T12:19:29.778114+00:00,ok,False,,,False,False,19.560497599988594,19.56045789999189,"17
+",17,17,True,289,4149,,4438,4146
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,532,0,28,42,2026-08-16T12:19:49.341800+00:00,ok,False,,,False,False,5.54770219999773,5.547674899993581,"False
+",False,False,True,297,1165,,1462,1162
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,532,1,29,42,2026-08-16T12:19:54.890606+00:00,ok,False,,,False,False,5.181297500006622,5.181272400004673,"True
+",True,True,True,298,1095,,1393,1092
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,533,0,30,42,2026-08-16T12:20:00.072857+00:00,ok,False,,,False,False,8.635098900005687,8.63505910000822,"[7, 8, 9]
+","[7, 8, 9]","[7, 8, 9]",True,323,1859,,2182,1856
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,533,1,31,42,2026-08-16T12:20:08.709497+00:00,ok,False,,,False,False,6.8891399999993155,6.88910699999542,"[7, 2]
+","[7, 2]","[7, 2]",True,327,1473,,1800,1470
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,537,0,32,42,2026-08-16T12:20:15.599959+00:00,ok,False,,,False,False,10.242278599995188,10.242247999995016,"''
+",'','None',False,294,2209,,2503,2206
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,537,1,33,42,2026-08-16T12:20:25.843998+00:00,ok,False,,,False,False,7.131404799991287,7.131376999997883,"'ca'
+",'ca','ca',True,297,1532,,1829,1529
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,538,0,34,42,2026-08-16T12:20:32.976477+00:00,ok,False,,,False,False,6.003221299994038,6.003176300000632,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,315,1282,,1597,1279
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,538,1,35,42,2026-08-16T12:20:38.980653+00:00,ok,False,,,False,False,7.246218800006318,7.246174800005974,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,314,1560,,1874,1557
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,540,0,36,42,2026-08-16T12:20:46.228168+00:00,ok,False,,,False,False,8.491975900004036,8.49195250000048,"3
+",3,3,True,329,1826,,2155,1823
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,540,1,37,42,2026-08-16T12:20:54.721244+00:00,ok,False,,,False,False,11.445699999996577,11.445666599989636,"0
+",0,0,True,319,2475,,2794,2472
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,541,0,38,42,2026-08-16T12:21:06.170116+00:00,ok,False,,,False,False,7.524453199992422,7.524427500000456,"False
+",False,False,True,288,1620,,1908,1611
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,541,1,39,42,2026-08-16T12:21:13.696084+00:00,ok,False,,,False,False,7.090593999993871,7.090564099999028,"True
+",True,True,True,288,1525,,1813,1522
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,542,0,40,42,2026-08-16T12:21:20.787302+00:00,ok,False,,,False,False,9.874923399998806,9.874892899999395,"'Stereo:Sound:Sweatproof'
+",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,321,2135,,2456,2132
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,542,1,41,42,2026-08-16T12:21:30.664075+00:00,ok,False,,,False,False,7.0529623000038555,7.052935300001991,"'Probass:Curve:Audio'
+",'Probass:Curve:Audio','Probass:Curve:Audio',True,320,1508,,1828,1505
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,544,0,42,42,2026-08-16T12:21:37.718270+00:00,ok,False,,,False,False,6.523873699989053,6.5238484000001336,"'2 3 4 6 9 3 2 2 11'
+",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,354,1395,,1749,1392
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,544,1,43,42,2026-08-16T12:21:44.243305+00:00,ok,False,,,False,False,6.120375799990143,6.120340800000122,"'14 21 9 24 19 12 29 23 17'
+",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,361,1307,,1668,1304
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,545,0,44,42,2026-08-16T12:21:50.365442+00:00,ok,False,,,False,False,12.632558800003608,12.632520200000727,"6
+",6,6,True,290,2691,,2981,2675
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,545,1,45,42,2026-08-16T12:22:03.000259+00:00,ok,False,,,False,False,11.474656699996558,11.474632199999178,"5
+",5,5,True,290,2478,,2768,2456
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,547,0,46,42,2026-08-16T12:22:14.476843+00:00,ok,False,,,False,False,8.018546499995864,8.018518900003983,"3
+",3,3,True,293,1723,,2016,1720
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,547,1,47,42,2026-08-16T12:22:22.496653+00:00,ok,False,,,False,False,11.253074699998251,11.253048099999432,"8
+",8,8,True,293,2431,,2724,2428
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,548,0,48,42,2026-08-16T12:22:33.751832+00:00,ok,False,,,False,False,9.395770499992068,9.395742699998664,"3
+",3,3,True,335,2019,,2354,2007
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,548,1,49,42,2026-08-16T12:22:43.149223+00:00,ok,False,,,False,False,13.19323190000432,13.193204100010917,"4
+",4,4,True,340,2830,,3170,2784
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,549,0,50,42,2026-08-16T12:22:56.344638+00:00,ok,False,,,False,False,9.22310980000475,9.22308399999747,"244
+",244,244,True,290,1989,,2279,1986
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,549,1,51,42,2026-08-16T12:23:05.569353+00:00,ok,False,,,False,False,8.594979699992109,8.594954799991683,"3369
+",3369,3369,True,290,1861,,2151,1858
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,550,0,52,42,2026-08-16T12:23:14.165897+00:00,ok,False,,,False,False,8.716629899994587,8.71660279999196,"5
+",5,5,True,312,1883,,2195,1875
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,550,1,53,42,2026-08-16T12:23:22.884161+00:00,ok,False,,,False,False,20.63147089999984,20.63144040000043,"3
+",3,3,True,308,4378,,4686,4375
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,552,0,54,42,2026-08-16T12:23:43.519069+00:00,ok,False,,,False,False,10.088755499993567,10.08872679999331,"'Linear Sequence'
+",'Linear Sequence','Linear Sequence',True,305,2168,,2473,2165
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,552,1,55,42,2026-08-16T12:23:53.609612+00:00,ok,False,,,False,False,12.608790600002976,12.60876059999282,"'Not Linear Sequence'
+",'Not Linear Sequence','Non Linear Sequence',False,305,2723,,3028,2715
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,553,0,56,42,2026-08-16T12:24:06.220671+00:00,ok,False,,,False,False,11.130179999992833,11.130153399994015,"7.256
+",7.256,7.256,True,301,2400,,2701,2397
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,553,1,57,42,2026-08-16T12:24:17.352774+00:00,ok,False,,,False,False,9.551437800007989,9.551411899999948,"8.123
+",8.123,8.123,True,301,2063,,2364,2060
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,554,0,58,42,2026-08-16T12:24:26.905892+00:00,ok,False,,,False,False,4.72420310000598,4.724170600005891,"[11, 13]
+","[11, 13]","[11, 13]",True,313,988,,1301,985
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,554,1,59,42,2026-08-16T12:24:31.630897+00:00,ok,False,,,False,False,5.439975700006471,5.439938499999698,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,309,1151,,1460,1148
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,555,0,60,42,2026-08-16T12:24:37.071723+00:00,ok,False,,,False,False,4.234063099997002,4.234035200002836,"210
+",210,210,True,299,882,,1181,879
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,555,1,61,42,2026-08-16T12:24:41.306598+00:00,ok,False,,,False,False,4.524612200009869,4.524585400009528,"6
+",6,6,True,299,957,,1256,954
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,556,0,62,42,2026-08-16T12:24:45.832166+00:00,ok,False,,,False,False,7.145952499995474,7.145924099997501,"12
+",12,12,True,312,1534,,1846,1531
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,556,1,63,42,2026-08-16T12:24:52.979404+00:00,ok,False,,,False,False,4.485792300009052,4.48576409999805,"2
+",2,2,True,303,940,,1243,937
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,558,0,64,42,2026-08-16T12:24:57.465989+00:00,ok,False,,,False,False,9.040016300001298,9.039991800003918,"6
+",6,6,True,291,1959,,2250,1956
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,558,1,65,42,2026-08-16T12:25:06.507790+00:00,ok,False,,,False,False,8.039244299987331,8.039219999991474,"7
+",7,7,True,293,1735,,2028,1732
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,559,0,66,42,2026-08-16T12:25:14.548479+00:00,ok,False,,,False,False,11.176309200003743,11.176284700006363,"8
+",8,8,True,338,2417,,2755,2414
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,559,1,67,42,2026-08-16T12:25:25.726670+00:00,ok,False,,,False,False,16.48341960000107,16.483393100003013,"10
+",10,10,True,338,3521,,3859,3518
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,560,0,68,42,2026-08-16T12:25:42.212910+00:00,ok,False,,,False,False,9.9725569000002,9.972513300002902,"(1, 2, 3, 4, 5, 6)
+","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,348,2147,,2495,2144
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,560,1,69,42,2026-08-16T12:25:52.187221+00:00,ok,False,,,False,False,8.954159699991578,8.95411459999741,"(11, 12, 13, 14, 15, 16, 17)
+","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,356,1930,,2286,1927
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,561,0,70,42,2026-08-16T12:26:01.142751+00:00,ok,False,,,False,False,31.557762600001297,31.557692600006703,"{3: [8], 4: [9], 5: [], 6: [4], 8: [], 9: [4, 5]}
+","{3: [8], 4: [9], 5: [], 6: [4], 8: [], 9: [4, 5]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",True,384,6493,,6877,6490
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,561,1,71,42,2026-08-16T12:26:32.705291+00:00,ok,False,,,False,False,25.00453249999555,25.00446139999258,"{2: [], 3: [7], 4: [9, 9], 6: [2, 8], 7: [], 8: [], 9: []}
+","{2: [], 3: [7], 4: [9, 9], 6: [2, 8], 7: [], 8: [], 9: []}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",True,384,5226,,5610,5223
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,562,0,72,42,2026-08-16T12:26:57.714148+00:00,ok,False,,,False,False,5.0677717000071425,5.067746100001386,"3
+",3,3,True,311,1061,,1372,1058
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,562,1,73,42,2026-08-16T12:27:02.782771+00:00,ok,False,,,False,False,5.101148899993859,5.101119799990556,"5
+",5,5,True,328,1083,,1411,1080
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,564,0,74,42,2026-08-16T12:27:07.884987+00:00,ok,False,,,False,False,10.561317899991991,10.56129399999918,"0
+",0,0,True,300,2286,,2586,2282
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,564,1,75,42,2026-08-16T12:27:18.447894+00:00,ok,False,,,False,False,10.10028980000061,10.10026310000103,"10
+",10,10,True,302,2161,,2463,2157
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,565,0,76,42,2026-08-16T12:27:28.549957+00:00,ok,False,,,False,False,3.5658922999864444,3.565856299988809,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,300,705,,1005,702
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,565,1,77,42,2026-08-16T12:27:32.116392+00:00,ok,False,,,False,False,4.240339500000118,4.240298399992753,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,300,864,,1164,861
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,571,0,78,42,2026-08-16T12:27:36.357501+00:00,ok,False,,,False,False,47.53941169999598,47.53938570000173,"330
+",330,25,False,344,9497,,9841,9492
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,571,1,79,42,2026-08-16T12:28:23.904763+00:00,ok,False,,,False,False,47.21523359999992,47.21520449999662,"12
+",12,21,False,345,9416,,9761,9408
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,572,0,80,42,2026-08-16T12:29:11.126884+00:00,ok,False,,,False,False,10.5418398000038,10.541798200007179,"[1, 3, 4, 5]
+","[1, 3, 4, 5]","[1, 3, 4, 5]",True,318,2236,,2554,2233
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,572,1,81,42,2026-08-16T12:29:21.670550+00:00,ok,False,,,False,False,8.870658899992122,8.870620499990764,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,316,1895,,2211,1892
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,573,0,82,42,2026-08-16T12:29:30.542920+00:00,ok,False,,,False,False,8.596340800009784,8.596312100009527,"6
+",6,6,True,338,1823,,2161,1820
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,573,1,83,42,2026-08-16T12:29:39.140840+00:00,ok,False,,,False,False,8.525703600011184,8.525676200006274,"0
+",0,0,True,343,1814,,2157,1811
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,575,0,84,42,2026-08-16T12:29:47.667815+00:00,ok,False,,,False,False,37.98256920000131,37.98254320000706,"3
+",3,11,False,307,7689,,7996,7686
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,575,1,85,42,2026-08-16T12:30:25.655960+00:00,ok,False,,,False,False,32.1647118999972,32.16468609998992,"16
+",16,16,True,308,6584,,6892,6581
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,576,0,86,42,2026-08-16T12:30:57.824762+00:00,ok,False,,,False,False,17.129886499998975,17.129859099994064,"True
+",True,True,True,316,3626,,3942,3623
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,577,0,87,42,2026-08-16T12:31:14.957538+00:00,ok,False,,,False,False,5.8924021999991965,5.892365799998515,"0
+",0,0,True,289,1225,,1514,1221
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,577,1,88,42,2026-08-16T12:31:20.850986+00:00,ok,False,,,False,False,5.536020899991854,5.535994199992274,"0
+",0,0,True,289,1162,,1451,1159
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,579,0,89,42,2026-08-16T12:31:26.388028+00:00,ok,False,,,False,False,10.589156999994884,10.589112699992256,"(1, 4, 7, 9)
+","(1, 4, 7, 9)","(1, 4, 7, 9)",True,343,2265,,2608,2262
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,579,1,90,42,2026-08-16T12:31:36.979038+00:00,ok,False,,,False,False,14.197380600002361,14.197320399995078,"(11, 25, 34, 36)
+","(11, 25, 34, 36)","(34, 36, 11, 25)",False,351,3033,,3384,3030
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,580,0,91,42,2026-08-16T12:31:51.180536+00:00,ok,False,,,False,False,18.822642799990717,18.822602499989443,"(6, (8, (4, 8)))
+","(6, (8, (4, 8)))","(6, (8, (4, 8)))",True,346,3988,,4334,3985
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,580,1,92,42,2026-08-16T12:32:10.005698+00:00,ok,False,,,False,False,20.48450619999494,20.484453400000348,"(6, (8, (4, 6)), 8, 10)
+","(6, (8, (4, 6)), 8, 10)","(6, (8, (4, 6)), 8, 10)",True,347,4321,,4668,4318
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,581,0,93,42,2026-08-16T12:32:30.493577+00:00,ok,False,,,False,False,6.010387800008175,6.010361300010118,"56
+",56,56,True,291,1252,,1543,1247
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,581,1,94,42,2026-08-16T12:32:36.504992+00:00,ok,False,,,False,False,7.016894599990337,7.016870199993718,"5
+",5,5,True,291,1494,,1785,1487
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,584,0,95,42,2026-08-16T12:32:43.523289+00:00,ok,False,,,False,False,33.54125990001194,33.5412318000017,"'28-36: carefuly'
+",'28-36: carefuly','28-36: carefuly',True,311,6866,,7177,6863
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,584,1,96,42,2026-08-16T12:33:17.069431+00:00,ok,False,,,False,False,34.36619780000183,34.36616890000005,"'18-25: quickly'
+",'18-25: quickly','18-25: quickly',True,309,7010,,7319,7005
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,586,0,97,42,2026-08-16T12:33:51.440802+00:00,ok,False,,,False,False,10.49396560000605,10.493924499998684,"[2, 3, 4, 1]
+","[2, 3, 4, 1]","[2, 3, 4, 1]",True,336,2227,,2563,2224
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,586,1,98,42,2026-08-16T12:34:01.936806+00:00,ok,False,,,False,False,9.570225299990852,9.570181899995077,"[3, 4, 5, 6, 7, 0, 1, 2]
+","[3, 4, 5, 6, 7, 0, 1, 2]","[3, 4, 5, 6, 7, 0, 1, 2]",True,344,2045,,2389,2042
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,588,0,99,42,2026-08-16T12:34:11.508762+00:00,ok,False,,,False,False,3.5062791999953333,3.506250699996599,"8
+",8,8,True,303,690,,993,687
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,588,1,100,42,2026-08-16T12:34:15.015692+00:00,ok,False,,,False,False,3.5225910999870393,3.5225677999987965,"7
+",7,7,True,302,698,,1000,695
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,591,0,101,42,2026-08-16T12:34:18.538919+00:00,ok,False,,,False,False,6.148612500008312,6.148571300000185,"[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,328,1252,,1580,1249
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,591,1,102,42,2026-08-16T12:34:24.688661+00:00,ok,False,,,False,False,5.292154299997492,5.292114900003071,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,328,1102,,1430,1099
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,592,0,103,42,2026-08-16T12:34:29.981759+00:00,ok,False,,,False,False,21.585672400004114,21.585642899997765,"56
+",56,56,True,289,4562,,4851,4559
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,592,1,104,42,2026-08-16T12:34:51.571152+00:00,ok,False,,,False,False,20.076382800005376,20.076354400007403,"1
+",1,1,True,289,4249,,4538,4246
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,595,0,105,42,2026-08-16T12:35:11.650331+00:00,ok,False,,,False,False,37.314097700000275,37.31406249999418,"-1
+",-1,'Not Possible',False,307,7538,,7845,7535
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,595,1,106,42,2026-08-16T12:35:48.969961+00:00,ok,False,,,False,False,34.51341440000397,34.51337590000185,"0
+",0,'Not Possible',False,307,7030,,7337,7027
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,596,0,107,42,2026-08-16T12:36:23.488609+00:00,ok,False,,,False,False,31.222379600003478,31.222351300006267,"19
+",19,88,False,325,6407,,6732,6404
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,596,1,108,42,2026-08-16T12:36:54.715984+00:00,ok,False,,,False,False,21.24822179999319,21.248190199999954,"16
+",16,72,False,329,4476,,4805,4473
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,597,0,109,42,2026-08-16T12:37:15.967344+00:00,ok,False,,,False,False,12.183070200000657,12.183041900003445,"256
+",256,256,True,386,2594,,2980,2591
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,597,1,110,42,2026-08-16T12:37:28.152309+00:00,ok,False,,,False,False,11.427427100003115,11.427401100008865,"8
+",8,8,True,357,2447,,2804,2444
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,600,0,111,42,2026-08-16T12:37:39.581964+00:00,ok,False,,,False,False,4.003432400000747,4.003407599986531,"True
+",True,True,True,289,805,,1094,802
+qwen3:30b-a3b,qwen3-30b-a3b (ollama),ollama,sequential,600,1,112,42,2026-08-16T12:37:43.586113+00:00,ok,False,,,False,False,3.6581652000022586,3.6581409000064014,"False
+",False,False,True,289,734,,1023,731
