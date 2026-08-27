@@ -32,7 +32,14 @@ MM_PER_IN = 25.4
 PAGE_WIDTH_MM = 170.0  # standard figure width; every figure shares it
 
 STRATEGIES = ["incremental", "sequential"]
-PALETTE = {"incremental": "tab:blue", "sequential": "tab:orange"}
+
+COLOR_INFERENCE = "#B3A7F7"  # light periwinkle -- LLM inference (token generation)
+COLOR_EXECUTION = "#FFC488"  # light apricot -- code execution
+COLOR_OUTLINE = "#4A3FA8"  # indigo -- 1.1pt stroke on every bar
+COLOR_INK = "#000000"  # black -- text, leader lines, arrows, axes
+BAR_OUTLINE_WIDTH = 1.1
+
+PALETTE = {"incremental": COLOR_INFERENCE, "sequential": COLOR_EXECUTION}
 
 
 def _round_or_na(value: float, decimals: int) -> object:
@@ -110,6 +117,12 @@ def _configure_matplotlib() -> None:
             "savefig.facecolor": "white",
             "axes.facecolor": "white",
             "savefig.transparent": False,
+            "text.color": COLOR_INK,
+            "axes.labelcolor": COLOR_INK,
+            "axes.edgecolor": COLOR_INK,
+            "xtick.color": COLOR_INK,
+            "ytick.color": COLOR_INK,
+            "legend.labelcolor": COLOR_INK,
         }
     )
 
@@ -526,55 +539,161 @@ def build_significance_table(
     return table
 
 
-def _paired_token_chunks(df: pd.DataFrame, model_label: str) -> pd.DataFrame:
-    """Pair per-task `ClientCompletionChunks` and the incremental arm's `EarlyExit` flag.
+def _estimate_missing_output_tokens(df: pd.DataFrame) -> pd.DataFrame:
+    """Back-fill token counts for incremental runs that aborted mid-stream.
 
-    `ClientCompletionChunks` (not `OutputTokens`) is what token-savings has to
-    be computed from: the provider's final usage chunk never arrives when the
-    stream is aborted mid-block, so every early-exited row has `OutputTokens`
-    `NaN` -- exactly the rows this comparison needs.
+    An incremental run that hits `EarlyExit` breaks out of the SSE loop
+    (`execution.py`'s `if driver.has_error: ... break`) before the
+    provider's trailing usage-only chunk arrives, so `InputTokens`/
+    `OutputTokens`/`TotalTokens` are `NaN` for that row -- confirmed
+    empirically to be the *sole* driver of every incremental/sequential
+    token-total mismatch (per-row values agree exactly on every row where
+    both strategies have one). Timeout ("stalled") rows are excluded on
+    both sides: a cancelled stream has no stable tokens-per-chunk rate to
+    extrapolate from, on either arm.
+
+    For each qualifying row, an estimate is derived from the paired
+    sequential run at the same `DatasetRow` (which drains its stream to
+    completion, so it almost never misses usage):
+
+      - `InputTokens`: sequential's own value, taken verbatim. Not really a
+        *statistical* estimate -- input tokens are confirmed identical
+        between strategies for the same row whenever both are measured, so
+        this is a safe direct substitution rather than an extrapolation.
+      - `OutputTokens`: sequential's own tokens-per-chunk rate
+        (`OutputTokens / ClientCompletionChunks`) applied to
+        *incremental's own* `ClientCompletionChunks` -- the one usage-like
+        figure incremental always has, since it's counted client-side off
+        the delta stream rather than read from the provider's final chunk.
+      - `TotalTokens`: the sum of the two estimates above.
 
     Args:
         df: Combined result rows, as returned by `load_results()`.
+
+    Returns:
+        A copy of `df` with `InputTokens`/`OutputTokens`/`TotalTokens`
+        back-filled for qualifying rows, plus a new boolean
+        `TokensEstimated` column flagging exactly which rows were filled
+        this way (`False` everywhere else, including every sequential row).
+    """
+    out = df.copy()
+    out["TokensEstimated"] = False
+
+    sequential = out.loc[out["Strategy"] == "sequential"].set_index(
+        ["ModelLabel", "DatasetRow"]
+    )
+
+    candidates = out.index[
+        (out["Strategy"] == "incremental")
+        & out["EarlyExit"]
+        & ~out["HasTimedOut"]
+        & out["OutputTokens"].isna()
+    ]
+
+    for idx in candidates:
+        key = (out.at[idx, "ModelLabel"], out.at[idx, "DatasetRow"])
+        if key not in sequential.index:
+            continue
+        seq_row = sequential.loc[key]
+        if (
+            seq_row["HasTimedOut"]
+            or pd.isna(seq_row["OutputTokens"])
+            or not seq_row["ClientCompletionChunks"]
+        ):
+            continue
+        rate = seq_row["OutputTokens"] / seq_row["ClientCompletionChunks"]
+        est_input = seq_row["InputTokens"]
+        est_output = out.at[idx, "ClientCompletionChunks"] * rate
+        out.at[idx, "InputTokens"] = est_input
+        out.at[idx, "OutputTokens"] = est_output
+        out.at[idx, "TotalTokens"] = est_input + est_output
+        out.at[idx, "TokensEstimated"] = True
+
+    return out
+
+
+def _paired_token_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Restrict to (Model, DatasetRow) pairs where both strategies have token counts.
+
+    A pair can end up with just one side missing `InputTokens`/`OutputTokens`
+    for more than one reason -- a timeout on either arm (which never gets a
+    usage chunk on the side that stalled), or a non-timeout harness/exception
+    path that also left usage uncaptured but falls outside
+    `_estimate_missing_output_tokens()`'s early-exit-only scope (e.g. an
+    error surfacing from `StreamDriver.afinish()` after the main loop already
+    ran to completion without ever setting `EarlyExit`). Whatever the cause,
+    keeping the *other* side's real value would let it contribute to that
+    strategy's own marginal sum with no counterpart on the other strategy --
+    breaking the "input tokens are identical between strategies for the same
+    task" invariant this dataset otherwise guarantees, and silently skewing
+    one strategy's totals relative to the other's. So an incomplete pair is
+    dropped for *both* strategies, not patched on just the side that's short.
+
+    Args:
+        df: Combined result rows, already run through
+            `_estimate_missing_output_tokens()`.
+
+    Returns:
+        A copy of `df` containing only rows for (`ModelLabel`, `DatasetRow`)
+        pairs where both strategies have a non-null `InputTokens` and
+        `OutputTokens` -- real or estimated.
+    """
+    complete = df["InputTokens"].notna() & df["OutputTokens"].notna()
+    complete_pair = complete.groupby(
+        [df["ModelLabel"], df["DatasetRow"]]
+    ).transform("all")
+    return df.loc[complete_pair].copy()
+
+
+def _paired_output_tokens(df: pd.DataFrame, model_label: str) -> pd.DataFrame:
+    """Pair per-task `OutputTokens` (post-estimation) and the incremental arm's flags.
+
+    Args:
+        df: Combined result rows, already run through
+            `_estimate_missing_output_tokens()`.
         model_label: The `ModelLabel` to restrict to.
 
     Returns:
-        One row per `DatasetRow` with `incremental_chunks`,
-        `sequential_chunks`, and `early_exit`, for tasks where both
-        strategies ran.
+        One row per `DatasetRow` with `incremental_tokens`,
+        `sequential_tokens`, `early_exit`, and `estimated` (whether
+        incremental's value for that row was back-filled rather than
+        measured), restricted to `_paired_token_rows()`'s complete-pair
+        subset -- both strategies have a value, real or estimated, and
+        neither timed out.
     """
-    subset = df.loc[df["ModelLabel"] == model_label]
-    chunks = subset.pivot_table(
-        index="DatasetRow",
-        columns="Strategy",
-        values="ClientCompletionChunks",
-        aggfunc="first",
+    subset = _paired_token_rows(df.loc[df["ModelLabel"] == model_label])
+    tokens = subset.pivot_table(
+        index="DatasetRow", columns="Strategy", values="OutputTokens", aggfunc="first"
     ).reindex(columns=["incremental", "sequential"])
-    chunks = chunks.dropna(subset=["incremental", "sequential"])
-    chunks.columns = ["incremental_chunks", "sequential_chunks"]
+    tokens.columns = ["incremental_tokens", "sequential_tokens"]
 
-    early_exit = subset.loc[subset["Strategy"] == "incremental"].set_index(
+    incremental_rows = subset.loc[subset["Strategy"] == "incremental"].set_index(
         "DatasetRow"
-    )["EarlyExit"]
-    chunks["early_exit"] = chunks.index.map(early_exit).fillna(False)
-    return chunks
+    )
+    tokens["early_exit"] = tokens.index.map(incremental_rows["EarlyExit"]).fillna(
+        False
+    )
+    tokens["estimated"] = tokens.index.map(
+        incremental_rows["TokensEstimated"]
+    ).fillna(False)
+    return tokens
 
 
-def _savings_pct(paired: pd.DataFrame) -> float:
-    """Compute the % of output tokens (by `ClientCompletionChunks`) incremental saved.
+def _token_savings_pct(paired: pd.DataFrame) -> float:
+    """Compute the % of output tokens incremental saved, from paired real/estimated counts.
 
     Args:
-        paired: Rows shaped like `_paired_token_chunks()`'s output, or a
+        paired: Rows shaped like `_paired_output_tokens()`'s output, or a
             subset of them (e.g. restricted to early-exited tasks).
 
     Returns:
         `(sequential_total - incremental_total) / sequential_total * 100`, or
         `NaN` if `sequential_total` is 0 -- nothing to compare savings against.
     """
-    sequential_total = paired["sequential_chunks"].sum()
+    sequential_total = paired["sequential_tokens"].sum()
     if sequential_total == 0:
         return float("nan")
-    incremental_total = paired["incremental_chunks"].sum()
+    incremental_total = paired["incremental_tokens"].sum()
     return (sequential_total - incremental_total) / sequential_total * 100
 
 
@@ -589,11 +708,41 @@ def build_token_usage(
     rather than collapsing to 0, which would be indistinguishable from a
     model that demonstrably used no extended thinking.
 
-    The sibling savings table reports the % of output tokens (by
-    `ClientCompletionChunks`, not `OutputTokens` -- see `_paired_token_chunks`)
-    the incremental arm saved by aborting early, both overall and restricted
-    to just the runs that actually aborted, since the whole-set number is
-    diluted by runs that had no tail to skip.
+    Every aggregate here is computed over
+    `_paired_token_rows(_estimate_missing_output_tokens(df))`, not `df`
+    itself, for two reasons stacked on top of each other:
+
+      - An incremental run that aborted mid-stream (`EarlyExit`) never
+        received the provider's usage chunk, so its raw `InputTokens`/
+        `OutputTokens`/`TotalTokens` are `NaN` -- `_estimate_missing_output_tokens`
+        back-fills those from the paired sequential run.
+      - Some rows still end up missing a value on just one side even after
+        that (a timeout, or a non-timeout harness error outside the
+        early-exit-only estimate) -- `_paired_token_rows` drops *both*
+        strategies' rows for any such (Model, DatasetRow) pair, rather than
+        letting the complete side's real value contribute to its own
+        strategy's sum with no counterpart on the other strategy. Without
+        this, `Input Tokens Sum` (which must be identical between strategies
+        for the same task) can end up mismatched between Incremental and
+        Sequential purely because of which rows each one happened to drop.
+
+    So `N` reflects the paired, complete-data row count for that (Model,
+    Strategy) -- identical between Incremental and Sequential for a given
+    model, but possibly below 113 when a model had any unrecoverable rows on
+    either arm -- not the raw per-strategy row count. Both output tables are
+    therefore *estimated* token counts wherever a model had any early exits,
+    over a possibly-reduced row set -- not pure, complete API-reported usage
+    -- which is why they're written under `..._estimated.csv` names and
+    carry an `Estimated Rows`/`Estimated Runs` column reporting how many of
+    the paired rows were filled in rather than measured. `ReasoningTokens`
+    is left alone (never estimated, never used to filter pairs): there's no
+    equivalent rate to extrapolate it from.
+
+    The sibling savings table reports the % of output tokens the incremental
+    arm saved by aborting early (using the post-estimation `OutputTokens`,
+    via `_paired_output_tokens`/`_token_savings_pct`), both overall and
+    restricted to just the runs that actually aborted, since the whole-set
+    number is diluted by runs that had no tail to skip.
 
     Args:
         df: Combined result rows, as returned by `load_results()`.
@@ -604,9 +753,13 @@ def build_token_usage(
         (`ModelLabel`, `Strategy`) for `token_usage`, one row per
         `ModelLabel` for `token_saving`.
     """
-    usage = df.groupby(["ModelLabel", "Strategy"], sort=False).agg(
+    estimated = _estimate_missing_output_tokens(df)
+    paired_rows = _paired_token_rows(estimated)
+
+    usage = paired_rows.groupby(["ModelLabel", "Strategy"], sort=False).agg(
         Count=("ErrorOccurred", "size"),
         EarlyExits=("EarlyExit", "sum"),
+        EstimatedRows=("TokensEstimated", "sum"),
         InputTokens_Mean=("InputTokens", "mean"),
         InputTokens_Sum=("InputTokens", "sum"),
         OutputTokens_Mean=("OutputTokens", "mean"),
@@ -633,12 +786,13 @@ def build_token_usage(
             "ModelLabel": "Model",
             "Count": "N",
             "EarlyExits": "Early Exits",
+            "EstimatedRows": "Estimated Rows",
             "InputTokens_Mean": "Input Tokens Mean",
             "InputTokens_Sum": "Input Tokens Sum",
-            "OutputTokens_Mean": "Output Tokens Mean",
-            "OutputTokens_Sum": "Output Tokens Sum",
-            "TotalTokens_Mean": "Total Tokens Mean",
-            "TotalTokens_Sum": "Total Tokens Sum",
+            "OutputTokens_Mean": "Output Tokens Mean (Est.)",
+            "OutputTokens_Sum": "Output Tokens Sum (Est.)",
+            "TotalTokens_Mean": "Total Tokens Mean (Est.)",
+            "TotalTokens_Sum": "Total Tokens Sum (Est.)",
             "ReasoningTokens_Mean": "Reasoning Tokens Mean",
             "ReasoningTokens_Sum": "Reasoning Tokens Sum",
         }
@@ -646,15 +800,16 @@ def build_token_usage(
 
     savings_rows: list[dict[str, object]] = []
     for model_label in df["ModelLabel"].unique():
-        paired = _paired_token_chunks(df, model_label)
+        paired = _paired_output_tokens(paired_rows, model_label)
         aborted = paired[paired["early_exit"]]
         savings_rows.append(
             {
                 "ModelLabel": model_label,
                 "PairedRuns": len(paired),
                 "AbortedRuns": len(aborted),
-                "OverallSavingsPct": _savings_pct(paired),
-                "AbortedSavingsPct": _savings_pct(aborted)
+                "EstimatedRuns": int(paired["estimated"].sum()),
+                "OverallSavingsPct": _token_savings_pct(paired),
+                "AbortedSavingsPct": _token_savings_pct(aborted)
                 if len(aborted)
                 else float("nan"),
             }
@@ -671,14 +826,15 @@ def build_token_usage(
             "ModelLabel": "Model",
             "PairedRuns": "Paired Runs",
             "AbortedRuns": "Aborted Runs",
-            "OverallSavingsPct": "Overall Savings (%)",
-            "AbortedSavingsPct": "Aborted-Run Savings (%)",
+            "EstimatedRuns": "Estimated Runs",
+            "OverallSavingsPct": "Overall Savings (%, Est.)",
+            "AbortedSavingsPct": "Aborted-Run Savings (%, Est.)",
         }
     )
 
     tables_dir.mkdir(parents=True, exist_ok=True)
-    usage.to_csv(tables_dir / "token_usage.csv", index=False)
-    saving.to_csv(tables_dir / "token_saving.csv", index=False)
+    usage.to_csv(tables_dir / "token_usage_estimated.csv", index=False)
+    saving.to_csv(tables_dir / "token_saving_estimated.csv", index=False)
     return usage, saving
 
 
@@ -895,13 +1051,15 @@ def _bar_with_iqr(
     q1_arr = np.asarray(q1s, dtype=float)
     q3_arr = np.asarray(q3s, dtype=float)
 
-    bars = ax.bar(x, median_arr, color=color, edgecolor="black")
+    bars = ax.bar(
+        x, median_arr, color=color, edgecolor=COLOR_OUTLINE, linewidth=BAR_OUTLINE_WIDTH
+    )
     error_container = ax.errorbar(
         x,
         median_arr,
         yerr=[median_arr - q1_arr, q3_arr - median_arr],
         fmt="none",
-        ecolor="black",
+        ecolor=COLOR_INK,
         capsize=4,
         linewidth=1,
     )
@@ -973,7 +1131,7 @@ def build_speedup_ratio_figure(df: pd.DataFrame, images_dir: Path = IMAGES_DIR) 
         annotate=lambda v: f"{v:.2f}×",
     )
 
-    reference_line = ax.axhline(1.0, color="black", linestyle="--", linewidth=0.8)
+    reference_line = ax.axhline(1.0, color=COLOR_INK, linestyle="--", linewidth=0.8)
 
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=45, ha="right")
@@ -1042,7 +1200,7 @@ def build_first_statement_fraction_figure(
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=45, ha="right")
     ax.set_xlabel("Model")
-    ax.set_ylabel("First statement position,\n% of total inference time (median)")
+    ax.set_ylabel("First statement position,\n% of total inference time\n(median)")
     ax.set_ylim(0, 108)
 
     _bottom_legend(
