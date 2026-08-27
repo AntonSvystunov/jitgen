@@ -1,0 +1,291 @@
+Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,511,0,0,42,2026-08-16T12:37:54.847478+00:00,ok,False,,,False,False,0.8110466999933124,0.48809099999198224,"192
+",192,15,False,274,47,,321,45
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,511,1,1,42,2026-08-16T12:37:55.658628+00:00,ok,False,,,False,False,0.857835700007854,0.47758360000443645,"3
+",3,2,False,272,45,,317,43
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,512,0,2,42,2026-08-16T12:37:56.516729+00:00,ok,False,,,False,False,1.2174540999985766,0.4873974999936763,"Counter({6: 2, 7: 2, 10: 2, 8: 1, 9: 1})
+","Counter({6: 2, 7: 2, 10: 2, 8: 1, 9: 1})","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",False,346,81,,427,80
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,512,1,3,42,2026-08-16T12:37:57.734321+00:00,ok,False,,,False,False,1.2259257000114303,0.465388399999938,"Counter({7: 2, 8: 2, 11: 2, 9: 1, 10: 1})
+","Counter({7: 2, 8: 2, 11: 2, 9: 1, 10: 1})","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",False,347,83,,430,82
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,513,0,4,42,2026-08-16T12:37:58.960399+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.7932950999966124,0.589802199989208,,,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",False,,,,,38
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,513,1,5,42,2026-08-16T12:37:59.753796+00:00,error,True,TypeError,TypeError: unsupported operand type(s) for +: 'int' and 'str',False,True,0.837285100002191,0.6373957000032533,,,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",False,,,,,42
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,514,0,6,42,2026-08-16T12:38:00.591204+00:00,ok,False,,,False,False,0.7471648000064306,0.6257858000026317,"21
+",21,21,True,307,35,,342,34
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,514,1,7,42,2026-08-16T12:38:01.338484+00:00,ok,False,,,False,False,0.7634726999967825,0.6359146000031615,"95
+",95,95,True,307,37,,344,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,515,0,8,42,2026-08-16T12:38:02.102074+00:00,ok,False,,,False,False,1.0143927000026451,0.5021722000092268,"True
+",True,False,False,296,62,,358,60
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,515,1,9,42,2026-08-16T12:38:03.116596+00:00,ok,False,,,False,False,1.0210551999916788,0.5070335999917006,"True
+",True,False,False,296,62,,358,60
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,516,0,10,42,2026-08-16T12:38:04.137792+00:00,ok,False,,,False,False,1.256020599990734,0.6405674999987241,"[9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 9, 11, 11, 11]
+","[9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 2, 9, 11, 8, 7, 3, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 7, 9, 11, 8, 9, 11, 11, 11]","[2, 3, 7, 8, 9, 11]",False,323,85,,408,83
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,516,1,11,42,2026-08-16T12:38:05.394058+00:00,ok,False,,,False,False,1.2165550000063377,0.6301309999980731,"[36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 26, 29, 36, 26, 29, 36, 29, 36, 29, 36, 29, 36, 36, 36, 36, 36, 36, 36]
+","[36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 12, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 24, 26, 29, 36, 26, 29, 36, 26, 29, 36, 29, 36, 29, 36, 29, 36, 36, 36, 36, 36, 36, 36]","[12, 24, 26, 29, 36]",False,324,83,,407,81
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,517,0,12,42,2026-08-16T12:38:06.610758+00:00,ok,False,,,False,False,0.8099005000112811,0.5666690000070957,"6
+",6,6,True,292,41,,333,39
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,517,1,13,42,2026-08-16T12:38:07.420777+00:00,ok,False,,,False,False,0.7548470000037923,0.5225831999996444,"1
+",1,1,True,288,37,,325,35
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,520,0,14,42,2026-08-16T12:38:08.175731+00:00,ok,False,,,False,False,1.0086194000032265,0.4774792000098387,"24
+",24,24,True,296,62,,358,58
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,520,1,15,42,2026-08-16T12:38:09.184471+00:00,ok,False,,,False,False,1.0426370999921346,0.4783116000035079,"120
+",120,120,True,300,65,,365,61
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,522,0,16,42,2026-08-16T12:38:10.227249+00:00,ok,False,,,False,False,2.3203355000005104,0.7162558000127319,"5
+",5,6,False,349,203,,552,199
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,522,1,17,42,2026-08-16T12:38:12.547825+00:00,error,True,ValueError,ValueError: attempt to assign sequence of size 5 to extended slice of size 6,False,True,1.5642060999962268,0.6901099999959115,,,5,False,,,,,112
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,524,0,18,42,2026-08-16T12:38:14.112145+00:00,ok,False,,,False,False,1.4143640999973286,0.5824934999982361,"22
+",22,22,True,314,101,,415,96
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,524,1,19,42,2026-08-16T12:38:15.526663+00:00,ok,False,,,False,False,1.414111000005505,0.5616440000012517,"10
+",10,10,True,314,101,,415,96
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,525,0,20,42,2026-08-16T12:38:16.940936+00:00,ok,False,,,False,False,0.9562147999968147,0.5258132000017213,"False
+",False,False,True,294,54,,348,49
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,525,1,21,42,2026-08-16T12:38:17.897278+00:00,error,True,IndexError,IndexError: list index out of range,False,True,0.8382044999889331,0.5226311000005808,,,True,False,,,,,35
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,526,0,22,42,2026-08-16T12:38:18.735589+00:00,ok,False,,,False,False,0.8793449000077089,0.4945012000098359,"'BigdatA'
+",'BigdatA','BigdatA',True,281,47,,328,44
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,526,1,23,42,2026-08-16T12:38:19.615078+00:00,ok,False,,,False,False,0.8825352000130806,0.4967687000025762,"'HadooP'
+",'HadooP','HadooP',True,281,47,,328,44
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,527,0,24,42,2026-08-16T12:38:20.497777+00:00,ok,False,,,False,False,1.1585303000028944,0.5688640000007581,"2
+",2,2,True,310,75,,385,73
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,527,1,25,42,2026-08-16T12:38:21.656435+00:00,ok,False,,,False,False,0.9058489000017289,0.5547423000098206,"0
+",0,6,False,310,51,,361,49
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,529,0,26,42,2026-08-16T12:38:22.562402+00:00,ok,False,,,False,False,0.9264713000011398,0.4797244000073988,"4
+",4,5,False,275,52,,327,51
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,529,1,27,42,2026-08-16T12:38:23.489008+00:00,ok,False,,,False,False,0.9027195000089705,0.46525570000812877,"22
+",22,17,False,275,52,,327,51
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,532,0,28,42,2026-08-16T12:38:24.391850+00:00,ok,False,,,False,False,0.877697599993553,0.47738419999950565,"False
+",False,False,True,282,49,,331,48
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,532,1,29,42,2026-08-16T12:38:25.269671+00:00,ok,False,,,False,False,0.9147471000032965,0.4901462999987416,"True
+",True,True,True,284,51,,335,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,533,0,30,42,2026-08-16T12:38:26.184552+00:00,ok,False,,,False,False,0.7908050999976695,0.5676045000000158,"['SR']
+",['SR'],"[7, 8, 9]",False,307,38,,345,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,533,1,31,42,2026-08-16T12:38:26.975468+00:00,ok,False,,,False,False,0.8136646000057226,0.5918152000085684,"[1.1, 2.2]
+","[1.1, 2.2]","[7, 2]",False,311,42,,353,40
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,537,0,32,42,2026-08-16T12:38:27.789279+00:00,ok,False,,,False,False,0.8465460000006715,0.4834281000075862,,,'None',False,278,46,,324,45
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,537,1,33,42,2026-08-16T12:38:28.635943+00:00,ok,False,,,False,False,0.8871369999978924,0.5191938000061782,"'ab'
+",'ab','ca',False,281,49,,330,48
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,538,0,34,42,2026-08-16T12:38:29.523197+00:00,ok,False,,,False,False,0.6093457999959355,0.4902139000041643,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,300,21,,321,20
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,538,1,35,42,2026-08-16T12:38:30.132640+00:00,ok,False,,,False,False,0.5893268999934662,0.4748994999972638,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,299,20,,319,19
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,540,0,36,42,2026-08-16T12:38:30.722052+00:00,ok,False,,,False,False,1.2743033000006108,0.6292141000012634,"3
+",3,3,True,313,85,,398,83
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,540,1,37,42,2026-08-16T12:38:31.996564+00:00,ok,False,,,False,False,1.1688406000030227,0.524101500006509,"0
+",0,0,True,303,75,,378,73
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,541,0,38,42,2026-08-16T12:38:33.165532+00:00,ok,False,,,False,False,0.9335692000022391,0.4882761000044411,"False
+",False,False,True,272,52,,324,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,541,1,39,42,2026-08-16T12:38:34.099216+00:00,ok,False,,,False,False,0.8361746000009589,0.48538439998810645,"True
+",True,True,True,272,43,,315,42
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,542,0,40,42,2026-08-16T12:38:34.935514+00:00,ok,False,,,False,False,0.7717536999989534,0.4488913999957731,"'Stereo:Sound:Sweatproof'
+",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,308,38,,346,37
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,542,1,41,42,2026-08-16T12:38:35.707380+00:00,ok,False,,,False,False,0.7420001999998931,0.4569253999943612,"'Probass:Curve:Audio'
+",'Probass:Curve:Audio','Probass:Curve:Audio',True,305,35,,340,34
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,544,0,42,42,2026-08-16T12:38:36.449488+00:00,ok,False,,,False,False,1.0486659000016516,0.7534822000015993,"'2 3 4 6 9 3 2 2 11'
+",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,343,64,,407,62
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,544,1,43,42,2026-08-16T12:38:37.498305+00:00,ok,False,,,False,False,1.1328174999944167,0.8357916999957524,"'14 21 9 24 19 12 29 23 17'
+",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,350,71,,421,69
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,545,0,44,42,2026-08-16T12:38:38.631264+00:00,ok,False,,,False,False,0.6220065999950748,0.4828813999920385,"12
+",12,6,False,274,23,,297,22
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,545,1,45,42,2026-08-16T12:38:39.253366+00:00,ok,False,,,False,False,0.6159995999914827,0.4807511999970302,"23
+",23,5,False,274,23,,297,22
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,547,0,46,42,2026-08-16T12:38:39.869465+00:00,ok,False,,,False,False,0.7245658000028925,0.4728083000081824,"1
+",1,3,False,277,33,,310,32
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,547,1,47,42,2026-08-16T12:38:40.594132+00:00,ok,False,,,False,False,0.7273919999861391,0.4726620000001276,"6
+",6,8,False,277,33,,310,32
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,548,0,48,42,2026-08-16T12:38:41.321639+00:00,ok,False,,,False,False,1.3136831000010716,0.6204919000010705,"3
+",3,3,True,319,90,,409,87
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,548,1,49,42,2026-08-16T12:38:42.635460+00:00,ok,False,,,False,False,1.3493486000079429,0.6631505000113975,"4
+",4,4,True,324,95,,419,92
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,549,0,50,42,2026-08-16T12:38:43.984957+00:00,ok,False,,,False,False,0.7647528999950737,0.4687178999884054,"244
+",244,244,True,274,37,,311,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,549,1,51,42,2026-08-16T12:38:44.749845+00:00,ok,False,,,False,False,0.7553802000038559,0.4695967000006931,"3369
+",3369,3369,True,274,37,,311,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,550,0,52,42,2026-08-16T12:38:45.505334+00:00,ok,False,,,False,False,1.0840789999929257,0.5579186999966623,"5
+",5,5,True,296,67,,363,65
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,550,1,53,42,2026-08-16T12:38:46.589538+00:00,ok,False,,,False,False,0.7896646000008332,0.5042539999994915,"3
+",3,3,True,292,40,,332,38
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,552,0,54,42,2026-08-16T12:38:47.379326+00:00,ok,False,,,False,False,1.158884600008605,0.5173053000034997,"'Linear Sequence'
+",'Linear Sequence','Linear Sequence',True,289,75,,364,71
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,552,1,55,42,2026-08-16T12:38:48.538350+00:00,ok,False,,,False,False,1.1332589000085136,0.5056106999982148,"'Not Linear'
+",'Not Linear','Non Linear Sequence',False,289,74,,363,70
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,553,0,56,42,2026-08-16T12:38:49.671740+00:00,ok,False,,,False,False,0.7490533999953186,0.5177682999928948,"7.256
+",7.256,7.256,True,285,35,,320,32
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,553,1,57,42,2026-08-16T12:38:50.420897+00:00,ok,False,,,False,False,0.7880368000041926,0.5239975000004051,"8.123
+",8.123,8.123,True,285,39,,324,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,554,0,58,42,2026-08-16T12:38:51.209041+00:00,ok,False,,,False,False,0.8439535000070464,0.5686017999978503,"[11, 13]
+","[11, 13]","[11, 13]",True,297,45,,342,42
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,554,1,59,42,2026-08-16T12:38:52.053124+00:00,ok,False,,,False,False,0.8007632999942871,0.5160538999916753,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,293,41,,334,38
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,555,0,60,42,2026-08-16T12:38:52.854048+00:00,ok,False,,,False,False,0.9587301999999909,0.4754575999977533,"210
+",210,210,True,283,55,,338,54
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,555,1,61,42,2026-08-16T12:38:53.812891+00:00,ok,False,,,False,False,0.9395645000040531,0.46738089999416843,"6
+",6,6,True,283,55,,338,54
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,556,0,62,42,2026-08-16T12:38:54.752576+00:00,ok,False,,,False,False,0.9089146000042092,0.5943299999926239,"7
+",7,12,False,296,52,,348,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,556,1,63,42,2026-08-16T12:38:55.661732+00:00,ok,False,,,False,False,0.8012677999940934,0.5068468999961624,"2
+",2,2,True,287,40,,327,38
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,558,0,64,42,2026-08-16T12:38:56.463106+00:00,ok,False,,,False,False,0.7276908000058029,0.5582896999985678,"33
+",33,6,False,275,33,,308,32
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,558,1,65,42,2026-08-16T12:38:57.190911+00:00,ok,False,,,False,False,0.7444866000005277,0.5786125999875367,"133
+",133,7,False,277,35,,312,34
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,559,0,66,42,2026-08-16T12:38:57.935504+00:00,ok,False,,,False,False,1.3198759000079008,0.6786258000065573,"8
+",8,8,True,322,90,,412,89
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,559,1,67,42,2026-08-16T12:38:59.255514+00:00,ok,False,,,False,False,1.3059687999921152,0.6791243999905419,"10
+",10,10,True,322,90,,412,89
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,560,0,68,42,2026-08-16T12:39:00.561654+00:00,ok,False,,,False,False,0.940780500008259,0.5971162000059849,"(1, 2, 3, 4, 5, 6)
+","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,332,51,,383,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,560,1,69,42,2026-08-16T12:39:01.502562+00:00,ok,False,,,False,False,0.9841795000102138,0.606649200009997,"(11, 12, 13, 14, 15, 16, 17)
+","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,340,59,,399,58
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,561,0,70,42,2026-08-16T12:39:02.486883+00:00,error,True,KeyError,KeyError: 6,False,True,1.136072299996158,0.7642595999932382,,,"{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,,,,,72
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,561,1,71,42,2026-08-16T12:39:03.623056+00:00,error,True,KeyError,KeyError: 6,False,True,1.1361121999943862,0.757441599998856,,,"{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",False,,,,,72
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,562,0,72,42,2026-08-16T12:39:04.759257+00:00,ok,False,,,False,False,0.8048612999991747,0.5933608999912394,"3
+",3,3,True,296,46,,342,42
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,562,1,73,42,2026-08-16T12:39:05.564239+00:00,ok,False,,,False,False,0.9761541000043508,0.7660601999959908,"5
+",5,5,True,313,64,,377,59
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,564,0,74,42,2026-08-16T12:39:06.540515+00:00,ok,False,,,False,False,0.8523322999972152,0.5636552999931155,"0
+",0,0,True,284,52,,336,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,564,1,75,42,2026-08-16T12:39:07.392967+00:00,ok,False,,,False,False,0.8744415999972261,0.5403296000004048,"20
+",20,10,False,286,54,,340,52
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,565,0,76,42,2026-08-16T12:39:08.267536+00:00,ok,False,,,False,False,0.5844103999988874,0.47028780000982806,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,284,21,,305,20
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,565,1,77,42,2026-08-16T12:39:08.852032+00:00,ok,False,,,False,False,0.6193958000076236,0.4790089000016451,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,284,24,,308,23
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,571,0,78,42,2026-08-16T12:39:09.471502+00:00,error,True,IndexError,IndexError: list index out of range,False,True,1.0564494999998715,0.6808541000063997,,,25,False,,,,,74
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,571,1,79,42,2026-08-16T12:39:10.528081+00:00,ok,False,,,False,False,1.0680898999999044,0.6029194000002462,"29
+",29,21,False,329,76,,405,74
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,572,0,80,42,2026-08-16T12:39:11.596319+00:00,ok,False,,,False,False,0.7137386999966111,0.5553649000066798,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 3, 4, 5]",False,302,36,,338,34
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,572,1,81,42,2026-08-16T12:39:12.310159+00:00,ok,False,,,False,False,0.7004151000001002,0.5430334000120638,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,300,34,,334,32
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,573,0,82,42,2026-08-16T12:39:13.010672+00:00,ok,False,,,False,False,0.8285432999982731,0.5555329000053462,"6
+",6,6,True,321,48,,369,46
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,573,1,83,42,2026-08-16T12:39:13.839322+00:00,ok,False,,,False,False,0.8755605999904219,0.6030939999909606,"0
+",0,0,True,327,54,,381,52
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,575,0,84,42,2026-08-16T12:39:14.715009+00:00,ok,False,,,False,False,0.8813973000069382,0.6014725000131875,"1
+",1,11,False,292,55,,347,54
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,575,1,85,42,2026-08-16T12:39:15.596524+00:00,ok,False,,,False,False,1.0622980999905849,0.6242816000012681,"5
+",5,16,False,293,75,,368,73
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,576,0,86,42,2026-08-16T12:39:16.658955+00:00,ok,False,,,False,False,0.874673400001484,0.6998527999967337,"True
+",True,True,True,300,53,,353,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,577,0,87,42,2026-08-16T12:39:17.533734+00:00,ok,False,,,False,False,0.8556372000020929,0.48499870000523515,"0
+",0,0,True,273,51,,324,50
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,577,1,88,42,2026-08-16T12:39:18.389495+00:00,ok,False,,,False,False,0.8004231000086293,0.476743000006536,"0
+",0,0,True,273,46,,319,45
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,579,0,89,42,2026-08-16T12:39:19.190023+00:00,ok,False,,,False,False,0.9555594999983441,0.5696023999917088,"(1, 4)
+","(1, 4)","(1, 4, 7, 9)",False,326,62,,388,61
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,579,1,90,42,2026-08-16T12:39:20.145704+00:00,ok,False,,,False,False,1.1470545000047423,0.5936919000087073,"(11, 25, 34, 36)
+","(11, 25, 34, 36)","(34, 36, 11, 25)",False,334,85,,419,84
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,580,0,91,42,2026-08-16T12:39:21.292893+00:00,ok,False,,,False,False,1.000456400011899,0.6768695000064326,"(6,)
+","(6,)","(6, (8, (4, 8)))",False,330,67,,397,66
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,580,1,92,42,2026-08-16T12:39:22.293507+00:00,ok,False,,,False,False,1.0049454000109108,0.6801902000006521,"(6, 8, 10)
+","(6, 8, 10)","(6, (8, (4, 6)), 8, 10)",False,331,68,,399,67
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,581,0,93,42,2026-08-16T12:39:23.298575+00:00,ok,False,,,False,False,0.7744201000023168,0.47561579999455716,"100
+",100,56,False,275,42,,317,41
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,581,1,94,42,2026-08-16T12:39:24.073097+00:00,ok,False,,,False,False,0.725963299992145,0.47149419999914244,"5
+",5,5,True,275,37,,312,36
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,584,0,95,42,2026-08-16T12:39:24.799148+00:00,ok,False,,,False,False,0.9688287000026321,0.4607082000002265,"0-7: carefuly
+",0-7: carefuly,'28-36: carefuly',False,297,64,,361,63
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,584,1,96,42,2026-08-16T12:39:25.768104+00:00,ok,False,,,False,False,0.9408607999939704,0.4498655999923358,"0-6: quickly
+",0-6: quickly,'18-25: quickly',False,295,62,,357,61
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,586,0,97,42,2026-08-16T12:39:26.709088+00:00,ok,False,,,False,False,1.0099302000016905,0.6230371999990894,"[2, 3, 4, 1]
+","[2, 3, 4, 1]","[2, 3, 4, 1]",True,320,69,,389,65
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,586,1,98,42,2026-08-16T12:39:27.719139+00:00,ok,False,,,False,False,0.8444085999944946,0.6855026999983238,"[0, 1, 2, 3, 4]
+","[0, 1, 2, 3, 4]","[3, 4, 5, 6, 7, 0, 1, 2]",False,328,50,,378,48
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,588,0,99,42,2026-08-16T12:39:28.563672+00:00,ok,False,,,False,False,0.6615356999973301,0.5119935999973677,"8
+",8,8,True,287,30,,317,28
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,588,1,100,42,2026-08-16T12:39:29.225304+00:00,ok,False,,,False,False,0.6659904999978608,0.5169029999960912,"7
+",7,7,True,286,29,,315,27
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,591,0,101,42,2026-08-16T12:39:29.891385+00:00,ok,False,,,False,False,0.7420752000034554,0.5226142000028631,"[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,312,39,,351,35
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,591,1,102,42,2026-08-16T12:39:30.633572+00:00,ok,False,,,False,False,0.746372399997199,0.527411300005042,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,312,39,,351,35
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,592,0,103,42,2026-08-16T12:39:31.380035+00:00,error,True,ExtractionError,"Unexpected token Token('NAME', 'choose') at line 2, column 16.
+Expected one of: 
+	* ""==""
+	* NOT
+	* PLUS
+	* COMMA
+	* STAR
+	* LSQB
+	* ""**""
+	* LESSTHAN
+	* VBAR
+	* AMPERSAND
+	* ""<<""
+	* ""!=""
+	* "":=""
+	* MORETHAN
+	* SLASH
+	* OR
+	* MINUS
+	* ""//""
+	* ""<>""
+	* ""<=""
+	* IF
+	* DOT
+	* AND
+	* "">=""
+	* LPAR
+	* PERCENT
+	* "">>""
+	* ASYNC
+	* FOR
+	* RPAR
+	* IS
+	* IN
+	* AT
+	* CIRCUMFLEX
+Previous tokens: [Token('NAME', 'n')]
+",False,True,0.7209823000011966,0.4807618999911938,,,56,False,,,,,35
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,592,1,104,42,2026-08-16T12:39:32.101199+00:00,error,True,ExtractionError,"Unexpected token Token('NAME', 'choose') at line 2, column 16.
+Expected one of: 
+	* ""==""
+	* NOT
+	* PLUS
+	* COMMA
+	* STAR
+	* LSQB
+	* ""**""
+	* LESSTHAN
+	* VBAR
+	* AMPERSAND
+	* ""<<""
+	* ""!=""
+	* "":=""
+	* MORETHAN
+	* SLASH
+	* OR
+	* MINUS
+	* ""//""
+	* ""<>""
+	* ""<=""
+	* IF
+	* DOT
+	* AND
+	* "">=""
+	* LPAR
+	* PERCENT
+	* "">>""
+	* ASYNC
+	* FOR
+	* RPAR
+	* IS
+	* IN
+	* AT
+	* CIRCUMFLEX
+Previous tokens: [Token('NAME', 'n')]
+",False,True,0.6766305000055581,0.47343589999945834,,,1,False,,,,,31
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,595,0,105,42,2026-08-16T12:39:32.778012+00:00,ok,False,,,False,False,0.7981739999959245,0.5001251999929082,"3
+",3,'Not Possible',False,292,45,,337,44
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,595,1,106,42,2026-08-16T12:39:33.576297+00:00,ok,False,,,False,False,0.7907331000023987,0.49129760000505485,"1
+",1,'Not Possible',False,292,45,,337,44
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,596,0,107,42,2026-08-16T12:39:34.367144+00:00,ok,False,,,False,False,0.7589344000007259,0.6536302999884356,"6
+",6,88,False,309,40,,349,39
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,596,1,108,42,2026-08-16T12:39:35.126189+00:00,ok,False,,,False,False,0.778959000002942,0.6734036999987438,"4
+",4,72,False,313,43,,356,42
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,597,0,109,42,2026-08-16T12:39:35.905277+00:00,ok,False,,,False,False,1.8905880999955116,0.6851213000045391,"256
+",256,256,True,370,168,,538,165
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,597,1,110,42,2026-08-16T12:39:37.796076+00:00,ok,False,,,False,False,1.9161270000040531,0.8731011000054423,"7
+",7,8,False,341,172,,513,169
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,600,0,111,42,2026-08-16T12:39:39.712408+00:00,ok,False,,,False,False,0.6554220000107307,0.4913206000055652,"True
+",True,True,True,274,25,,299,24
+mistral-nemo:12b,mistral-nemo-12b (ollama),ollama,incremental,600,1,112,42,2026-08-16T12:39:40.367960+00:00,ok,False,,,False,False,0.622904899995774,0.47376989999611396,"False
+",False,False,True,274,25,,299,24

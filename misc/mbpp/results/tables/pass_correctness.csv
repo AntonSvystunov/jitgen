@@ -1,0 +1,21 @@
+Model,Strategy,N,Pass Rate (%),Correctness Rate (%),Timeout Rate (%)
+gemma-3-4b (lmstudio),Incremental,113,93.81,56.64,0.0
+gemma-3-4b (lmstudio),Sequential,113,93.81,56.64,0.0
+gemma-4-e4b (lmstudio),Incremental,113,99.12,77.88,0.88
+gemma-4-e4b (lmstudio),Sequential,113,99.12,77.88,0.88
+llama3.2-latest (ollama),Incremental,113,92.92,49.56,0.0
+llama3.2-latest (ollama),Sequential,113,92.92,49.56,0.0
+mistral-nemo-12b (ollama),Incremental,113,92.04,54.87,0.0
+mistral-nemo-12b (ollama),Sequential,113,92.04,54.87,0.0
+gpt-oss-20b (lmstudio),Incremental,113,99.12,84.96,0.0
+gpt-oss-20b (lmstudio),Sequential,113,99.12,84.96,0.0
+phi4-latest (ollama),Incremental,113,99.12,76.99,0.0
+phi4-latest (ollama),Sequential,113,99.12,76.99,0.0
+qwen3-30b-a3b (ollama),Incremental,113,100.0,89.38,0.0
+qwen3-30b-a3b (ollama),Sequential,113,100.0,89.38,0.0
+smollm2-1.7b (ollama),Incremental,113,85.84,30.97,1.77
+smollm2-1.7b (ollama),Sequential,113,85.84,30.97,1.77
+codeact-agent-mistral-latest (ollama),Incremental,113,87.61,46.02,0.0
+codeact-agent-mistral-latest (ollama),Sequential,113,87.61,46.02,0.0
+zephyr-7b (ollama),Incremental,113,47.79,23.89,1.77
+zephyr-7b (ollama),Sequential,113,49.56,25.66,2.65

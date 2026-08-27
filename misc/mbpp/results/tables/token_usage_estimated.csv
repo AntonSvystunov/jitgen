@@ -1,0 +1,21 @@
+Model,Strategy,N,Early Exits,Estimated Rows,Input Tokens Mean,Input Tokens Sum,Output Tokens Mean (Est.),Output Tokens Sum (Est.),Total Tokens Mean (Est.),Total Tokens Sum (Est.),Reasoning Tokens Mean,Reasoning Tokens Sum
+gemma-3-4b (lmstudio),Incremental,112,6,6,329.4,36893,89.2,9990,418.6,46883,0.0,0
+gemma-3-4b (lmstudio),Sequential,112,0,0,329.4,36893,90.12,10093,419.52,46986,0.0,0
+gemma-4-e4b (lmstudio),Incremental,112,0,0,334.47,37461,1266.63,141863,1601.11,179324,1128.71,126415
+gemma-4-e4b (lmstudio),Sequential,112,0,0,334.47,37461,1266.63,141863,1601.11,179324,1128.71,126415
+llama3.2-latest (ollama),Incremental,113,8,8,323.29,36532,62.12,7020,385.42,43552,N/A,N/A
+llama3.2-latest (ollama),Sequential,113,0,0,323.29,36532,62.56,7069,385.85,43601,N/A,N/A
+mistral-nemo-12b (ollama),Incremental,113,9,9,302.42,34173,56.31,6363,358.73,40536,N/A,N/A
+mistral-nemo-12b (ollama),Sequential,113,0,0,302.42,34173,57.27,6472,359.69,40645,N/A,N/A
+gpt-oss-20b (lmstudio),Incremental,113,0,0,370.3,41844,263.93,29824,634.23,71668,179.04,20232
+gpt-oss-20b (lmstudio),Sequential,113,0,0,370.3,41844,263.93,29824,634.23,71668,179.04,20232
+phi4-latest (ollama),Incremental,113,1,1,314.29,35515,78.78,8902,393.08,44418,N/A,N/A
+phi4-latest (ollama),Sequential,113,0,0,314.29,35515,79.23,8953,393.52,44468,N/A,N/A
+qwen3-30b-a3b (ollama),Incremental,113,0,0,318.13,35949,2731.01,308604,3049.14,344553,N/A,N/A
+qwen3-30b-a3b (ollama),Sequential,113,0,0,318.13,35949,2731.01,308604,3049.14,344553,N/A,N/A
+smollm2-1.7b (ollama),Incremental,111,14,14,344.97,38292,82.22,9127,427.19,47419,N/A,N/A
+smollm2-1.7b (ollama),Sequential,111,0,0,344.97,38292,82.67,9176,427.64,47468,N/A,N/A
+codeact-agent-mistral-latest (ollama),Incremental,113,14,14,362.82,40999,86.68,9794,449.5,50793,N/A,N/A
+codeact-agent-mistral-latest (ollama),Sequential,113,0,0,362.82,40999,89.67,10133,452.5,51132,N/A,N/A
+zephyr-7b (ollama),Incremental,107,51,51,377.13,40353,183.51,19635,560.64,59988,N/A,N/A
+zephyr-7b (ollama),Sequential,107,0,0,377.13,40353,270.42,28935,647.55,69288,N/A,N/A
