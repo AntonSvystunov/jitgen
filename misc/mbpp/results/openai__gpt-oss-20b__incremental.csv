@@ -1,0 +1,226 @@
+Model,ModelLabel,Provider,Strategy,TaskId,CaseIndex,DatasetRow,Seed,StartedAt,Outcome,ErrorOccurred,ErrorType,ExecutionError,HasTimedOut,EarlyExit,ExecutionTime,FirstExecutedStatement,ExecutionOutput,ActualOutput,ExpectedOutput,CorrectOutput,InputTokens,OutputTokens,ReasoningTokens,TotalTokens,ClientCompletionChunks
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,511,0,0,42,2026-08-16T11:41:46.997581+00:00,ok,False,,,False,False,1.077495400008047,0.6685815000091679,"15
+",15,15,True,342,175,70,517,95
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,511,1,1,42,2026-08-16T11:41:48.075316+00:00,ok,False,,,False,False,1.5846266000007745,1.0073783000116237,"2
+",2,2,True,342,262,129,604,123
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,512,0,2,42,2026-08-16T11:41:49.660239+00:00,ok,False,,,False,False,1.0850046999985352,0.7436234999913722,"{10: 2, 9: 1, 8: 1, 7: 2, 6: 2}
+","{10: 2, 9: 1, 8: 1, 7: 2, 6: 2}","{6: 2, 7: 2, 8: 1, 9: 1, 10: 2}",True,415,152,49,567,93
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,512,1,3,42,2026-08-16T11:41:50.745425+00:00,ok,False,,,False,False,1.9738762999913888,1.6734124999929918,"{11: 2, 10: 1, 9: 1, 8: 2, 7: 2}
+","{11: 2, 10: 1, 9: 1, 8: 2, 7: 2}","{7: 2, 8: 2, 9: 1, 10: 1, 11: 2}",True,415,343,240,758,93
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,513,0,4,42,2026-08-16T11:41:52.719666+00:00,ok,False,,,False,False,1.050728500005789,0.8871183000010205,"[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']
+","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']","[7, 'PF', 8, 'PF', 9, 'PF', 10, 'PF']",True,409,146,89,555,47
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,513,1,5,42,2026-08-16T11:41:53.770587+00:00,ok,False,,,False,False,1.1690783999947598,0.9964470999984769,"[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']
+","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']","[11, 'JH', 14, 'JH', 12, 'JH', 1, 'JH', 4, 'JH']",True,413,169,108,582,51
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,514,0,6,42,2026-08-16T11:41:54.939882+00:00,ok,False,,,False,False,0.6450439000036567,0.5741299000073923,"21
+",21,21,True,377,68,23,445,35
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,514,1,7,42,2026-08-16T11:41:55.585057+00:00,ok,False,,,False,False,0.6887627999967663,0.6187270999944303,"95
+",95,95,True,372,78,38,450,30
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,515,0,8,42,2026-08-16T11:41:56.274076+00:00,ok,False,,,False,False,2.06654630000412,1.6269938000041293,"True
+",True,False,False,367,358,243,725,105
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,515,1,9,42,2026-08-16T11:41:58.341002+00:00,ok,False,,,False,False,2.6976843000011286,2.2773245999997016,"True
+",True,False,False,367,494,384,861,100
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,516,0,10,42,2026-08-16T11:42:01.039249+00:00,ok,False,,,False,False,1.59636870000395,0.6899554000119679,"[2, 3, 7, 8, 9, 11]
+","[2, 3, 7, 8, 9, 11]","[2, 3, 7, 8, 9, 11]",True,382,257,46,639,201
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,516,1,11,42,2026-08-16T11:42:02.635914+00:00,ok,False,,,False,False,1.5917575000057695,0.6278098000038881,"[12, 24, 26, 29, 36]
+","[12, 24, 26, 29, 36]","[12, 24, 26, 29, 36]",True,379,258,41,637,207
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,517,0,12,42,2026-08-16T11:42:04.227998+00:00,ok,False,,,False,False,1.1119064999948023,0.9477957999915816,"6
+",6,6,True,363,158,101,521,47
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,517,1,13,42,2026-08-16T11:42:05.340116+00:00,ok,False,,,False,False,1.1015967999992426,0.9055963999999221,"1
+",1,1,True,359,157,98,516,49
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,520,0,14,42,2026-08-16T11:42:06.441915+00:00,ok,False,,,False,False,2.1315743000013754,1.8311461999983294,"24
+",24,24,True,365,373,282,738,81
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,520,1,15,42,2026-08-16T11:42:08.573881+00:00,ok,False,,,False,False,1.2079604999889852,0.8237871999881463,"120
+",120,120,True,368,179,78,547,91
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,522,0,16,42,2026-08-16T11:42:09.782081+00:00,ok,False,,,False,False,3.834655600003316,3.0040944000065792,"6
+",6,6,True,412,743,527,1155,206
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,522,1,17,42,2026-08-16T11:42:13.617432+00:00,ok,False,,,False,False,3.2056197000056272,2.5847319000022253,"5
+",5,5,True,406,609,442,1015,156
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,524,0,18,42,2026-08-16T11:42:16.823757+00:00,ok,False,,,False,False,1.257975799991982,0.8303776999964612,"22
+",22,22,True,378,181,75,559,96
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,524,1,19,42,2026-08-16T11:42:18.081970+00:00,ok,False,,,False,False,1.2140967000013916,0.7905270000046585,"10
+",10,10,True,378,177,73,555,94
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,525,0,20,42,2026-08-16T11:42:19.296373+00:00,ok,False,,,False,False,1.7336322999908589,1.4790558999957284,"False
+",False,False,True,365,288,209,653,69
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,525,1,21,42,2026-08-16T11:42:21.030272+00:00,ok,False,,,False,False,1.7477639999997336,1.0085133999964455,"True
+",True,True,True,360,295,122,655,163
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,526,0,22,42,2026-08-16T11:42:22.778330+00:00,ok,False,,,False,False,2.1871364999969956,1.7486810999980662,"'BigdatA'
+",'BigdatA','BigdatA',True,352,384,272,736,102
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,526,1,23,42,2026-08-16T11:42:24.965791+00:00,ok,False,,,False,False,1.5207167999906233,1.108180800001719,"'HadooP'
+",'HadooP','HadooP',True,352,243,142,595,91
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,527,0,24,42,2026-08-16T11:42:26.486797+00:00,ok,False,,,False,False,2.8976435999938985,2.50814829999581,"3
+",3,2,False,381,536,426,917,100
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,527,1,25,42,2026-08-16T11:42:29.384870+00:00,ok,False,,,False,False,2.8985433999914676,2.585680999996839,"0
+",0,6,False,381,533,439,914,83
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,529,0,26,42,2026-08-16T11:42:32.283976+00:00,ok,False,,,False,False,1.6734484000044176,1.2412197999947239,"1
+",1,5,False,344,275,167,619,98
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,529,1,27,42,2026-08-16T11:42:33.957741+00:00,ok,False,,,False,False,1.8848885000043083,1.5441666999977315,"17
+",17,17,True,344,324,233,668,81
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,532,0,28,42,2026-08-16T11:42:35.842967+00:00,ok,False,,,False,False,0.9300778999895556,0.7927769999951124,"False
+",False,False,True,353,120,76,473,34
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,532,1,29,42,2026-08-16T11:42:36.773228+00:00,ok,False,,,False,False,0.7981149999977788,0.6599991999974009,"True
+",True,True,True,354,103,58,457,35
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,533,0,30,42,2026-08-16T11:42:37.571513+00:00,ok,False,,,False,False,1.1366766999999527,0.9917328000010457,"[7, 8, 9]
+","[7, 8, 9]","[7, 8, 9]",True,378,161,108,539,43
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,533,1,31,42,2026-08-16T11:42:38.708431+00:00,ok,False,,,False,False,1.2383330000011483,1.096566399995936,"[7, 2]
+","[7, 2]","[7, 2]",True,382,184,127,566,47
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,537,0,32,42,2026-08-16T11:42:39.947004+00:00,ok,False,,,False,False,0.815516500006197,0.5770265000028303,"None
+",None,'None',False,349,104,40,453,54
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,537,1,33,42,2026-08-16T11:42:40.762693+00:00,ok,False,,,False,False,1.5725448000011966,1.3826788000005763,"'ca'
+",'ca','ca',True,352,255,192,607,53
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,538,0,34,42,2026-08-16T11:42:42.335538+00:00,ok,False,,,False,False,1.2704957999958424,1.1515745000069728,"('b', 'i', 'g', 'd', 'a', 't', 'a')
+","('b', 'i', 'g', 'd', 'a', 't', 'a')","('b', 'i', 'g', 'd', 'a', 't', 'a')",True,370,185,143,555,32
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,538,1,35,42,2026-08-16T11:42:43.606292+00:00,ok,False,,,False,False,0.8684353999997256,0.7683199000020977,"('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')
+","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')","('l', 'a', 'n', 'g', 'u', 'a', 'g', 'e')",True,369,117,80,486,27
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,540,0,36,42,2026-08-16T11:42:44.474889+00:00,ok,False,,,False,False,1.6010738000040874,1.2825751999916974,"3
+",3,3,True,383,260,160,643,90
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,540,1,37,42,2026-08-16T11:42:46.076409+00:00,ok,False,,,False,False,1.4859146999951918,1.196840799995698,"0
+",0,0,True,373,233,152,606,71
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,541,0,38,42,2026-08-16T11:42:47.562579+00:00,ok,False,,,False,False,1.073040300005232,0.7598518000013428,"False
+",False,False,True,341,151,76,492,65
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,541,1,39,42,2026-08-16T11:42:48.635832+00:00,ok,False,,,False,False,1.1354777999949874,0.8270316999987699,"True
+",True,True,True,341,166,91,507,65
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,542,0,40,42,2026-08-16T11:42:49.771536+00:00,ok,False,,,False,False,1.145299600000726,1.0096925999969244,"'Stereo:Sound:Sweatproof'
+",'Stereo:Sound:Sweatproof','Stereo:Sound:Sweatproof',True,372,161,117,533,34
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,542,1,41,42,2026-08-16T11:42:50.917056+00:00,ok,False,,,False,False,0.963017400004901,0.8366983000014443,"'Probass:Curve:Audio'
+",'Probass:Curve:Audio','Probass:Curve:Audio',True,372,134,90,506,34
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,544,0,42,42,2026-08-16T11:42:51.880271+00:00,ok,False,,,False,False,1.2177321999915875,1.0249325999902794,"'2 3 4 6 9 3 2 2 11'
+",'2 3 4 6 9 3 2 2 11','2 3 4 6 9 3 2 2 11',True,406,176,99,582,67
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,544,1,43,42,2026-08-16T11:42:53.098258+00:00,ok,False,,,False,False,1.2296997999947052,1.0366397999896435,"'14 21 9 24 19 12 29 23 17'
+",'14 21 9 24 19 12 29 23 17','14 21 9 24 19 12 29 23 17',True,406,180,103,586,67
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,545,0,44,42,2026-08-16T11:42:54.328202+00:00,ok,False,,,False,False,1.3165673000039533,1.0839355000061914,"6
+",6,6,True,343,200,139,543,51
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,545,1,45,42,2026-08-16T11:42:55.645117+00:00,ok,False,,,False,False,1.8831646999897202,1.7076387999986764,"5
+",5,5,True,343,324,269,667,45
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,547,0,46,42,2026-08-16T11:42:57.528578+00:00,ok,False,,,False,False,1.1332251999992877,0.8613865999941481,"3
+",3,3,True,348,158,89,506,59
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,547,1,47,42,2026-08-16T11:42:58.661998+00:00,ok,False,,,False,False,1.5616181000077631,1.3655613000009907,"8
+",8,8,True,348,258,199,606,49
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,548,0,48,42,2026-08-16T11:43:00.223911+00:00,ok,False,,,False,False,1.4924023999919882,1.1177630000020145,"3
+",3,3,True,381,235,130,616,95
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,548,1,49,42,2026-08-16T11:43:01.716624+00:00,ok,False,,,False,False,1.0336465000000317,0.6466407999978401,"4
+",4,4,True,384,144,40,528,94
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,549,0,50,42,2026-08-16T11:43:02.750479+00:00,ok,False,,,False,False,1.0603191999980481,0.7818734000029508,"244
+",244,244,True,345,148,79,493,59
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,549,1,51,42,2026-08-16T11:43:03.811009+00:00,ok,False,,,False,False,1.2622655000013765,0.9834531999949832,"3369
+",3369,3369,True,345,190,121,535,59
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,550,0,52,42,2026-08-16T11:43:05.073514+00:00,ok,False,,,False,False,1.358538000000408,1.0241764000093099,"5
+",5,5,True,367,203,116,570,77
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,550,1,53,42,2026-08-16T11:43:06.432294+00:00,ok,False,,,False,False,1.2164244999876246,1.0342270999972243,"3
+",3,3,True,363,181,124,544,47
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,552,0,54,42,2026-08-16T11:43:07.648956+00:00,ok,False,,,False,False,1.4543706999975257,0.9774838000012096,"'Linear Sequence'
+",'Linear Sequence','Linear Sequence',True,359,229,113,588,106
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,552,1,55,42,2026-08-16T11:43:09.103603+00:00,ok,False,,,False,False,1.4994963999924948,1.0321300999930827,"'Not Linear Sequence'
+",'Not Linear Sequence','Non Linear Sequence',False,359,238,122,597,105
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,553,0,56,42,2026-08-16T11:43:10.603333+00:00,ok,False,,,False,False,0.9693112000095425,0.7638460000016494,"7.256
+",7.256,7.256,True,352,132,72,484,50
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,553,1,57,42,2026-08-16T11:43:11.572839+00:00,ok,False,,,False,False,1.2242313999886392,1.0266426000016509,"8.123
+",8.123,8.123,True,352,185,127,537,48
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,554,0,58,42,2026-08-16T11:43:12.797386+00:00,ok,False,,,False,False,0.9805199999973411,0.8517321999970591,"[11, 13]
+","[11, 13]","[11, 13]",True,364,133,82,497,41
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,554,1,59,42,2026-08-16T11:43:13.778116+00:00,ok,False,,,False,False,0.9564696000015829,0.8221388999954797,"[7, 9, 1]
+","[7, 9, 1]","[7, 9, 1]",True,364,132,84,496,38
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,555,0,60,42,2026-08-16T11:43:14.734775+00:00,ok,False,,,False,False,1.399906299993745,1.1833466999960365,"210
+",210,210,True,353,216,157,569,49
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,555,1,61,42,2026-08-16T11:43:16.134972+00:00,ok,False,,,False,False,1.1464545999915572,0.8618666999973357,"6
+",6,6,True,353,169,99,522,60
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,556,0,62,42,2026-08-16T11:43:17.281649+00:00,ok,False,,,False,False,1.6137527000100818,1.3928597000049194,"12
+",12,12,True,366,265,188,631,66
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,556,1,63,42,2026-08-16T11:43:18.895843+00:00,ok,False,,,False,False,1.1005288000014843,0.8512732999952277,"2
+",2,2,True,358,161,90,519,60
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,558,0,64,42,2026-08-16T11:43:19.996661+00:00,ok,False,,,False,False,1.200943100004224,0.6499394000129541,"6
+",6,6,True,344,175,56,519,109
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,558,1,65,42,2026-08-16T11:43:21.197822+00:00,ok,False,,,False,False,1.2926702999975532,0.8455039999971632,"7
+",7,7,True,344,196,94,540,92
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,559,0,66,42,2026-08-16T11:43:22.490770+00:00,ok,False,,,False,False,1.0456938999996055,0.6139621999900555,"8
+",8,8,True,393,146,25,539,111
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,559,1,67,42,2026-08-16T11:43:23.536656+00:00,ok,False,,,False,False,2.328452500005369,1.9967227000015555,"10
+",10,10,True,393,419,310,812,99
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,560,0,68,42,2026-08-16T11:43:25.865494+00:00,ok,False,,,False,False,1.4565413000091212,1.0542432000074768,"(1, 2, 3, 4, 5, 6)
+","(1, 2, 3, 4, 5, 6)","(1, 2, 3, 4, 5, 6)",True,401,225,118,626,97
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,560,1,69,42,2026-08-16T11:43:27.322312+00:00,ok,False,,,False,False,1.5748883000051137,1.2968151999957627,"(11, 12, 13, 14, 15, 16, 17)
+","(11, 12, 13, 14, 15, 16, 17)","(11, 12, 13, 14, 15, 16, 17)",True,401,256,170,657,76
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,561,0,70,42,2026-08-16T11:43:28.897452+00:00,ok,False,,,False,False,3.3880145000002813,3.02212119998876,"{3: [8], 4: [9], 5: [], 6: [4], 8: [], 9: [4]}
+","{3: [8], 4: [9], 5: [], 6: [4], 8: [], 9: [4]}","{4: [9], 6: [4], 9: [4, 5], 8: [], 3: [8], 5: []}",False,439,638,516,1077,112
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,561,1,71,42,2026-08-16T11:43:32.286130+00:00,ok,False,,,False,False,3.1436307999974815,2.798430599999847,"{6: [2, 8], 4: [9, 9], 3: [7], 2: [], 7: [], 8: [], 9: []}
+","{6: [2, 8], 4: [9, 9], 3: [7], 2: [], 7: [], 8: [], 9: []}","{2: [], 6: [2, 8], 8: [], 9: [], 4: [9, 9], 7: [], 3: [7]}",True,439,590,473,1029,107
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,562,0,72,42,2026-08-16T11:43:35.430383+00:00,ok,False,,,False,False,0.9642004000052111,0.8634616000053938,"3
+",3,3,True,367,128,79,495,39
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,562,1,73,42,2026-08-16T11:43:36.394771+00:00,ok,False,,,False,False,0.8681896000052802,0.6619943999976385,"5
+",5,5,True,374,115,29,489,76
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,564,0,74,42,2026-08-16T11:43:37.263135+00:00,ok,False,,,False,False,0.8576971000002231,0.5747840000112774,"0
+",0,0,True,355,113,37,468,66
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,564,1,75,42,2026-08-16T11:43:38.121007+00:00,ok,False,,,False,False,0.8095525999960955,0.6279715999990003,"10
+",10,10,True,357,102,40,459,52
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,565,0,76,42,2026-08-16T11:43:38.930733+00:00,ok,False,,,False,False,0.72947849999764,0.6562354999914533,"['N', 'a', 'm', 'e']
+","['N', 'a', 'm', 'e']","['N', 'a', 'm', 'e']",True,355,87,57,442,20
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,565,1,77,42,2026-08-16T11:43:39.660360+00:00,ok,False,,,False,False,0.7284570999909192,0.6375685999955749,"['p', 'r', 'o', 'g', 'r', 'a', 'm']
+","['p', 'r', 'o', 'g', 'r', 'a', 'm']","['p', 'r', 'o', 'g', 'r', 'a', 'm']",True,355,92,58,447,24
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,571,0,78,42,2026-08-16T11:43:40.388971+00:00,ok,False,,,False,False,4.448300200005178,3.471051600005012,"0
+",0,25,False,390,863,628,1253,225
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,571,1,79,42,2026-08-16T11:43:44.838061+00:00,ok,False,,,False,False,1.31270979999681,1.0938443999912124,"21
+",21,21,True,396,199,126,595,63
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,572,0,80,42,2026-08-16T11:43:46.151036+00:00,ok,False,,,False,False,1.0995298000052571,0.8440133999974933,"[1, 3, 4, 5]
+","[1, 3, 4, 5]","[1, 3, 4, 5]",True,373,157,82,530,65
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,572,1,81,42,2026-08-16T11:43:47.250773+00:00,ok,False,,,False,False,0.9822931999951834,0.7887839000031818,"[1, 2, 3, 4, 5]
+","[1, 2, 3, 4, 5]","[1, 2, 3, 4, 5]",True,371,139,73,510,56
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,573,0,82,42,2026-08-16T11:43:48.233264+00:00,ok,False,,,False,False,0.9950457000086317,0.8093233999970835,"6
+",6,6,True,379,137,77,516,50
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,573,1,83,42,2026-08-16T11:43:49.228538+00:00,ok,False,,,False,False,0.9685315000097034,0.7877650000009453,"0
+",0,0,True,384,136,70,520,56
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,575,0,84,42,2026-08-16T11:43:50.197283+00:00,ok,False,,,False,False,5.98645330000727,5.817145500011975,"23
+",23,11,False,360,1197,1145,1557,42
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,575,1,85,42,2026-08-16T11:43:56.184672+00:00,ok,False,,,False,False,8.727510199998505,8.388928799991845,"8
+",8,16,False,360,1777,1689,2137,78
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,576,0,86,42,2026-08-16T11:44:04.913430+00:00,ok,False,,,False,False,2.088743499989505,1.7740296999982093,"True
+",True,True,True,371,362,272,733,80
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,577,0,87,42,2026-08-16T11:44:07.002492+00:00,ok,False,,,False,False,1.5586178999947151,1.3854445000033593,"0
+",0,0,True,343,248,194,591,44
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,577,1,88,42,2026-08-16T11:44:08.561355+00:00,ok,False,,,False,False,1.0621741000068141,0.7808362000068882,"0
+",0,0,True,343,156,84,499,61
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,579,0,89,42,2026-08-16T11:44:09.623732+00:00,ok,False,,,False,False,1.778085000012652,1.389376800012542,"(1, 4, 7, 9)
+","(1, 4, 7, 9)","(1, 4, 7, 9)",True,396,299,188,695,101
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,579,1,90,42,2026-08-16T11:44:11.402147+00:00,ok,False,,,False,False,1.661518699998851,1.467109300006996,"(11, 25, 34, 36)
+","(11, 25, 34, 36)","(34, 36, 11, 25)",False,396,273,204,669,59
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,580,0,91,42,2026-08-16T11:44:13.063927+00:00,ok,False,,,False,False,2.357327699995949,2.2525745000020834,"(6, (8, (4, 8)))
+","(6, (8, (4, 8)))","(6, (8, (4, 8)))",True,401,414,353,815,51
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,580,1,92,42,2026-08-16T11:44:15.421719+00:00,ok,False,,,False,False,1.7566403000091668,1.0189978000125848,"(6, (8, (4, 6)), 8, 10)
+","(6, (8, (4, 6)), 8, 10)","(6, (8, (4, 6)), 8, 10)",True,401,293,105,694,178
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,581,0,93,42,2026-08-16T11:44:17.178676+00:00,ok,False,,,False,False,1.3381141999998363,1.1319075999927009,"56
+",56,56,True,345,199,143,544,46
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,581,1,94,42,2026-08-16T11:44:18.517053+00:00,ok,False,,,False,False,1.4419637999963015,1.2497839999996359,"5
+",5,5,True,345,224,168,569,46
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,584,0,95,42,2026-08-16T11:44:19.959320+00:00,ok,False,,,False,False,2.2389984000037657,1.8365253999945708,"'28-35: carefuly'
+",'28-35: carefuly','28-36: carefuly',False,366,395,287,761,98
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,584,1,96,42,2026-08-16T11:44:22.198674+00:00,ok,False,,,False,False,1.158060599991586,0.8220653999887872,"'18-24: quickly'
+",'18-24: quickly','18-25: quickly',False,364,169,85,533,74
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,586,0,97,42,2026-08-16T11:44:23.356970+00:00,ok,False,,,False,False,1.5186510000057751,1.3889500000077533,"[2, 3, 4, 1]
+","[2, 3, 4, 1]","[2, 3, 4, 1]",True,383,241,187,624,44
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,586,1,98,42,2026-08-16T11:44:24.875897+00:00,ok,False,,,False,False,1.9698149000032572,1.8397377999935998,"[3, 4, 5, 6, 7, 0, 1, 2]
+","[3, 4, 5, 6, 7, 0, 1, 2]","[3, 4, 5, 6, 7, 0, 1, 2]",True,391,341,282,732,49
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,588,0,99,42,2026-08-16T11:44:26.846154+00:00,ok,False,,,False,False,0.8359567000006791,0.5164787999965483,"8
+",8,8,True,357,104,23,461,71
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,588,1,100,42,2026-08-16T11:44:27.682285+00:00,ok,False,,,False,False,0.7691949000000022,0.6796707000030437,"7
+",7,7,True,357,97,57,454,30
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,591,0,101,42,2026-08-16T11:44:28.451662+00:00,ok,False,,,False,False,0.9722890999983065,0.818177499997546,"[3, 2, 1]
+","[3, 2, 1]","[3, 2, 1]",True,375,131,79,506,42
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,591,1,102,42,2026-08-16T11:44:29.424139+00:00,ok,False,,,False,False,0.8818546999973478,0.7298966000089422,"[6, 5, 4]
+","[6, 5, 4]","[6, 5, 4]",True,375,118,66,493,42
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,592,0,103,42,2026-08-16T11:44:30.306179+00:00,ok,False,,,False,False,1.3382442000001902,,,,56,False,343,203,145,546,0
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,592,1,104,42,2026-08-16T11:44:31.644744+00:00,ok,False,,,False,False,1.4422635000082664,1.2363202999986243,"1
+",1,1,True,343,231,172,574,49
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,595,0,105,42,2026-08-16T11:44:33.087272+00:00,ok,False,,,False,False,1.6549063999991631,1.250821099994937,"3
+",3,'Not Possible',False,354,274,170,628,94
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,595,1,106,42,2026-08-16T11:44:34.742486+00:00,ok,False,,,False,False,1.4575465000089025,1.0255917000031332,"1
+",1,'Not Possible',False,354,233,129,587,94
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,596,0,107,42,2026-08-16T11:44:36.200295+00:00,ok,False,,,False,False,1.3370315000065602,1.268436300000758,"88
+",88,88,True,379,200,150,579,40
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,596,1,108,42,2026-08-16T11:44:37.537589+00:00,ok,False,,,False,False,4.13652970000112,4.046217100010836,"72
+",72,72,True,381,806,749,1187,47
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,597,0,109,42,2026-08-16T11:44:41.674935+00:00,ok,False,,,False,False,2.636447400000179,1.806379300003755,"256
+",256,256,True,417,478,270,895,198
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,597,1,110,42,2026-08-16T11:44:44.311804+00:00,ok,False,,,False,False,2.48492790000455,1.927969900003518,"8
+",8,8,True,408,448,300,856,138
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,600,0,111,42,2026-08-16T11:44:46.797098+00:00,ok,False,,,False,False,0.79788520000875,0.6900954000011552,"True
+",True,True,True,345,99,62,444,27
+openai/gpt-oss-20b,gpt-oss-20b (lmstudio),lmstudio,incremental,600,1,112,42,2026-08-16T11:44:47.595182+00:00,ok,False,,,False,False,0.7565916000021389,0.6466810999991139,"False
+",False,False,True,345,95,58,440,27

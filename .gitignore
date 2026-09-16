@@ -17,4 +17,5 @@ data
 dataset
 
 coverage.xml
+.coverage
 htmlcov/

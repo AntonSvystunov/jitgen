@@ -1,0 +1,11 @@
+Model,Paired Runs,Aborted Runs,Estimated Runs,"Overall Savings (%, Est.)","Aborted-Run Savings (%, Est.)"
+gemma-3-4b (lmstudio),112,6,6,1.02,14.41
+gemma-4-e4b (lmstudio),112,0,0,0.0,N/A
+llama3.2-latest (ollama),113,8,8,0.69,7.25
+mistral-nemo-12b (ollama),113,9,9,1.68,16.95
+gpt-oss-20b (lmstudio),113,0,0,0.0,N/A
+phi4-latest (ollama),113,1,1,0.56,25.0
+qwen3-30b-a3b (ollama),113,0,0,0.0,N/A
+smollm2-1.7b (ollama),111,14,14,0.54,3.19
+codeact-agent-mistral-latest (ollama),113,14,14,3.34,22.22
+zephyr-7b (ollama),107,51,51,32.14,61.64

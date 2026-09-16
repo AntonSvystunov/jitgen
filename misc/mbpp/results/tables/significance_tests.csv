@@ -1,0 +1,21 @@
+Model,Metric,N,Mean Delta (s),Median Delta (s),Wilcoxon W,p-value,p-value (Bonferroni),Effect Size (r),Significant (alpha=0.05)
+gemma-3-4b (lmstudio),Execution Time,113,-0.0052,-0.0009,2654.0,0.105,1.000,0.18,No
+gemma-3-4b (lmstudio),First Statement,113,-0.3782,-0.3073,0.0,2.80e-20,5.61e-19,1.0,Yes
+gemma-4-e4b (lmstudio),Execution Time,113,0.0115,0.0134,1326.0,5.72e-08,1.14e-06,0.59,Yes
+gemma-4-e4b (lmstudio),First Statement,112,-0.7542,-0.4715,0.0,4.10e-20,8.19e-19,1.0,Yes
+llama3.2-latest (ollama),Execution Time,113,-0.0028,-0.0037,2531.0,0.048,0.965,0.21,No
+llama3.2-latest (ollama),First Statement,113,-0.1796,-0.1491,0.0,2.80e-20,5.61e-19,1.0,Yes
+mistral-nemo-12b (ollama),Execution Time,113,0.0316,0.0316,960.0,9.42e-11,1.88e-09,0.7,Yes
+mistral-nemo-12b (ollama),First Statement,113,-0.349,-0.3025,0.0,2.80e-20,5.61e-19,1.0,Yes
+gpt-oss-20b (lmstudio),Execution Time,113,0.0007,-0.0002,2999.0,0.526,1.000,0.07,No
+gpt-oss-20b (lmstudio),First Statement,112,-0.2994,-0.2651,0.0,4.10e-20,8.19e-19,1.0,Yes
+phi4-latest (ollama),Execution Time,113,-0.0034,-0.0,2994.0,0.516,1.000,0.07,No
+phi4-latest (ollama),First Statement,113,-0.7787,-0.6423,0.0,2.80e-20,5.61e-19,1.0,Yes
+qwen3-30b-a3b (ollama),Execution Time,113,0.1293,0.0112,2587.0,0.070,1.000,0.2,No
+qwen3-30b-a3b (ollama),First Statement,113,-0.1127,-0.2118,934.0,5.74e-11,1.15e-09,0.71,Yes
+smollm2-1.7b (ollama),Execution Time,113,-0.0032,-0.0012,2266.0,0.006,0.125,0.3,No
+smollm2-1.7b (ollama),First Statement,111,-0.0995,-0.0893,0.0,5.99e-20,1.20e-18,1.0,Yes
+codeact-agent-mistral-latest (ollama),Execution Time,113,-0.0367,-0.0077,2104.0,0.001,0.028,0.35,Yes
+codeact-agent-mistral-latest (ollama),First Statement,113,-0.7437,-0.663,0.0,2.80e-20,5.61e-19,1.0,Yes
+zephyr-7b (ollama),Execution Time,113,-1.0151,-0.1432,811.0,5.10e-12,1.02e-10,0.75,Yes
+zephyr-7b (ollama),First Statement,108,-1.3006,-1.2705,1.0,1.92e-19,3.84e-18,1.0,Yes
