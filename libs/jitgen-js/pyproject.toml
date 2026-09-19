@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jitgen-js"
+version = "0.1.0"
+description = "JavaScript guest-language extractor and executor for JitGen."
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    { name = "AntonSvystunov", email = "antonsvistunov99@gmail.com" }
+]
+dependencies = [
+    "jitgen",
+    "antlr4-python3-runtime==4.13.2",
+    "quickjs-rs>=0.2.5,<0.3.0",
+]
+
+[tool.uv.sources]
+jitgen = { path = "../jitgen", editable = true }
+
+[dependency-groups]
+test = [
+    "pytest>=9.0.1",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+omit = ["tests/*", "jitgen_js/_grammar/*"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+extend-exclude = ["jitgen_js/_grammar/*.py", "scripts/vendor/*.py"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["jitgen_js"]

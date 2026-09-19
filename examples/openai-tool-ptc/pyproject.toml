@@ -1,0 +1,19 @@
+[project]
+name = "openai-tool-ptc"
+version = "0.1.0"
+description = "Programmatic Tool Calling example: JitGen executing a streamed `eval` tool call incrementally."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jitgen",
+    "jitgen-js",
+    "jitgen-openai",
+    "langsmith>=0.10.17",
+    "openai>=2.53.0",
+    "python-dotenv>=1.2.2",
+]
+
+[tool.uv.sources]
+jitgen = { path = "../../libs/jitgen", editable = true }
+jitgen-js = { path = "../../libs/jitgen-js", editable = true }
+jitgen-openai = { path = "../../libs/jitgen-openai", editable = true }

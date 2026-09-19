@@ -1,6 +1,8 @@
+import ast
 import asyncio
 import contextlib
 import ctypes
+import inspect
 import io
 import queue
 import sys
@@ -116,15 +118,27 @@ class InProcPythonExecutor(ExecutorBase):
     A persistent `_locals` dict maintains variable state across executions
     (same semantics as a Python REPL).
 
-    All `exec()` calls are serialized through a single dedicated worker
+    Each dispatched statement is compiled with `ast.PyCF_ALLOW_TOP_LEVEL_
+    AWAIT` and run via `eval()` rather than `exec()` (see `_run_job`), so a
+    statement containing a top-level `await` — e.g. calling an `async def`
+    tool bound via `tools=` — runs correctly without needing to be wrapped
+    in an `async def`. A statement with no top-level `await` behaves
+    exactly as it did under plain `exec()`.
+
+    All statements are serialized through a single dedicated worker
     thread. When a call times out, the caller returns promptly while the
-    thread finishes the in-flight `exec` before accepting the next job. This
-    guarantees `_locals` is never written by two threads simultaneously.
+    thread finishes the in-flight statement before accepting the next job.
+    This guarantees `_locals` is never written by two threads simultaneously.
 
     A timed-out or cancelled job is **interrupted**: an exception is injected
     into the worker thread so a runaway `while True:` stops instead of
     spinning for the life of the process. This reaches any pure-Python loop
-    but cannot break a blocking C call; see `_raise_in_thread`.
+    — including one driven from inside an awaited coroutine, e.g. `async def
+    busy(): \n    while True: pass` — but cannot break a blocking C call; see
+    `_raise_in_thread`. `await asyncio.sleep(...)` is one such call (it
+    blocks on the event loop's selector wait), so a statement awaiting it
+    is, like `time.sleep(...)`, only interrupted once that wait itself
+    returns — bounded by its own duration, not by `timeout`.
 
     Note: in-process execution still cannot *guarantee* a kill. Code that
     blocks in C, or that swallows `BaseException`, survives interruption; the
@@ -217,7 +231,18 @@ class InProcPythonExecutor(ExecutorBase):
                 contextlib.redirect_stdout(job.stdout),
                 contextlib.redirect_stderr(job.stderr),
             ):
-                exec(job.compiled_code, self._locals)  # noqa: S102
+                # `job.compiled_code` was compiled with
+                # `ast.PyCF_ALLOW_TOP_LEVEL_AWAIT`, so a statement containing
+                # a top-level `await` compiles with `CO_COROUTINE` set and
+                # `eval()` — not `exec()` — returns a coroutine instead of
+                # running the statement immediately; a plain statement runs
+                # immediately either way and `eval()` returns `None`, same
+                # as `exec()` would. `asyncio.run` gives that coroutine a
+                # fresh event loop on this same worker thread, which never
+                # runs a loop of its own between jobs.
+                result = eval(job.compiled_code, self._locals)
+                if inspect.iscoroutine(result):
+                    asyncio.run(result)
         except ExecutionInterrupted:
             self._settle(job, ExecutionCancelled("Execution interrupted"))
         except SystemExit as exc:
@@ -285,6 +310,12 @@ class InProcPythonExecutor(ExecutorBase):
         completion. Jobs are serialized on that one thread, so `_locals` is
         never mutated by two threads concurrently.
 
+        `source_code` may contain a top-level `await` (`ast.PyCF_ALLOW_
+        TOP_LEVEL_AWAIT`) — this is what lets an injected async tool be
+        called as `await tool(...)` directly in dispatched statements,
+        rather than needing a synchronous bridge. See `_run_job` for how
+        the resulting coroutine, if any, is run.
+
         On timeout the job is interrupted rather than left running, so a
         runaway loop does not keep a core busy — and, just as importantly,
         does not keep holding the process-wide stdout redirect.
@@ -303,7 +334,13 @@ class InProcPythonExecutor(ExecutorBase):
         error_message: str | None = None
 
         try:
-            compiled_code = compile(source_code, "<string>", "exec", optimize=2)
+            compiled_code = compile(
+                source_code,
+                "<string>",
+                "exec",
+                flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                optimize=2,
+            )
         except Exception as exc:  # noqa: BLE001
             return ExecutionResult(success=False, error=_describe(exc))
 

@@ -317,3 +317,82 @@ async def test_interrupt_does_not_leak_into_the_next_statement(
     result = await exec_.aexecute("print('still here')")
     assert result.success
     assert result.output == "still here\n"
+
+
+# ── top-level await ─────────────────────────────────────────────────────────
+
+
+async def test_top_level_await_of_an_async_tool(
+    make_executor: Callable[..., InProcPythonExecutor],
+):
+    """A dispatched statement may `await` an injected `async def` tool directly.
+
+    This is what lets a PTC-style tool be an ordinary `async def` — no
+    synchronous bridge required — since each statement is compiled with
+    `ast.PyCF_ALLOW_TOP_LEVEL_AWAIT` and its resulting coroutine (if any) is
+    driven to completion on the worker thread.
+    """
+
+    async def fetch(name: str) -> str:
+        await asyncio.sleep(0.01)
+        return f"fetched:{name}"
+
+    exec_ = make_executor(tools={"fetch": fetch})
+    result = await exec_.aexecute("print(await fetch('x'))")
+    assert result.success
+    assert result.output == "fetched:x\n"
+
+
+async def test_a_plain_statement_is_unaffected_by_top_level_await_support(
+    executor: InProcPythonExecutor,
+):
+    """A statement with no `await` still just runs — `eval()` replacing
+    `exec()` internally must not change observable behavior."""
+    result = await executor.aexecute("x = 1 + 1\nprint(x)")
+    assert result.success
+    assert result.output == "2\n"
+
+
+async def test_mixed_sync_and_async_statements_share_repl_state(
+    make_executor: Callable[..., InProcPythonExecutor],
+):
+    async def double(n: int) -> int:
+        await asyncio.sleep(0.01)
+        return n * 2
+
+    exec_ = make_executor(tools={"double": double})
+    await exec_.aexecute("base = 21")
+    result = await exec_.aexecute("total = await double(base)\nprint(total)")
+    assert result.success
+    assert result.output == "42\n"
+
+
+async def test_async_tool_exception_is_captured(
+    make_executor: Callable[..., InProcPythonExecutor],
+):
+    async def bad() -> None:
+        raise RuntimeError("async boom")
+
+    exec_ = make_executor(tools={"bad": bad})
+    result = await exec_.aexecute("await bad()")
+    assert not result.success
+    assert result.error is not None
+    assert "async boom" in result.error
+
+
+async def test_runaway_async_loop_is_interrupted_at_timeout(
+    make_executor: Callable[..., InProcPythonExecutor],
+):
+    """A pure-Python busy loop inside an awaited coroutine has no blocking C
+    call in it, so it must be interruptible exactly like a plain `while
+    True:` statement is — this is the property the whole interrupt
+    mechanism exists for."""
+    exec_ = make_executor(timeout=0.3)
+    src = "async def busy():\n    while True:\n        pass\nawait busy()"
+    result = await exec_.aexecute(src)
+    assert result.has_timed_out
+    assert not result.success
+
+    probe = await exec_.aexecute("print('still alive')")
+    assert probe.success
+    assert probe.output == "still alive\n"
