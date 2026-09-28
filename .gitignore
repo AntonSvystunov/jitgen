@@ -19,3 +19,6 @@ dataset
 coverage.xml
 .coverage
 htmlcov/
+
+# iptc-parcs case-study run data (local only)
+misc/iptc-parcs/results/

@@ -8,7 +8,7 @@ import queue
 import sys
 import threading
 import warnings
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from types import CodeType
 from typing import Any
@@ -99,17 +99,90 @@ def _discard_outcome(future: asyncio.Future[None]) -> None:
         future.exception()
 
 
-def _restore_std_streams() -> None:
-    """Undo a `redirect_stdout`/`redirect_stderr` left behind by a dead job.
+class _ThreadRoutedStream:
+    """Stands in for `sys.stdout`/`sys.stderr` while jobs run.
 
-    Those context managers swap the streams **process-wide**, so a job that
-    never unwinds keeps every later write in the process — progress bars,
-    logging, tracebacks — disappearing into its own buffer.
+    Writes from a thread that is capturing go to that thread's buffer; writes
+    from every other thread go to the stream this one replaced.
+
+    Args:
+        fallback: The stream to use for threads that aren't capturing.
     """
-    if sys.stdout is not sys.__stdout__:
-        sys.stdout = sys.__stdout__
-    if sys.stderr is not sys.__stderr__:
-        sys.stderr = sys.__stderr__
+
+    def __init__(self, fallback: Any) -> None:
+        self.fallback = fallback
+        self._local = threading.local()
+
+    def write(self, text: str) -> int:
+        return self._target().write(text)
+
+    def flush(self) -> None:
+        self._target().flush()
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.fallback, name)
+
+    def set_target(self, target: io.StringIO | None) -> None:
+        """Route the calling thread's writes to `target`, or back to fallback."""
+        self._local.target = target
+
+    def _target(self) -> Any:
+        return getattr(self._local, "target", None) or self.fallback
+
+
+_STREAM_NAMES = ("stdout", "stderr")
+_routing_lock = threading.Lock()
+# Thread ids rather than a counter: an interrupt that skips one release is
+# repaired by the same thread's next job.
+_capturing_threads: set[int] = set()
+
+
+def _install_routers() -> tuple[_ThreadRoutedStream, _ThreadRoutedStream]:
+    """Put a `_ThreadRoutedStream` in place of `sys.stdout` and `sys.stderr`."""
+    with _routing_lock:
+        _capturing_threads.add(threading.get_ident())
+        for name in _STREAM_NAMES:
+            if not isinstance(getattr(sys, name), _ThreadRoutedStream):
+                setattr(sys, name, _ThreadRoutedStream(getattr(sys, name)))
+        return sys.stdout, sys.stderr  # type: ignore[return-value]
+
+
+def _uninstall_routers() -> None:
+    """Restore the original streams once no thread is capturing any more."""
+    with _routing_lock:
+        _capturing_threads.discard(threading.get_ident())
+        if _capturing_threads:
+            return
+        for name in _STREAM_NAMES:
+            stream = getattr(sys, name)
+            if isinstance(stream, _ThreadRoutedStream):
+                setattr(sys, name, stream.fallback)
+
+
+@contextlib.contextmanager
+def _capture_thread_output(stdout: io.StringIO, stderr: io.StringIO) -> Iterator[None]:
+    """Capture the calling thread's `print` output into `stdout`/`stderr`.
+
+    Unlike `contextlib.redirect_stdout`, which swaps the stream for every
+    thread, writes from other threads (e.g. a caller printing the model's
+    stream while code runs) still reach the stream they would have used.
+
+    Args:
+        stdout: Receives the thread's standard output.
+        stderr: Receives the thread's standard error.
+
+    Yields:
+        Nothing; capture lasts for the `with` block.
+    """
+    out_router, err_router = _install_routers()
+    out_router.set_target(stdout)
+    err_router.set_target(stderr)
+    try:
+        yield
+    finally:
+        out_router.set_target(None)
+        err_router.set_target(None)
+        _uninstall_routers()
 
 
 class InProcPythonExecutor(ExecutorBase):
@@ -148,8 +221,8 @@ class InProcPythonExecutor(ExecutorBase):
     Args:
         timeout: Max seconds allowed per `aexecute` call.
         interrupt_grace: Max seconds a timed-out `aexecute` waits for its
-            interrupt to take effect before returning, so the job releases
-            the process-wide stdout redirect first. Kept short deliberately:
+            interrupt to take effect before returning, so the job has
+            finished capturing output first. Kept short deliberately:
             an interruptible job stops at the next bytecode, and a job
             blocked in C will not stop within any grace period, so waiting
             longer only adds latency.
@@ -227,10 +300,7 @@ class InProcPythonExecutor(ExecutorBase):
         with self._lock:
             self._running = job
         try:
-            with (
-                contextlib.redirect_stdout(job.stdout),
-                contextlib.redirect_stderr(job.stderr),
-            ):
+            with _capture_thread_output(job.stdout, job.stderr):
                 # `job.compiled_code` was compiled with
                 # `ast.PyCF_ALLOW_TOP_LEVEL_AWAIT`, so a statement containing
                 # a top-level `await` compiles with `CO_COROUTINE` set and
@@ -317,8 +387,7 @@ class InProcPythonExecutor(ExecutorBase):
         the resulting coroutine, if any, is run.
 
         On timeout the job is interrupted rather than left running, so a
-        runaway loop does not keep a core busy — and, just as importantly,
-        does not keep holding the process-wide stdout redirect.
+        runaway loop does not keep a core busy.
 
         Args:
             source_code: One dispatched top-level statement.
@@ -362,10 +431,8 @@ class InProcPythonExecutor(ExecutorBase):
             # was a timeout at all.
             error_message = f"Execution timed out after {self.timeout}s"
             self._interrupt(job)
-            # Give the interrupt a moment to actually land.  Until the job
-            # unwinds, it still owns the process-wide stdout/stderr redirect, so
-            # returning immediately would silently swallow whatever the caller
-            # logs about the timeout.  An interruptible job settles in
+            # Give the interrupt a moment to actually land, so the job's output
+            # is complete when we return.  An interruptible job settles in
             # microseconds; an uninterruptible one costs this grace period once.
             await asyncio.wait([future], timeout=self.interrupt_grace)
             # We stopped awaiting this future, but the worker will still settle
@@ -406,16 +473,13 @@ class InProcPythonExecutor(ExecutorBase):
         then joins for at most `close_timeout`. A job that refuses to die —
         blocked in C, or swallowing `BaseException` — leaves the thread
         abandoned instead of hanging the caller; it is a daemon, so it will
-        not keep the process alive. In that case the process-wide
-        stdout/stderr redirect it still owns is force-restored, otherwise
-        every subsequent write in this process would vanish into the dead
-        job's buffer.
+        not keep the process alive. Its output capture only affects its own
+        thread, so writes from the rest of the process are unaffected.
         """
         self._thread_queue.put_nowait(_ThreadShutdown())
         self._interrupt()
         await asyncio.to_thread(self._thread.join, self.close_timeout)
         if self._thread.is_alive():
-            _restore_std_streams()
             warnings.warn(
                 "InProcPythonExecutor: worker thread did not stop within "
                 f"{self.close_timeout}s and was abandoned — executed code is "

@@ -1,0 +1,19 @@
+[project]
+name = "openai-tool-ptc-mcp"
+version = "0.1.0"
+description = "Incremental Programmatic Tool Calling (IPTC): JitGen executing a streamed `eval` tool call that itself calls a real, read-only MCP server."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jitgen",
+    "jitgen-openai[js]",
+    "langsmith>=0.10.17",
+    "mcp>=1.2.0",
+    "openai>=2.53.0",
+    "python-dotenv>=1.2.2",
+]
+
+[tool.uv.sources]
+jitgen = { path = "../../libs/jitgen", editable = true }
+jitgen-js = { path = "../../libs/jitgen-js", editable = true }
+jitgen-openai = { path = "../../libs/jitgen-openai", editable = true }

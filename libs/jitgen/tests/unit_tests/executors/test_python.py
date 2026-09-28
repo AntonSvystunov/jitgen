@@ -234,7 +234,7 @@ async def test_infinite_loop_is_interrupted_at_timeout(
     """A ``while True:`` must stop when its budget runs out.
 
     Without interruption the worker thread spins for the life of the process,
-    burning a core and holding the process-wide stdout redirect.
+    burning a core.
     """
     exec_ = make_executor(timeout=0.5)
     result = await exec_.aexecute("while True:\n    pass")
@@ -264,20 +264,37 @@ async def test_repl_state_survives_an_interrupt(
     assert result.output == "before\n"
 
 
-async def test_std_streams_restored_after_a_runaway_job(
+async def test_caller_output_is_not_captured_after_a_runaway_job(
     make_executor: Callable[..., InProcPythonExecutor],
+    capsys: pytest.CaptureFixture[str],
 ):
-    """The redirect is process-wide, so a job that never unwinds silently eats
-    every later write in the whole process — progress bars, logs, tracebacks."""
-    # Snapshot rather than compare against sys.__stdout__: pytest's capture has
-    # already swapped the streams, and what matters is that we hand back
-    # whatever was in place before the job ran.
-    stdout_before, stderr_before = sys.stdout, sys.stderr
+    """A job that times out must not keep swallowing the rest of the process's output."""
     exec_ = make_executor(timeout=0.5)
     await exec_.aexecute("while True:\n    pass")
 
-    assert sys.stdout is stdout_before
-    assert sys.stderr is stderr_before
+    print("after the runaway job")
+    assert "after the runaway job" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("stream", ["stdout", "stderr"])
+async def test_caller_output_during_a_job_is_not_captured(
+    executor: InProcPythonExecutor,
+    capsys: pytest.CaptureFixture[str],
+    stream: str,
+):
+    """Another thread printing while a job runs (e.g. a caller echoing the
+    model's stream) must reach its own stream, not the job's output."""
+    job = asyncio.ensure_future(
+        executor.aexecute("import time\nprint('from job')\ntime.sleep(0.3)")
+    )
+    await asyncio.sleep(0.1)
+    print("from the caller", file=getattr(sys, stream))
+    result = await job
+
+    assert result.output == "from job\n"
+    assert "from the caller" in getattr(
+        capsys.readouterr(), "out" if stream == "stdout" else "err"
+    )
 
 
 async def test_aclose_is_bounded_even_while_code_is_still_running(

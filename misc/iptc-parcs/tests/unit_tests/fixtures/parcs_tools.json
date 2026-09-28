@@ -1,0 +1,104 @@
+[
+  {
+    "name": "get_layer_result",
+    "description": "Returns the stored result of a previously executed layer by its layerId.\n\nPrimary use cases:\n  1. Recovery after connection drop: if run_layer returns status 'Running' (the SSE connection was interrupted before the job finished), call this tool after a short wait to retrieve the result once the cluster has completed it.\n  2. Lazy reads: retrieve a completed layer's result on demand without re-running.\n\nReturns { layerId, status:'Completed', result } on success, { layerId, status:'Failed', errorMessage } on failure, or { layerId, status:'Running' } if the layer is still executing.",
+    "inputSchema": {
+      "title": "get_layer_result",
+      "description": "Returns the stored result of a previously executed layer by its layerId.\n\nPrimary use cases:\n  1. Recovery after connection drop: if run_layer returns status 'Running' (the SSE connection was interrupted before the job finished), call this tool after a short wait to retrieve the result once the cluster has completed it.\n  2. Lazy reads: retrieve a completed layer's result on demand without re-running.\n\nReturns { layerId, status:'Completed', result } on success, { layerId, status:'Failed', errorMessage } on failure, or { layerId, status:'Running' } if the layer is still executing.",
+      "type": "object",
+      "properties": {
+        "layerId": {
+          "description": "layerId returned by run_layer.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "layerId"
+      ]
+    }
+  },
+  {
+    "name": "run_layer",
+    "description": "Executes the compiled session code across 'parallelism' daemon workers in parallel, waits for all workers to finish, and returns aggregated results.\n\nTo chain layers, pass the layerId returned by the previous run_layer call as previousLayerId — the server fetches the stored result automatically and makes it available to every worker via input.PreviousLayerResultJson. You never need to read or repeat the full result JSON.\n\nReturns on success:\n  { layerId, status:'Completed', totalElapsedSeconds, successCount, failureCount,\n    results: [ { workerIndex, success, outputData, errorMessage, elapsedSeconds } ] }\n\nOn status:'Failed', check errorMessage. If workers ran out of memory, reduce parallelism or simplify per-worker work size and call run_layer again. If the C# code threw, fix it with create_session and retry from the last good layerId.",
+    "inputSchema": {
+      "title": "run_layer",
+      "description": "Executes the compiled session code across 'parallelism' daemon workers in parallel, waits for all workers to finish, and returns aggregated results.\n\nTo chain layers, pass the layerId returned by the previous run_layer call as previousLayerId — the server fetches the stored result automatically and makes it available to every worker via input.PreviousLayerResultJson. You never need to read or repeat the full result JSON.\n\nReturns on success:\n  { layerId, status:'Completed', totalElapsedSeconds, successCount, failureCount,\n    results: [ { workerIndex, success, outputData, errorMessage, elapsedSeconds } ] }\n\nOn status:'Failed', check errorMessage. If workers ran out of memory, reduce parallelism or simplify per-worker work size and call run_layer again. If the C# code threw, fix it with create_session and retry from the last good layerId.",
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "description": "Session ID from create_session.",
+          "type": "string"
+        },
+        "parallelism": {
+          "description": "Number of parallel workers. Must not exceed maxParallelism from get_cluster_info.",
+          "type": "integer"
+        },
+        "previousLayerId": {
+          "description": "layerId from the previous run_layer call. The server retrieves the stored result and passes it to every worker as input.PreviousLayerResultJson. Omit for the first layer. (Default value: null)",
+          "type": "string"
+        },
+        "customData": {
+          "description": "Optional shared string payload sent unchanged to every worker via input.CustomData. Use this to broadcast a small configuration value (e.g. a threshold, a mode flag, or a compact serialised object) that all workers need identically. For worker-specific inputs, use parameters instead. Maximum a few KB. (Default value: null)",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Optional named parameters available to every worker via input.Parameters (a Dictionary<string,string>). Pass as a JSON object: {\"key\": \"value\"}. Workers read values with input.Parameters[\"key\"]. (Default value: null)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "datasetUrl": {
+          "description": "Optional URL of a dataset file. Downloaded once by the MCP server to shared cluster storage; all workers read it from the same NFS path via input.DatasetPath. Supports HuggingFace raw URLs, GCS, Azure Blob, or any public HTTPS URL. The file is cached by URL so repeated calls with the same URL skip the download. Workers read it with File.ReadAllBytes(input.DatasetPath!) or File.ReadAllText(...). Pass null when workers generate their own data from a seed. (Default value: null)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sessionId",
+        "parallelism",
+        "previousLayerId",
+        "customData",
+        "parameters",
+        "datasetUrl"
+      ]
+    }
+  },
+  {
+    "name": "list_sessions",
+    "description": "Lists all active compute sessions in this MCP server instance, ordered newest first. Useful for resuming a multi-layer pipeline after a connection interruption.",
+    "inputSchema": {
+      "title": "list_sessions",
+      "description": "Lists all active compute sessions in this MCP server instance, ordered newest first. Useful for resuming a multi-layer pipeline after a connection interruption.",
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "create_session",
+    "description": "Compiles C# source code and registers it as a PARCS compute session. The code must implement IAgentComputation from Parcs.Agent.Runtime:\n\n  public interface IAgentComputation {\n    Task<AgentLayerResult> ExecuteAsync(AgentLayerInput input, CancellationToken ct);\n  }\n\nAgentLayerInput fields available to each worker:\n  • WorkerIndex         – 0-based index of this worker\n  • TotalWorkers        – total number of workers in this layer\n  • PreviousLayerResultJson – full JSON output of the previous layer (populated     automatically when you pass previousLayerId to run_layer)\n  • CustomData          – shared payload broadcast to all workers\n  • Parameters          – Dictionary<string,string> of named parameters\n  • DatasetPath         – path to the dataset file on shared NFS storage (populated when datasetUrl is passed to run_layer)\n\nReturn AgentLayerResult.Ok(outputJson) or AgentLayerResult.Error(message).\n\nReturns { sessionId } on success or { error } with diagnostics on compile failure. On failure, fix the code and call create_session again — no state is lost.",
+    "inputSchema": {
+      "title": "create_session",
+      "description": "Compiles C# source code and registers it as a PARCS compute session. The code must implement IAgentComputation from Parcs.Agent.Runtime:\n\n  public interface IAgentComputation {\n    Task<AgentLayerResult> ExecuteAsync(AgentLayerInput input, CancellationToken ct);\n  }\n\nAgentLayerInput fields available to each worker:\n  • WorkerIndex         – 0-based index of this worker\n  • TotalWorkers        – total number of workers in this layer\n  • PreviousLayerResultJson – full JSON output of the previous layer (populated     automatically when you pass previousLayerId to run_layer)\n  • CustomData          – shared payload broadcast to all workers\n  • Parameters          – Dictionary<string,string> of named parameters\n  • DatasetPath         – path to the dataset file on shared NFS storage (populated when datasetUrl is passed to run_layer)\n\nReturn AgentLayerResult.Ok(outputJson) or AgentLayerResult.Error(message).\n\nReturns { sessionId } on success or { error } with diagnostics on compile failure. On failure, fix the code and call create_session again — no state is lost.",
+      "type": "object",
+      "properties": {
+        "sourceCode": {
+          "description": "Complete C# class implementing IAgentComputation, or just the ExecuteAsync method body (usings and class wrapper are added automatically).",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceCode"
+      ]
+    }
+  },
+  {
+    "name": "get_cluster_info",
+    "description": "Returns PARCS cluster capacity: worker node count, maximum simultaneous daemon workers (maxParallelism), and per-daemon CPU allocation in millicores. Call once at the start to decide how many workers to use per layer. KEDA autoscales nodes on demand, so requesting up to maxParallelism workers is safe.",
+    "inputSchema": {
+      "title": "get_cluster_info",
+      "description": "Returns PARCS cluster capacity: worker node count, maximum simultaneous daemon workers (maxParallelism), and per-daemon CPU allocation in millicores. Call once at the start to decide how many workers to use per layer. KEDA autoscales nodes on demand, so requesting up to maxParallelism workers is safe.",
+      "type": "object",
+      "properties": {}
+    }
+  }
+]

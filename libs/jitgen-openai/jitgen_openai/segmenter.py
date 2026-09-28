@@ -1,4 +1,7 @@
+import re
+from collections.abc import Callable
 from enum import Enum, auto
+from typing import ClassVar
 
 from jitgen.base import CodeSegment
 
@@ -12,168 +15,143 @@ _SIMPLE_ESCAPES = {
     "r": "\r",
     "t": "\t",
 }
+_UNICODE_ESCAPE_LENGTH = len("\\uXXXX")
 
-_HIGH_SURROGATE_RANGE = range(0xD800, 0xDC00)
-_LOW_SURROGATE_RANGE = range(0xDC00, 0xE000)
-
-
-class _State(Enum):
-    SEEK_OBJECT_START = auto()
-    SEEK_KEY_OR_END = auto()
-    IN_KEY = auto()
-    SEEK_COLON = auto()
-    SEEK_VALUE = auto()
-    IN_TARGET_VALUE = auto()
-    IN_SKIP_STRING = auto()
-    SKIP_STRUCT = auto()
-    SKIP_SCALAR = auto()
-    SEEK_COMMA_OR_END = auto()
+_STRING_DELIMITER = re.compile(r'["\\]')
+_NESTED_DELIMITER = re.compile(r'["{}\[\]]')
+_SCALAR_END = re.compile(r"[\s,}\]]")
+_HEX_CODE_UNIT = re.compile(r"[0-9a-fA-F]{4}")
 
 
-class _StringScanner:
-    """Decodes one JSON string body, one character at a time.
+def _is_high_surrogate(code_point: int) -> bool:
+    return 0xD800 <= code_point < 0xDC00
 
-    Escape sequences — including a `\\uXXXX` split across several calls, and
-    a surrogate pair split across two separate escapes — are tracked as
-    instance state so a chunk boundary landing mid-escape is buffered rather
-    than misread as a plain character or an error.
+
+def _is_low_surrogate(code_point: int) -> bool:
+    return 0xDC00 <= code_point < 0xE000
+
+
+class _StringDecoder:
+    """Incrementally decodes one JSON string body, across chunk boundaries.
+
+    An escape sequence or surrogate pair split between chunks is held back
+    until it is complete, so it is never misread as plain characters.
     """
 
     def __init__(self) -> None:
-        self._escaped = False
-        self._pending_escape = ""
-        self._pending_high_surrogate: str | None = None
+        self._escape = ""
+        self._high_surrogate = ""
 
     def reset(self) -> None:
-        """Clear buffered escape state so the scanner can decode a new string."""
-        self._escaped = False
-        self._pending_escape = ""
-        self._pending_high_surrogate = None
+        """Forget any partial escape so a new string can be decoded."""
+        self._escape = ""
+        self._high_surrogate = ""
 
-    def step(self, char: str) -> tuple[list[str], bool]:
-        """Consume one character of a string body (after the opening quote).
+    def decode(self, chunk: str, pos: int) -> tuple[str, int, bool]:
+        """Decode `chunk` from `pos` up to the closing quote or the chunk's end.
 
         Args:
-            char: The next raw character of the string body.
+            chunk: Raw JSON text.
+            pos: Index of the first string-body character to decode.
 
         Returns:
-            `(decoded_chars, closed)`. `decoded_chars` is usually zero or one
-            characters — two only when an unpaired high surrogate is flushed
-            alongside the character that follows it. `closed` is `True` when
-            `char` was the unescaped quote that ends the string.
+            `(decoded, next_pos, closed)`, where `closed` is `True` when the
+            string's closing quote was consumed.
         """
-        if self._pending_escape:
-            return self._continue_unicode_escape(char), False
-        if self._escaped:
-            self._escaped = False
-            return self._resolve_escape(char), False
-        if char == "\\":
-            self._escaped = True
-            return [], False
-        if char == '"':
-            return self.flush_pending_surrogate(), True
-        return [char], False
+        parts: list[str] = []
+        while pos < len(chunk):
+            char = chunk[pos]
+            if self._escape:
+                self._escape += char
+                pos += 1
+                parts.append(self._resolve_escape())
+            elif char == "\\":
+                self._escape = char
+                pos += 1
+            elif char == '"':
+                parts.append(self.flush())
+                return "".join(parts), pos + 1, True
+            else:
+                delimiter = _STRING_DELIMITER.search(chunk, pos)
+                run_end = delimiter.start() if delimiter else len(chunk)
+                parts.append(self.flush() + chunk[pos:run_end])
+                pos = run_end
+        return "".join(parts), pos, False
 
-    def flush_pending_surrogate(self) -> list[str]:
-        """Emit a held-back high surrogate that never got its pair.
-
-        Called both when the string closes and, best-effort, when the
-        stream ends while a value is still open (see
-        `OpenAIToolCallSegmenter.finalize`).
+    def flush(self) -> str:
+        """Release a high surrogate still waiting for its pair.
 
         Returns:
-            `[pending_char]`, or `[]` when nothing was held back.
+            The held-back surrogate, or `""` when there is none.
         """
-        if self._pending_high_surrogate is None:
-            return []
-        pending, self._pending_high_surrogate = self._pending_high_surrogate, None
-        return [pending]
+        pending, self._high_surrogate = self._high_surrogate, ""
+        return pending
 
-    def _resolve_escape(self, char: str) -> list[str]:
-        if char == "u":
-            self._pending_escape = "u"
-            return []
-        return self._emit(_SIMPLE_ESCAPES.get(char, char))
+    def _resolve_escape(self) -> str:
+        escape = self._escape
+        if escape[1] != "u":
+            self._escape = ""
+            return self.flush() + _SIMPLE_ESCAPES.get(escape[1], escape[1])
+        if len(escape) < _UNICODE_ESCAPE_LENGTH:
+            return ""
+        self._escape = ""
+        hex_digits = escape[2:]
+        if not _HEX_CODE_UNIT.fullmatch(hex_digits):
+            return ""  # malformed escape; drop it rather than raise
+        return self._combine_surrogates(int(hex_digits, 16))
 
-    def _continue_unicode_escape(self, char: str) -> list[str]:
-        self._pending_escape += char
-        if len(self._pending_escape) < 5:  # "u" + 4 hex digits
-            return []
-        hex_digits, self._pending_escape = self._pending_escape[1:], ""
-        try:
-            code_point = int(hex_digits, 16)
-        except ValueError:
-            return []  # malformed escape; drop it rather than raise
-        return self._emit(chr(code_point))
+    def _combine_surrogates(self, code_point: int) -> str:
+        high = self.flush()
+        if high and _is_low_surrogate(code_point):
+            return chr(0x10000 + (ord(high) - 0xD800) * 0x400 + (code_point - 0xDC00))
+        if _is_high_surrogate(code_point):
+            self._high_surrogate = chr(code_point)
+            return high
+        return high + chr(code_point)
 
-    def _emit(self, unit: str) -> list[str]:
-        code_point = ord(unit)
-        if self._pending_high_surrogate is not None:
-            high, self._pending_high_surrogate = self._pending_high_surrogate, None
-            if code_point in _LOW_SURROGATE_RANGE:
-                combined = (
-                    0x10000 + (ord(high) - 0xD800) * 0x400 + (code_point - 0xDC00)
-                )
-                return [chr(combined)]
-            return [high, unit]
-        if code_point in _HIGH_SURROGATE_RANGE:
-            self._pending_high_surrogate = unit
-            return []
-        return [unit]
+
+class _State(Enum):
+    SEEK_OBJECT = auto()
+    SEEK_KEY = auto()
+    IN_KEY = auto()
+    SEEK_VALUE = auto()
+    IN_TARGET_VALUE = auto()
+    SKIP_STRING = auto()
+    SKIP_NESTED = auto()
+    SKIP_SCALAR = auto()
 
 
 class OpenAIToolCallSegmenter:
-    """Extracts one JSON string property from a streaming tool-call `arguments` blob.
+    """Streams one string property out of a tool call's JSON `arguments`.
 
-    OpenAI (and OpenAI-compatible) tool-call streaming delivers a function's
-    arguments as successive plain-text deltas of one growing JSON object,
-    e.g. `{"la` -> `{"language": "python", "co` -> `{"language": "python",
-    "code": "pri` -> ... This scans that raw text and emits the *decoded*
-    value of `property_name` as soon as each character of it is final,
-    correctly skipping over any other properties before or after it and
-    treating the property's closing quote as the end of the block.
-
-    Feed it the raw `arguments` delta text yourself, e.g.
-    `chunk.choices[0].delta.tool_calls[0].function.arguments` — this class
-    has no OpenAI SDK dependency and never sees the chunk object itself.
-
-    One instance scans one JSON object's `property_name` at a time, but it
-    is safe to keep feeding it further JSON afterward — either after
-    `StreamDriver` resets it on `end_of_block`, or even concatenated within
-    a single `feed()` call (e.g. two tool calls' `arguments` fed back to
-    back) — each new `{` restarts the scan from scratch.
+    Feed it the raw `arguments` deltas (`delta.tool_calls[i].function.arguments`);
+    it emits the decoded value of `property_name` as soon as each character is
+    final, skips every other property, and ends the block at the value's closing
+    quote. Each new top-level `{` starts a fresh scan, so several objects can be
+    fed back to back.
 
     Args:
-        property_name: The JSON key whose string value should be extracted.
+        property_name: The JSON key whose string value holds the code.
     """
 
     def __init__(self, *, property_name: str) -> None:
         self.property_name = property_name
-        self._state = _State.SEEK_OBJECT_START
-        self._scanner = _StringScanner()
-        self._key_chars: list[str] = []
-        self._current_key = ""
-        self._struct_depth = 0
-        self._struct_in_string = False
-        self._struct_scanner = _StringScanner()
-        self._output: list[str] = []
-        self._segments: list[CodeSegment] = []
+        self._decoder = _StringDecoder()
+        self.reset()
 
     @property
     def inside_block(self) -> bool:
-        """`True` while scanning `property_name`'s still-open string value."""
+        """`True` while `property_name`'s string value is still open."""
         return self._state is _State.IN_TARGET_VALUE
 
     def reset(self) -> None:
         """Clear buffered state so the segmenter can be reused for a new stream."""
-        self._state = _State.SEEK_OBJECT_START
-        self._scanner.reset()
-        self._key_chars = []
-        self._current_key = ""
-        self._struct_depth = 0
-        self._struct_in_string = False
-        self._struct_scanner.reset()
-        self._output = []
+        self._decoder.reset()
+        self._state = _State.SEEK_OBJECT
+        self._key_parts: list[str] = []
+        self._is_target_key = False
+        self._nesting_depth = 0
+        self._after_skipped_string = _State.SEEK_KEY
 
     def feed(self, chunk: str) -> list[CodeSegment]:
         """Append `chunk` and return any newly extractable code segments.
@@ -185,162 +163,117 @@ class OpenAIToolCallSegmenter:
             Code segments that became extractable as a result of `chunk`, in
             order; empty when nothing is ready yet.
         """
-        self._segments = []
-        for char in chunk:
-            self._advance(char)
-        if self._state is _State.IN_TARGET_VALUE and self._output:
-            self._segments.append(CodeSegment(text="".join(self._output)))
-            self._output = []
-        segments, self._segments = self._segments, []
+        segments: list[CodeSegment] = []
+        pos = 0
+        while pos < len(chunk):
+            if self._state is not _State.IN_TARGET_VALUE:
+                pos = self._HANDLERS[self._state](self, chunk, pos)
+                continue
+            text, pos, closed = self._decoder.decode(chunk, pos)
+            if closed:
+                self._state = _State.SEEK_KEY
+                segments.append(CodeSegment(text=text, end_of_block=True))
+            elif text:
+                segments.append(CodeSegment(text=text))
         return segments
 
     def finalize(self) -> list[CodeSegment]:
-        """Flush whatever is buffered at end-of-stream.
-
-        Used when the tool call's `arguments` ended without closing
-        `property_name`'s string — inference stopped early, or the model
-        never reached the closing quote — so the code written so far is
-        executed rather than silently discarded.
+        """Flush whatever is buffered when the stream ends inside the value.
 
         Returns:
-            Any code segments still held back, in order.
+            A final block-ending segment with any held-back text, or `[]`.
         """
-        if self._state is not _State.IN_TARGET_VALUE:
+        if not self.inside_block:
             return []
-        self._output.extend(self._scanner.flush_pending_surrogate())
-        text = "".join(self._output)
-        self._output = []
+        text = self._decoder.flush()
         return [CodeSegment(text=text, end_of_block=True)] if text else []
 
-    # ── private ────────────────────────────────────────────────────────
+    # Each handler below consumes input in its state, starting at `pos`, and
+    # returns the index of the next unprocessed character.
 
-    def _advance(self, char: str) -> None:
-        """Drive the state machine over one raw character.
+    def _seek_object(self, chunk: str, pos: int) -> int:
+        start = chunk.find("{", pos)
+        if start == -1:
+            return len(chunk)
+        self._state = _State.SEEK_KEY
+        return start + 1
 
-        A single character can cross more than one state transition (e.g. a
-        scalar value's first character both starts `SKIP_SCALAR` and, if
-        the value is empty, immediately ends it), so `_dispatch` is
-        retried on the same character until it reports the char consumed.
+    def _seek_key(self, chunk: str, pos: int) -> int:
+        char = chunk[pos]
+        if char == '"':
+            self._key_parts = []
+            self._start_string(_State.IN_KEY)
+        elif char == "}":
+            self._state = _State.SEEK_OBJECT
+        return pos + 1  # whitespace, commas and stray characters are ignored
 
-        Args:
-            char: The next raw character of the buffered JSON text.
-        """
-        while self._dispatch(char):
-            pass
+    def _read_key(self, chunk: str, pos: int) -> int:
+        text, pos, closed = self._decoder.decode(chunk, pos)
+        self._key_parts.append(text)
+        if closed:
+            self._is_target_key = "".join(self._key_parts) == self.property_name
+            self._state = _State.SEEK_VALUE
+        return pos
 
-    def _dispatch(self, char: str) -> bool:
-        """Handle `char` in the current state.
+    def _seek_value(self, chunk: str, pos: int) -> int:
+        char = chunk[pos]
+        if char.isspace() or char == ":":
+            return pos + 1
+        if char == '"':
+            if self._is_target_key:
+                self._start_string(_State.IN_TARGET_VALUE)
+            else:
+                self._skip_string_then(_State.SEEK_KEY)
+            return pos + 1
+        if char in "{[":
+            self._nesting_depth = 1
+            self._state = _State.SKIP_NESTED
+            return pos + 1
+        self._state = _State.SKIP_SCALAR
+        return pos
 
-        Args:
-            char: The character to process under `self._state`.
+    def _skip_string(self, chunk: str, pos: int) -> int:
+        _, pos, closed = self._decoder.decode(chunk, pos)
+        if closed:
+            self._state = self._after_skipped_string
+        return pos
 
-        Returns:
-            `True` when `char` must be reprocessed under the state this call
-            just switched to; `False` once `char` has been fully consumed.
-        """
-        state = self._state
+    def _skip_nested(self, chunk: str, pos: int) -> int:
+        delimiter = _NESTED_DELIMITER.search(chunk, pos)
+        if delimiter is None:
+            return len(chunk)
+        char = delimiter.group()
+        if char == '"':
+            self._skip_string_then(_State.SKIP_NESTED)
+        elif char in "{[":
+            self._nesting_depth += 1
+        else:
+            self._nesting_depth -= 1
+            if self._nesting_depth == 0:
+                self._state = _State.SEEK_KEY
+        return delimiter.end()
 
-        if state is _State.SEEK_OBJECT_START:
-            if char == "{":
-                self._state = _State.SEEK_KEY_OR_END
-            return False
+    def _skip_scalar(self, chunk: str, pos: int) -> int:
+        delimiter = _SCALAR_END.search(chunk, pos)
+        if delimiter is None:
+            return len(chunk)
+        self._state = _State.SEEK_KEY
+        return delimiter.start()  # let `SEEK_KEY` consume the delimiter
 
-        if state is _State.SEEK_KEY_OR_END:
-            if char.isspace():
-                return False
-            if char == '"':
-                self._key_chars = []
-                self._scanner.reset()
-                self._state = _State.IN_KEY
-                return False
-            if char == "}":
-                self._state = _State.SEEK_OBJECT_START
-            return False  # lenient: ignore any other unexpected character
+    def _start_string(self, state: _State) -> None:
+        self._decoder.reset()
+        self._state = state
 
-        if state is _State.IN_KEY:
-            decoded, closed = self._scanner.step(char)
-            self._key_chars.extend(decoded)
-            if closed:
-                self._current_key = "".join(self._key_chars)
-                self._state = _State.SEEK_COLON
-            return False
+    def _skip_string_then(self, resume: _State) -> None:
+        self._after_skipped_string = resume
+        self._start_string(_State.SKIP_STRING)
 
-        if state is _State.SEEK_COLON:
-            if char.isspace():
-                return False
-            if char == ":":
-                self._state = _State.SEEK_VALUE
-            return False
-
-        if state is _State.SEEK_VALUE:
-            if char.isspace():
-                return False
-            if char == '"':
-                self._scanner.reset()
-                self._output = []
-                self._state = (
-                    _State.IN_TARGET_VALUE
-                    if self._current_key == self.property_name
-                    else _State.IN_SKIP_STRING
-                )
-                return False
-            if char in "{[":
-                self._struct_depth = 1
-                self._struct_in_string = False
-                self._state = _State.SKIP_STRUCT
-                return False
-            self._state = _State.SKIP_SCALAR
-            return True  # let SKIP_SCALAR see this same char
-
-        if state is _State.IN_TARGET_VALUE:
-            decoded, closed = self._scanner.step(char)
-            self._output.extend(decoded)
-            if closed:
-                text = "".join(self._output)
-                self._output = []
-                self._segments.append(CodeSegment(text=text, end_of_block=True))
-                self._state = _State.SEEK_COMMA_OR_END
-            return False
-
-        if state is _State.IN_SKIP_STRING:
-            _, closed = self._scanner.step(char)
-            if closed:
-                self._state = _State.SEEK_COMMA_OR_END
-            return False
-
-        if state is _State.SKIP_STRUCT:
-            if self._struct_in_string:
-                _, closed = self._struct_scanner.step(char)
-                if closed:
-                    self._struct_in_string = False
-                return False
-            if char == '"':
-                self._struct_in_string = True
-                self._struct_scanner.reset()
-                return False
-            if char in "{[":
-                self._struct_depth += 1
-                return False
-            if char in "}]":
-                self._struct_depth -= 1
-                if self._struct_depth == 0:
-                    self._state = _State.SEEK_COMMA_OR_END
-            return False
-
-        if state is _State.SKIP_SCALAR:
-            if char.isspace() or char in ",}]":
-                self._state = _State.SEEK_COMMA_OR_END
-                return True  # let SEEK_COMMA_OR_END see the delimiter
-            return False
-
-        if state is _State.SEEK_COMMA_OR_END:
-            if char.isspace():
-                return False
-            if char == ",":
-                self._state = _State.SEEK_KEY_OR_END
-                return False
-            if char in "}]":
-                self._state = _State.SEEK_OBJECT_START
-            return False  # lenient: ignore any other unexpected character
-
-        return False
+    _HANDLERS: ClassVar[dict[_State, Callable[..., int]]] = {
+        _State.SEEK_OBJECT: _seek_object,
+        _State.SEEK_KEY: _seek_key,
+        _State.IN_KEY: _read_key,
+        _State.SEEK_VALUE: _seek_value,
+        _State.SKIP_STRING: _skip_string,
+        _State.SKIP_NESTED: _skip_nested,
+        _State.SKIP_SCALAR: _skip_scalar,
+    }
