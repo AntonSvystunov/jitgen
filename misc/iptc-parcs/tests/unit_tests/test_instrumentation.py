@@ -109,3 +109,21 @@ async def test_requests_carry_capped_tool_results_and_count_them():
     sent = fake.chat.completions.calls[0]["messages"][0]["content"]
     assert sent.startswith("01234\n[truncated: 5 of 10")
     assert recorder.turns[0].truncated_tool_results == 1
+
+
+async def test_generation_end_and_upstream_provider_are_recorded():
+    first = tool_chunk('{"code": "a')
+    first.provider = "DeepInfra"
+    fake = FakeClient([[first, tool_chunk('b"}'), FakeChunk(usage=FakeUsage(1, 2))]])
+    recorder = RunRecorder()
+    client = InstrumentedClient(fake, recorder)
+
+    stream = await client.chat.completions.create(messages=[], stream=True)
+    async with stream:
+        [_ async for _ in stream]
+
+    [turn] = recorder.turns
+    assert turn.upstream_provider == "DeepInfra"
+    assert turn.first_arguments <= turn.last_arguments == turn.last_token
+    # The usage chunk carries no text, so generation ended before the stream did.
+    assert turn.last_token <= turn.end

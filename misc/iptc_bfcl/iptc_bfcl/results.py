@@ -1,0 +1,163 @@
+# Adapted from misc/iptc-parcs/iptc_parcs/results.py.
+import csv
+from dataclasses import asdict, fields
+from pathlib import Path
+from typing import Any
+
+from iptc_bfcl.metrics import ToolCallRecord, TurnRecord
+
+RUN_KEY_FIELDS = [
+    "model",
+    "category",
+    "entry_id",
+    "strategy",
+    "language",
+    "reasoning_effort",
+    "upstream",
+    "tool_delay",
+    "mode",
+    "rep",
+]
+
+RUN_FIELDS = [
+    *RUN_KEY_FIELDS,
+    "attempt",
+    "seed",
+    "order",
+    "started_at",
+    "status",
+    "correct",
+    "first_turn_correct",
+    "grade_reason",
+    "expected_calls",
+    "successful_calls",
+    "wall_seconds",
+    "iterations",
+    "tool_iterations",
+    "failed_iterations",
+    "self_correction_iterations",
+    "successful_iterations",
+    "early_closed_turns",
+    "tool_calls",
+    "tool_errors",
+    "truncated_tool_results",
+    "est_input_tokens",
+    "est_output_tokens",
+    "est_reasoning_tokens",
+    "usage_input_tokens",
+    "usage_output_tokens",
+    "usage_reasoning_tokens",
+    "native_input_tokens",
+    "native_output_tokens",
+    "native_reasoning_tokens",
+    "est_output_tokens_failed_turns",
+    "est_tokens_after_first_failure",
+    "model_seconds",
+    "tool_seconds",
+    "overlap_seconds",
+    "first_tool_call_seconds",
+    "seconds_per_iteration",
+    "est_tokens_per_iteration",
+    "error",
+    "answer",
+]
+
+_TEXT_FIELDS = {"reasoning_text", "content_text", "arguments_text", "tool_result"}
+TURN_FIELDS = (
+    [*RUN_KEY_FIELDS, "attempt"]
+    + [f.name for f in fields(TurnRecord) if f.name not in _TEXT_FIELDS]
+    + ["tool_result_head"]
+)
+TOOL_CALL_FIELDS = [*RUN_KEY_FIELDS, "attempt"] + [
+    f.name for f in fields(ToolCallRecord)
+]
+
+
+def run_key(row: dict[str, Any]) -> tuple[str, ...]:
+    """The identity of one run in the grid, used for resuming.
+
+    Args:
+        row: A `RunSpec.key()`, or a row read back from `runs.csv`.
+
+    Returns:
+        The key fields as strings, so both sources compare equal.
+    """
+    return tuple(str(row[name]) for name in RUN_KEY_FIELDS)
+
+
+class ResultsWriter:
+    """Appends runs, turns and tool calls to CSV files in `directory`."""
+
+    def __init__(self, directory: Path) -> None:
+        directory.mkdir(parents=True, exist_ok=True)
+        self.runs_path = directory / "runs.csv"
+        self.turns_path = directory / "turns.csv"
+        self.tool_calls_path = directory / "tool_calls.csv"
+        for path, fieldnames in [
+            (self.runs_path, RUN_FIELDS),
+            (self.turns_path, TURN_FIELDS),
+            (self.tool_calls_path, TOOL_CALL_FIELDS),
+        ]:
+            _check_header(path, fieldnames)
+
+    def existing_runs(self) -> list[dict[str, str]]:
+        """Rows already in `runs.csv`."""
+        if not self.runs_path.exists():
+            return []
+        with self.runs_path.open(newline="", encoding="utf-8") as handle:
+            return list(csv.DictReader(handle))
+
+    def write(
+        self,
+        run: dict[str, Any],
+        turns: list[TurnRecord],
+        tool_calls: list[ToolCallRecord],
+    ) -> None:
+        """Append one run with all of its turns and tool calls."""
+        key = {name: run[name] for name in [*RUN_KEY_FIELDS, "attempt"]}
+        _append(self.runs_path, RUN_FIELDS, [run])
+        turn_rows = []
+        for turn in turns:
+            row = {k: v for k, v in asdict(turn).items() if k not in _TEXT_FIELDS}
+            row["tool_result_head"] = (turn.tool_result or "")[:300]
+            turn_rows.append({**key, **row})
+        _append(self.turns_path, TURN_FIELDS, turn_rows)
+        _append(
+            self.tool_calls_path,
+            TOOL_CALL_FIELDS,
+            [{**key, **asdict(call)} for call in tool_calls],
+        )
+
+
+def _check_header(path: Path, fieldnames: list[str]) -> None:
+    """Refuse to append to a CSV whose columns differ from `fieldnames`.
+
+    Rows appended under a different header would land in the wrong columns,
+    so this fails before any run is spent rather than corrupting the file.
+
+    Args:
+        path: The CSV file, which may not exist yet.
+        fieldnames: The columns this version writes.
+
+    Raises:
+        SystemExit: If `path` exists with a different header.
+    """
+    if not path.exists():
+        return
+    with path.open(newline="", encoding="utf-8") as handle:
+        header = next(csv.reader(handle), [])
+    if header != fieldnames:
+        msg = (
+            f"{path} has different columns (written by an older version?); "
+            "use a new --out directory"
+        )
+        raise SystemExit(msg)
+
+
+def _append(path: Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> None:
+    new_file = not path.exists()
+    with path.open("a", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore")
+        if new_file:
+            writer.writeheader()
+        writer.writerows(rows)

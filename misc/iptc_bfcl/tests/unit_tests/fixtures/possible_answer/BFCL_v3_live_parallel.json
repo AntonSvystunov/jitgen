@@ -1,0 +1,1 @@
+{"id": "live_parallel_0-0-0", "ground_truth": [{"get_current_weather": {"location": ["Beijing, China"], "unit": ["", "fahrenheit"]}}, {"get_current_weather": {"location": ["Shanghai, China"], "unit": ["", "fahrenheit"]}}]}

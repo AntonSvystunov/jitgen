@@ -22,3 +22,6 @@ htmlcov/
 
 # iptc-parcs case-study run data (local only)
 misc/iptc-parcs/results/
+
+# iptc_bfcl case-study run data (local only)
+misc/iptc_bfcl/results/

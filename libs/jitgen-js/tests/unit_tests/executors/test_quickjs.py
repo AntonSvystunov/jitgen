@@ -115,3 +115,33 @@ async def test_tools_are_bound_as_js_globals_at_construction(
     assert result.success
     assert result.output == "5\n"
     assert calls == [(2, 3)]
+
+
+async def test_a_raising_tool_fails_the_statement_instead_of_raising(
+    make_executor: Callable[..., QuickJsExecutor],
+):
+    async def lookup(**kwargs: Any) -> str:
+        msg = "lookup() missing required argument(s): case_id"
+        raise TypeError(msg)
+
+    executor = make_executor(tools={"lookup": lookup})
+    result = await executor.aexecute('console.log("before"); await lookup();')
+
+    assert not result.success
+    assert result.error == "TypeError: lookup() missing required argument(s): case_id"
+    assert result.output == "before\n"
+
+
+async def test_output_of_a_failed_tool_call_does_not_leak_into_the_next_statement(
+    make_executor: Callable[..., QuickJsExecutor],
+):
+    def fail() -> None:
+        msg = "boom"
+        raise RuntimeError(msg)
+
+    executor = make_executor(tools={"fail": fail})
+    await executor.aexecute('console.log("before"); fail();')
+    result = await executor.aexecute('console.log("next");')
+
+    assert result.success
+    assert result.output == "next\n"

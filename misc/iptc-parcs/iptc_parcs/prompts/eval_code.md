@@ -24,7 +24,9 @@ session_id = session["sessionId"]
 
 layer1 = json.loads(
     await run_layer(
-        sessionId=session_id, parallelism=8, parameters={"start": "1000", "end": "2000"}
+        sessionId=session_id,
+        parallelism=info["workerNodeCount"],
+        parameters={"start": "1000", "end": "2000"},
     )
 )
 print(

@@ -52,6 +52,7 @@ class FakeChunk:
     choices: list[FakeChoice] = field(default_factory=list)
     usage: FakeUsage | None = None
     id: str = "gen-1"
+    provider: str | None = None
 
 
 def content_chunk(text: str, finish: str | None = None) -> FakeChunk:

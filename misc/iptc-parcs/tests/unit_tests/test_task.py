@@ -40,3 +40,17 @@ def test_reference_matches_an_independent_monte_carlo():
 )
 def test_extract_answer(text, expected):
     assert extract_answer(text) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ('{"VaR": 0.0176, "CVaR": 0.0201, "N": 2000000}', (0.0176, 0.0201)),
+        ('{"var99": 0.0176, "cvar99": 0.0201}', (0.0176, 0.0201)),
+        ('{"VaR_99": 0.0176, "ES_99": 0.0201}', (0.0176, 0.0201)),
+        ('{"var_99": "n/a", "cvar_99": 0.0201}', None),
+        ('{"VaR": 0.0176}', None),
+    ],
+)
+def test_extract_answer_accepts_aliased_keys(text, expected):
+    assert extract_answer(text) == expected

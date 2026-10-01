@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iptc-bfcl"
+version = "0.1.0"
+description = "Case study: tool calling vs PTC vs IPTC agents on the Berkeley Function Calling Leaderboard."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "jitgen",
+    "jitgen-openai[js]",
+    "langsmith>=0.4",
+    "mcp>=1.2.0",
+    "openai>=2.53.0",
+    "python-dotenv>=1.2.2",
+    "tiktoken>=0.9.0",
+]
+
+[project.scripts]
+iptc-bfcl = "iptc_bfcl.main:main"
+iptc-bfcl-report = "iptc_bfcl.report:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["iptc_bfcl"]
+
+[tool.uv.sources]
+jitgen = { path = "../../libs/jitgen", editable = true }
+jitgen-js = { path = "../../libs/jitgen-js", editable = true }
+jitgen-openai = { path = "../../libs/jitgen-openai", editable = true }
+
+[dependency-groups]
+# Figures for `iptc-bfcl-report`; the tables need nothing extra.
+analysis = [
+    "matplotlib>=3.9",
+]
+test = [
+    "pytest>=9.0.1",
+    "pytest-asyncio>=1.2.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint.isort]
+known-first-party = ["iptc_bfcl"]

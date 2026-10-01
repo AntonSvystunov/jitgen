@@ -55,26 +55,48 @@ def reference() -> Reference:
 
 
 _JSON_OBJECT = re.compile(r"\{[^{}]*\}")
+# Normalized (lowercase, alphanumeric only) keys accepted for each number: the
+# prompt asks for `var_99`/`cvar_99`, but models echo the names their own
+# aggregation layer used, e.g. `VaR`/`CVaR` or `var99`/`cvar99`.
+_VAR_KEYS = {"var99", "var"}
+_CVAR_KEYS = {"cvar99", "cvar", "es99", "es", "expectedshortfall"}
+
+
+def _normalize(key: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", key.lower())
+
+
+def _pick(data: dict[str, object], keys: set[str]) -> float | None:
+    for key, value in data.items():
+        if _normalize(key) in keys:
+            try:
+                return float(value)  # type: ignore[arg-type]
+            except (TypeError, ValueError):
+                return None
+    return None
 
 
 def extract_answer(text: str) -> tuple[float, float] | None:
-    """Find the last JSON object in `text` holding `var_99` and `cvar_99`.
+    """Find the last JSON object in `text` holding the VaR and CVaR.
 
     Args:
         text: The model's final answer.
 
     Returns:
-        `(var_99, cvar_99)`, or `None` if no such object is present.
+        `(var_99, cvar_99)`, or `None` if no object holds both. Keys are
+        matched loosely (`var_99`, `VaR`, `var99`, ...), but both must be
+        present and numeric.
     """
     for candidate in reversed(_JSON_OBJECT.findall(text)):
         try:
             data = json.loads(candidate)
         except json.JSONDecodeError:
             continue
-        try:
-            return float(data["var_99"]), float(data["cvar_99"])
-        except (KeyError, TypeError, ValueError):
+        if not isinstance(data, dict):
             continue
+        var, cvar = _pick(data, _VAR_KEYS), _pick(data, _CVAR_KEYS)
+        if var is not None and cvar is not None:
+            return var, cvar
     return None
 
 

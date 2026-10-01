@@ -25,7 +25,7 @@ Case study: three ways of letting an LLM drive the live [PARCS](https://github.c
 
 ## The task
 
-An equally weighted portfolio of 20 assets, with jointly normal returns and covariance Σᵢⱼ = sᵢsⱼ·0.5^|i−j|, where sᵢ = 0.01 + 0.001·i. The loss has an exact normal distribution, so VaR₉₉ = 0.017601 and CVaR₉₉ = 0.020165 are known analytically (`iptc_parcs/task.py`). The model has to run 2,000,000 Monte Carlo scenarios on the cluster; an answer counts as correct if both numbers are within `--tolerance` (1%).
+An equally weighted portfolio of 20 assets, with jointly normal returns and covariance Σᵢⱼ = sᵢsⱼ·0.5^|i−j|, where sᵢ = 0.01 + 0.001·i. The loss has an exact normal distribution, so VaR₉₉ = 0.017601 and CVaR₉₉ = 0.020165 are known analytically (`iptc_parcs/task.py`). The model has to run 2,000,000 Monte Carlo scenarios on the cluster; an answer counts as correct if both numbers are within `--tolerance` (1%). The grader reads the last JSON object in the final answer that holds both numbers; besides the requested `var_99`/`cvar_99` it accepts the names models tend to echo from their own aggregation layer, such as `VaR`/`CVaR` or `var99`/`cvar99`.
 
 ## Scenarios
 
@@ -54,7 +54,13 @@ uv run iptc-parcs --out results/main                       # 5 reps x 5 arms x 2
 uv run iptc-parcs --languages javascript --out results/js  # baseline + JavaScript arms
 uv run iptc-parcs --strategies iptc --scenarios natural --reps 1 --out results/smoke
 uv run iptc-parcs --models lmstudio:qwen/qwen3.6-27b,openrouter:<id> ...
+uv run iptc-parcs --models openrouter:openai/gpt-6-luna \
+    --reasoning-effort low,high --provider openai --out results/effort
 ```
+
+**OpenRouter-only options** (a run with an LM Studio model refuses them rather than ignoring them):
+- `--reasoning-effort low,high` sets OpenRouter's `reasoning.effort` (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`). It is a grid axis: each effort is its own set of cells, so one experiment compares efforts within a model. Without it, each model reasons at its default.
+- `--provider deepinfra[,novita]` pins every model to these upstream providers, in order, with fallbacks off, so arms aren't served by different hardware. A provider that is down fails its run as `infra_error` instead of silently switching. `turns.csv`'s `upstream_provider` shows who actually served each call.
 
 **Defaults:** 15 minutes and 12 iterations per run (`--time-limit`, `--max-iterations`), temperature 0.6, seeds `--seed-base` + rep, and local models loaded with a 65,536-token context (`--context-length`; LM Studio's own default of 8,192 is too small for a reasoning model).
 
@@ -71,7 +77,7 @@ uv run iptc-parcs --models lmstudio:qwen/qwen3.6-27b,openrouter:<id> ...
 
 | Column | Meaning |
 |---|---|
-| `model`, `scenario`, `strategy`, `language`, `rep` | The run's identity; `language` is empty for `baseline` |
+| `model`, `scenario`, `strategy`, `language`, `reasoning_effort`, `upstream`, `rep` | The run's identity; `language` is empty for `baseline`, `reasoning_effort` and `upstream` are empty when not set |
 | `status` | `answered_correct`, `answered_wrong`, `no_answer`, `output_truncated` (the last model call hit the length limit), `context_overflow` (a request exceeded the model's context), `iteration_limit`, `time_limit`, `agent_error`, or `infra_error` (tools or model server failed, and the run didn't produce a correct answer) |
 | `wall_seconds` | Total run time |
 | `iterations` | Model round trips (agent-loop iterations) |
@@ -82,11 +88,11 @@ uv run iptc-parcs --models lmstudio:qwen/qwen3.6-27b,openrouter:<id> ...
 | `usage_*_tokens` | Provider-reported usage, where the stream reached its final usage chunk |
 | `native_*_tokens` | OpenRouter's server-side counts per generation, which include streams closed early |
 | `est_output_tokens_failed_turns`, `est_tokens_after_first_failure` | H2 metrics: output spent in failing iterations, and all tokens after the first failure |
-| `model_seconds`, `tool_seconds`, `overlap_seconds` | Time the model was streaming, time tools were running, and how much of the two overlapped (IPTC's gain) |
+| `model_seconds`, `tool_seconds`, `overlap_seconds` | Time the model was generating (request to its last reasoning, content or argument chunk), time tools were running, and how much of the two overlapped (IPTC's gain) |
 | `cluster_seconds` | Sum of `run_layer` `totalElapsedSeconds`: server-side cluster time |
 | `seconds_per_iteration`, `est_tokens_per_iteration` | Derived per-iteration figures |
 
-**`turns.csv`** has one row per model call: timings, including time to first chunk and first reasoning, content and arguments; `completed` or closed early; `finish_reason`; chunk counts; token estimates and usage; and whether the iteration failed.
+**`turns.csv`** has one row per model call: timings, including time to first chunk and first reasoning, content and arguments; `completed` or closed early; `finish_reason`; chunk counts; token estimates and usage; and whether the iteration failed. `last_arguments` and `last_token` mark when the arguments and generation ended; `end` is when the agent released the stream, which for IPTC waits for its code to finish running. `upstream_provider` is the OpenRouter provider that served the call.
 
 **`tool_calls.csv`** has one row per PARCS tool call: timing, success, whether it was injected, and `totalElapsedSeconds`.
 

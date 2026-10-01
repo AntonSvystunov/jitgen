@@ -260,6 +260,13 @@ class QuickJsExecutor(ExecutorBase):
             return ExecutionResult(
                 success=False, output=self._console.drain(), error=_describe(exc)
             )
+        except Exception as exc:  # noqa: BLE001  # a tool raised: the statement failed
+            # `quickjs_rs` re-raises a host function's exception as-is. Report it
+            # like any other failure, draining the console so the output this
+            # statement printed doesn't surface in the next one.
+            return ExecutionResult(
+                success=False, output=self._console.drain(), error=_describe(exc)
+            )
         else:
             handle.dispose()
             return ExecutionResult(success=True, output=self._console.drain())

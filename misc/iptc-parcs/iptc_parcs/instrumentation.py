@@ -65,6 +65,14 @@ def _delta_reasoning(delta: Any) -> str | None:
     return None
 
 
+def _chunk_provider(chunk: Any) -> str | None:
+    """The upstream provider OpenRouter routed the call to, if it says."""
+    provider = getattr(chunk, "provider", None)
+    if provider is None and getattr(chunk, "model_extra", None):
+        provider = chunk.model_extra.get("provider")
+    return provider if isinstance(provider, str) else None
+
+
 class _InstrumentedStream:
     """Passes chunks through unchanged while recording one turn."""
 
@@ -123,6 +131,7 @@ class _InstrumentedStream:
         if turn.first_chunk is None:
             turn.first_chunk = now
             turn.generation_id = getattr(chunk, "id", None)
+            turn.upstream_provider = _chunk_provider(chunk)
         usage = getattr(chunk, "usage", None)
         if usage is not None:
             turn.usage_input = usage.prompt_tokens
@@ -138,14 +147,17 @@ class _InstrumentedStream:
         reasoning = _delta_reasoning(delta)
         if reasoning:
             turn.first_reasoning = turn.first_reasoning or now
+            turn.last_token = now
             turn.reasoning_text += reasoning
         if delta.content:
             turn.first_content = turn.first_content or now
+            turn.last_token = now
             turn.content_text += delta.content
         for call in delta.tool_calls or ():
             arguments = call.function.arguments if call.function else None
             if arguments:
                 turn.first_arguments = turn.first_arguments or now
+                turn.last_arguments = turn.last_token = now
                 turn.arguments_text += arguments
 
     def _finish(self) -> None:

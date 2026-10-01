@@ -95,3 +95,18 @@ def test_native_tokens_and_seconds_per_iteration_are_derived():
     assert metrics["native_output_tokens"] == 57
     assert metrics["native_input_tokens"] is None
     assert metrics["seconds_per_iteration"] == pytest.approx(12.0)
+
+
+def test_model_time_ends_at_the_last_token_not_when_the_stream_was_closed():
+    # IPTC: generation ended at 4s, but the stream was only released at 10s,
+    # once the code the tool call carried had finished running (5-9s).
+    recorder = RunRecorder()
+    recorder.turns = [
+        TurnRecord(0, 0.0, last_token=4.0, end=10.0, completed=True),
+    ]
+    recorder.tool_calls = [ToolCallRecord("run_layer", 5.0, 9.0, ok=True, turn=0)]
+
+    metrics = summarize(recorder, wall_seconds=10.0)
+
+    assert metrics["model_seconds"] == pytest.approx(4.0)
+    assert metrics["overlap_seconds"] == pytest.approx(0.0)

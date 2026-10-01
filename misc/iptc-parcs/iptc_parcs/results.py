@@ -5,7 +5,15 @@ from typing import Any
 
 from iptc_parcs.metrics import ToolCallRecord, TurnRecord
 
-RUN_KEY_FIELDS = ["model", "scenario", "strategy", "language", "rep"]
+RUN_KEY_FIELDS = [
+    "model",
+    "scenario",
+    "strategy",
+    "language",
+    "reasoning_effort",
+    "upstream",
+    "rep",
+]
 
 RUN_FIELDS = [
     *RUN_KEY_FIELDS,
@@ -84,6 +92,12 @@ class ResultsWriter:
         self.runs_path = directory / "runs.csv"
         self.turns_path = directory / "turns.csv"
         self.tool_calls_path = directory / "tool_calls.csv"
+        for path, fieldnames in [
+            (self.runs_path, RUN_FIELDS),
+            (self.turns_path, TURN_FIELDS),
+            (self.tool_calls_path, TOOL_CALL_FIELDS),
+        ]:
+            _check_header(path, fieldnames)
 
     def existing_runs(self) -> list[dict[str, str]]:
         """Rows already in `runs.csv`."""
@@ -112,6 +126,31 @@ class ResultsWriter:
             TOOL_CALL_FIELDS,
             [{**key, **asdict(call)} for call in tool_calls],
         )
+
+
+def _check_header(path: Path, fieldnames: list[str]) -> None:
+    """Refuse to append to a CSV whose columns differ from `fieldnames`.
+
+    Rows appended under a different header would land in the wrong columns,
+    so this fails before any run is spent rather than corrupting the file.
+
+    Args:
+        path: The CSV file, which may not exist yet.
+        fieldnames: The columns this version writes.
+
+    Raises:
+        SystemExit: If `path` exists with a different header.
+    """
+    if not path.exists():
+        return
+    with path.open(newline="", encoding="utf-8") as handle:
+        header = next(csv.reader(handle), [])
+    if header != fieldnames:
+        msg = (
+            f"{path} has different columns (written by an older version?); "
+            "use a new --out directory"
+        )
+        raise SystemExit(msg)
 
 
 def _append(path: Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> None:

@@ -8,12 +8,18 @@ from unittest.mock import MagicMock
 
 import langsmith
 import pytest
+from jitgen import ExecutionError
 from langsmith import Client
 from mcp.server.mcpserver import MCPServer
 from mcp.shared.memory import create_client_server_memory_streams
 
 from jitgen_openai import IptcAgent, McpToolBridge, PtcAgent
-from jitgen_openai.agent import _close_truncated_json, _spread_object_argument
+from jitgen_openai._tracing import EvalTracer
+from jitgen_openai.agent import (
+    _BufferedRunner,
+    _close_truncated_json,
+    _spread_object_argument,
+)
 
 BOTH_AGENTS = pytest.mark.parametrize("agent_cls", [IptcAgent, PtcAgent])
 
@@ -787,3 +793,51 @@ async def test_javascript_undefined_properties_are_not_sent_to_tools(agent_cls):
     await agent.arun("call a tool")
 
     assert received == [{"a": 1}]
+
+
+async def test_ptc_reports_an_executor_exception_as_an_execution_error():
+    # `Session` (IPTC) turns any exception from `aexecute` into an execution
+    # error; PTC must too, or the same model mistake ends a PTC run outright.
+    class _RaisingExecutor:
+        async def aexecute(self, code: str) -> None:
+            msg = "lookup() missing required argument(s): case_id"
+            raise TypeError(msg)
+
+    runner = _BufferedRunner(_RaisingExecutor(), EvalTracer(None, "javascript"), print)
+    outputs: list[str] = []
+
+    error = await runner.afinish(json.dumps({"code": "await lookup();"}), outputs)
+
+    assert isinstance(error, ExecutionError)
+    assert str(error) == "TypeError: lookup() missing required argument(s): case_id"
+    assert error.statement == "await lookup();"
+    assert isinstance(error.__cause__, TypeError)
+    assert outputs == []
+
+
+@BOTH_AGENTS_JS
+async def test_a_raising_javascript_tool_is_reported_back_instead_of_raised(agent_cls):
+    async def lookup(**kwargs: object) -> str:
+        msg = "lookup() missing required argument(s): case_id"
+        raise TypeError(msg)
+
+    class _Bridge:
+        def __init__(self) -> None:
+            self.callables = {"lookup": lookup}
+
+        def describe_tools(self, language: str) -> str:
+            return ""
+
+    turns = [
+        _eval_call_chunks("call_1", 'console.log("start");\nawait lookup({});'),
+        [_Chunk.content("it failed")],
+    ]
+    client = _FakeClient(turns)
+    agent = agent_cls(client, "fake-model", bridges=[_Bridge()], language="javascript")
+
+    assert await agent.arun("look it up") == "it failed"
+    [tool_message] = [
+        m for m in client.chat.completions.calls[1]["messages"] if m["role"] == "tool"
+    ]
+    assert tool_message["content"].startswith("execution error:")
+    assert "missing required argument(s): case_id" in tool_message["content"]

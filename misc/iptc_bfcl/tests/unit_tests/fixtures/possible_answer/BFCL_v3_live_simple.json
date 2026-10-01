@@ -1,0 +1,2 @@
+{"id": "live_simple_0-0-0", "ground_truth": [{"get_user_info": {"user_id": [7890], "special": ["black"]}}]}
+{"id": "live_simple_58-27-0", "ground_truth": [{"get_movies": {"city": ["Mumbai"], "cinema_hall": ["", "All"], "movie_date": ["", null], "movie_language": ["", "All"], "movie_format": ["", "2D"]}}]}

@@ -15,6 +15,9 @@ from dotenv import load_dotenv
 from iptc_parcs.config import (
     DEFAULT_MODELS,
     LANGUAGES,
+    REASONING_EFFORTS,
+    Arm,
+    ModelSpec,
     RunSettings,
     RunSpec,
     Scenario,
@@ -51,6 +54,21 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="languages the ptc/iptc arms write code in",
     )
     parser.add_argument("--scenarios", type=_csv, default=list(Scenario))
+    parser.add_argument(
+        "--reasoning-effort",
+        type=lambda value: _csv(value) or [""],
+        default=[""],
+        help="comma-separated OpenRouter reasoning efforts to compare "
+        f"({', '.join(e for e in REASONING_EFFORTS if e)}); "
+        "the model's default when omitted",
+    )
+    parser.add_argument(
+        "--provider",
+        type=_csv,
+        default=[],
+        help="comma-separated OpenRouter provider slugs to pin every model to, "
+        "in order, with no fallback",
+    )
     parser.add_argument("--reps", type=int, default=5)
     parser.add_argument("--context-length", type=int, default=65536)
     parser.add_argument("--tool-result-limit", type=int, default=20000)
@@ -93,8 +111,8 @@ def _run_lock() -> Iterator[None]:
 def plan_runs(args: argparse.Namespace) -> list[RunSpec]:
     """Expand the CLI grid into runs, in execution order.
 
-    Within each (model, rep, scenario) cell every arm runs once with the same
-    seed, in a seeded-shuffle order recorded per run: the live cluster keeps
+    Within each (model, reasoning effort, rep, scenario) cell every arm runs
+    once with the same seed, in a seeded-shuffle order recorded per run: the live cluster keeps
     its worker pods warm between runs, so a fixed order would always hand the
     cold start to the same arm.
 
@@ -104,7 +122,7 @@ def plan_runs(args: argparse.Namespace) -> list[RunSpec]:
     Returns:
         Every run of the grid.
     """
-    settings = RunSettings(
+    base = RunSettings(
         temperature=args.temperature,
         time_limit=args.time_limit,
         max_iterations=args.max_iterations,
@@ -112,6 +130,7 @@ def plan_runs(args: argparse.Namespace) -> list[RunSpec]:
         tolerance=args.tolerance,
         context_length=args.context_length,
         tool_result_limit=args.tool_result_limit,
+        upstream=tuple(args.provider),
     )
     arms = plan_arms(
         [Strategy(s) for s in args.strategies],
@@ -119,32 +138,87 @@ def plan_runs(args: argparse.Namespace) -> list[RunSpec]:
     )
     runs = []
     for model in [parse_model(m) for m in args.models]:
-        for rep in range(args.reps):
-            seed = args.seed_base + rep
-            for scenario in [Scenario(s) for s in args.scenarios]:
-                order = list(arms)
-                random.Random(f"{seed}|{scenario}|{model.label}").shuffle(order)
-                runs.extend(
-                    RunSpec(
-                        model,
-                        arm,
-                        scenario,
-                        rep,
-                        seed,
-                        position,
-                        parcs_url=args.parcs_url,
-                        settings=settings,
-                    )
-                    for position, arm in enumerate(order)
+        for effort in args.reasoning_effort:
+            settings = replace(base, reasoning_effort=effort)
+            runs.extend(_plan_cell_runs(args, model, settings, arms))
+    return runs
+
+
+def _plan_cell_runs(
+    args: argparse.Namespace, model: ModelSpec, settings: RunSettings, arms: list[Arm]
+) -> list[RunSpec]:
+    """Plan every rep and scenario of one (model, reasoning effort) pair.
+
+    Args:
+        args: The parsed command line.
+        model: The model to run.
+        settings: The run settings, with this pair's reasoning effort.
+        arms: The arms each cell runs.
+
+    Returns:
+        The pair's runs, cell by cell.
+    """
+    runs = []
+    for rep in range(args.reps):
+        seed = args.seed_base + rep
+        for scenario in [Scenario(s) for s in args.scenarios]:
+            order = list(arms)
+            shuffle_key = f"{seed}|{scenario}|{model.label}|{settings.reasoning_effort}"
+            random.Random(shuffle_key).shuffle(order)
+            runs.extend(
+                RunSpec(
+                    model,
+                    arm,
+                    scenario,
+                    rep,
+                    seed,
+                    position,
+                    parcs_url=args.parcs_url,
+                    settings=settings,
                 )
+                for position, arm in enumerate(order)
+            )
     return runs
 
 
 def _label(spec: RunSpec, index: int, total: int) -> str:
+    effort = spec.settings.reasoning_effort
     return (
         f"[{index}/{total}] {spec.model.label} {spec.arm.label} "
-        f"{spec.scenario} rep={spec.rep} attempt={spec.attempt}"
+        f"{spec.scenario} rep={spec.rep}"
+        f"{f' effort={effort}' if effort else ''} attempt={spec.attempt}"
     )
+
+
+def _validate(args: argparse.Namespace) -> None:
+    """Reject options that would fail, or be silently ignored, mid-experiment.
+
+    Args:
+        args: The parsed command line.
+
+    Raises:
+        SystemExit: On an unknown language or reasoning effort, a model that
+            can't take the reasoning or provider options, or a real run
+            without a PARCS URL.
+    """
+    unknown = sorted(set(args.languages) - set(LANGUAGES))
+    if unknown:
+        msg = f"unknown languages {unknown}; known: {list(LANGUAGES)}"
+        raise SystemExit(msg)
+    unknown = sorted(set(args.reasoning_effort) - set(REASONING_EFFORTS))
+    if unknown:
+        known = [effort for effort in REASONING_EFFORTS if effort]
+        msg = f"unknown reasoning efforts {unknown}; known: {known}"
+        raise SystemExit(msg)
+    for model in [parse_model(m) for m in args.models]:
+        for effort in args.reasoning_effort:
+            try:
+                model.provider.routing_options(effort, tuple(args.provider))
+            except ValueError as exc:
+                raise SystemExit(f"{model.label}: {exc}") from None
+    if not args.parcs_url and not args.dry_run:
+        msg = "set PARCS_SERVER_URL (e.g. in .env) or pass --parcs-url"
+        raise SystemExit(msg)
 
 
 async def _run_all(args: argparse.Namespace, runs: list[RunSpec]) -> None:
@@ -181,13 +255,7 @@ def main(argv: list[str] | None = None) -> None:
     """
     load_dotenv()
     args = _parse_args(argv)
-    unknown = sorted(set(args.languages) - set(LANGUAGES))
-    if unknown:
-        msg = f"unknown languages {unknown}; known: {list(LANGUAGES)}"
-        raise SystemExit(msg)
-    if not args.parcs_url and not args.dry_run:
-        msg = "set PARCS_SERVER_URL (e.g. in .env) or pass --parcs-url"
-        raise SystemExit(msg)
+    _validate(args)
     runs = plan_runs(args)
     if args.dry_run:
         for spec in runs:

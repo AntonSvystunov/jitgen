@@ -9,6 +9,7 @@ from iptc_parcs.bridge import EVAL_CODE_GUIDANCE
 from iptc_parcs.config import (
     LANGUAGES,
     Arm,
+    RunSettings,
     RunSpec,
     Scenario,
     Strategy,
@@ -249,3 +250,32 @@ def test_a_dropped_connection_turns_a_wrong_answer_into_an_infra_error():
     graded = grade(Outcome("no numbers", "no_answer"), recorder, tolerance=0.01)
 
     assert (graded["status"], graded["infra_incidents"]) == ("infra_error", 1)
+
+
+@pytest.mark.parametrize(
+    "arm", [Arm(Strategy.BASELINE), Arm(Strategy.IPTC, "javascript")], ids=str
+)
+async def test_reasoning_effort_and_provider_reach_every_model_call(arm):
+    spec = RunSpec(
+        parse_model("openrouter:fake-model"),
+        arm,
+        Scenario.NATURAL,
+        rep=0,
+        seed=1,
+        order=0,
+        parcs_url="http://unused",
+        settings=RunSettings(reasoning_effort="low", upstream=("deepinfra",)),
+    )
+    fake = FakeClient([_first_turn(arm), [content_chunk(_CORRECT_ANSWER)]])
+    recorder = RunRecorder()
+
+    await run_agent(spec, FakeParcs(), InstrumentedClient(fake, recorder), recorder)
+
+    expected = {
+        "reasoning": {"effort": "low"},
+        "provider": {"order": ["deepinfra"], "allow_fallbacks": False},
+    }
+    assert [call["extra_body"] for call in fake.chat.completions.calls] == [
+        expected,
+        expected,
+    ]

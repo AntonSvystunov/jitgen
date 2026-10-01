@@ -1,3 +1,5 @@
+import pytest
+
 from iptc_parcs.config import Arm, RunSpec, Scenario, Strategy, parse_model
 from iptc_parcs.results import RUN_FIELDS, ResultsWriter, run_key
 
@@ -25,3 +27,12 @@ def test_run_fields_hold_the_key_and_no_simulator_columns():
         name.startswith("sim_") or name in {"target", "cold_start"}
         for name in RUN_FIELDS
     )
+
+
+def test_a_results_dir_with_other_columns_is_refused_before_any_run(tmp_path):
+    (tmp_path / "runs.csv").write_text(
+        "model,scenario,strategy,rep\n", encoding="utf-8"
+    )
+
+    with pytest.raises(SystemExit, match="use a new --out directory"):
+        ResultsWriter(tmp_path)

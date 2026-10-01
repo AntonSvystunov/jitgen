@@ -1,0 +1,2 @@
+{"id": "simple_0", "ground_truth": [{"calculate_triangle_area": {"base": [10], "height": [5], "unit": ["units", ""]}}]}
+{"id": "simple_89", "ground_truth": [{"db_fetch_records": {"database_name": ["StudentDB"], "table_name": ["students"], "conditions": [{"department": ["Science"], "school": ["Bluebird High School", "Bluebird HS"]}], "fetch_limit": ["", 0]}}]}

@@ -70,6 +70,19 @@ def _close_truncated_json(raw: str) -> str:
     return raw
 
 
+def _describe(exc: BaseException) -> str:
+    """Render `exc` as `"TypeError: ..."`, the way `Session` reports it.
+
+    Args:
+        exc: The exception to describe.
+
+    Returns:
+        `exc`'s type name, followed by `": {message}"` when it has one.
+    """
+    message = str(exc)
+    return f"{type(exc).__name__}: {message}" if message else type(exc).__name__
+
+
 def _decode_code(arguments: str) -> str:
     """Extract the `code` string from `eval` arguments, for tracing.
 
@@ -321,7 +334,12 @@ class _BufferedRunner:
             code = json.loads(arguments)[_CODE_PROPERTY]
         except (json.JSONDecodeError, KeyError, TypeError) as exc:
             return ExtractionError(f"invalid `eval` arguments: {exc}", source=arguments)
-        result = await self._executor.aexecute(code)
+        try:
+            result = await self._executor.aexecute(code)
+        except Exception as exc:  # noqa: BLE001  # reported back, as `Session` does
+            error = ExecutionError(_describe(exc), statement=code)
+            error.__cause__ = exc
+            return error
         if result.output:
             _collect([result.output], outputs, self._on_output)
         return None if result.success else ExecutionError.from_result(result)

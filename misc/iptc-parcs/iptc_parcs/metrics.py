@@ -10,6 +10,12 @@ class TurnRecord:
     `est_*` token counts are a tiktoken `o200k_base` proxy computed the same
     way for every strategy (a stream closed early has no provider usage);
     `usage_*` are what the provider reported, when it did.
+
+    `end` is when the agent was done with the stream, which for IPTC is after
+    its code finished executing: `StreamDriver` awaits execution once the
+    `code` argument closes, before the final chunks are read. `last_token` is
+    when the model's last reasoning, content or argument chunk arrived, i.e.
+    when generation actually ended, so model time is measured up to it.
     """
 
     index: int
@@ -18,10 +24,13 @@ class TurnRecord:
     first_reasoning: float | None = None
     first_content: float | None = None
     first_arguments: float | None = None
+    last_arguments: float | None = None
+    last_token: float | None = None
     end: float | None = None
     completed: bool = False
     finish_reason: str | None = None
     generation_id: str | None = None
+    upstream_provider: str | None = None
     chunks: int = 0
     reasoning_text: str = ""
     content_text: str = ""
@@ -139,7 +148,11 @@ def summarize(recorder: RunRecorder, wall_seconds: float) -> dict[str, Any]:
     ]
     failed_turns = [t for t in turns if t.failed]
 
-    model_spans = [(t.request_start, t.end) for t in turns if t.end is not None]
+    model_spans = [
+        (t.request_start, t.last_token if t.last_token is not None else t.end)
+        for t in turns
+        if t.end is not None
+    ]
     tool_spans = [(c.start, c.end) for c in calls]
     iterations = len(turns)
     est_in = sum(t.est_input for t in turns)

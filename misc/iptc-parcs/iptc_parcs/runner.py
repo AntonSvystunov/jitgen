@@ -55,7 +55,14 @@ def build_agent(
     Returns:
         The agent to run.
     """
-    options = {"seed": spec.seed, "temperature": spec.settings.temperature}
+    settings = spec.settings
+    options = {
+        "seed": spec.seed,
+        "temperature": settings.temperature,
+        **spec.model.provider.routing_options(
+            settings.reasoning_effort, settings.upstream
+        ),
+    }
     if spec.arm.strategy is Strategy.BASELINE:
         return ToolCallingAgent(
             client,

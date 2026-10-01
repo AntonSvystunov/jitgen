@@ -24,6 +24,26 @@ class Provider(ABC):
         """Extra arguments for every model call: ask for a final usage chunk."""
         return {"stream_options": {"include_usage": True}}
 
+    def routing_options(
+        self, reasoning_effort: str, upstream: tuple[str, ...]
+    ) -> dict[str, Any]:
+        """Arguments that set the reasoning effort and pin an upstream provider.
+
+        Args:
+            reasoning_effort: The reasoning effort; empty for the model's default.
+            upstream: Upstream providers to pin, in order; empty for none.
+
+        Returns:
+            Extra arguments for every model call; empty when both are unset.
+
+        Raises:
+            ValueError: If either is set; only OpenRouter supports them.
+        """
+        if reasoning_effort or upstream:
+            msg = f"{self.name} models don't support --reasoning-effort or --provider"
+            raise ValueError(msg)
+        return {}
+
     async def prepare(self, model: str, context_length: int) -> None:
         """Bring `model` to a fresh state before a run. No-op by default."""
 
@@ -100,6 +120,28 @@ class OpenRouterProvider(Provider):
     def request_options(self) -> dict[str, Any]:
         # OpenRouter always sends usage in the final chunk.
         return {}
+
+    def routing_options(
+        self, reasoning_effort: str, upstream: tuple[str, ...]
+    ) -> dict[str, Any]:
+        """OpenRouter's `reasoning` and `provider` request fields.
+
+        Pinned providers get no fallback: a run served by another provider
+        would no longer be comparable, so it fails (as an `infra_error`) instead.
+
+        Args:
+            reasoning_effort: The reasoning effort; empty for the model's default.
+            upstream: OpenRouter provider slugs to pin, in order; empty for none.
+
+        Returns:
+            An `extra_body` argument, or nothing when both are unset.
+        """
+        body: dict[str, Any] = {}
+        if reasoning_effort:
+            body["reasoning"] = {"effort": reasoning_effort}
+        if upstream:
+            body["provider"] = {"order": list(upstream), "allow_fallbacks": False}
+        return {"extra_body": body} if body else {}
 
     async def fill_native_usage(self, turns: list[TurnRecord]) -> None:
         """Add OpenRouter's per-generation counts, which include closed streams."""

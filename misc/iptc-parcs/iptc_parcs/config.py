@@ -7,6 +7,8 @@ from jitgen_openai import CodeLanguage
 from iptc_parcs.providers import PROVIDERS, Provider
 
 LANGUAGES: tuple[CodeLanguage, ...] = get_args(CodeLanguage)
+# OpenRouter's `reasoning.effort` values; "" leaves the model's default.
+REASONING_EFFORTS = ("", "none", "minimal", "low", "medium", "high", "xhigh")
 DEFAULT_MODELS = ["lmstudio:qwen/qwen3.6-27b"]
 
 
@@ -108,6 +110,10 @@ class RunSettings:
         context_length: Context window local models are loaded with.
         tool_result_limit: Maximum characters of each tool message sent to
             the model.
+        reasoning_effort: The model's reasoning effort; empty for its default.
+        upstream: OpenRouter providers to pin the model to, in order of
+            preference, with no fallback to others; empty to let OpenRouter
+            route.
     """
 
     temperature: float = 0.6
@@ -117,6 +123,8 @@ class RunSettings:
     tolerance: float = 0.01
     context_length: int = 65536
     tool_result_limit: int = 20000
+    reasoning_effort: str = ""
+    upstream: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -140,5 +148,7 @@ class RunSpec:
             "scenario": self.scenario.value,
             "strategy": self.arm.strategy.value,
             "language": self.arm.language,
+            "reasoning_effort": self.settings.reasoning_effort,
+            "upstream": ",".join(self.settings.upstream),
             "rep": self.rep,
         }

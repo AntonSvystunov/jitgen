@@ -62,3 +62,50 @@ def test_a_real_run_needs_a_parcs_url(monkeypatch):
 
     with pytest.raises(SystemExit, match="PARCS_SERVER_URL"):
         main(["--reps", "1"])
+
+
+def test_reasoning_efforts_are_a_grid_axis_in_the_run_key():
+    args = _parse_args(
+        [
+            "--models",
+            "openrouter:m",
+            "--reps",
+            "1",
+            "--scenarios",
+            "natural",
+            "--reasoning-effort",
+            "low,high",
+            "--provider",
+            "deepinfra",
+        ]
+    )
+
+    runs = plan_runs(args)
+
+    assert len(runs) == 2 * 5
+    assert Counter(spec.key()["reasoning_effort"] for spec in runs) == {
+        "low": 5,
+        "high": 5,
+    }
+    assert {spec.key()["upstream"] for spec in runs} == {"deepinfra"}
+    assert len({tuple(spec.key().values()) for spec in runs}) == len(runs)
+
+
+def test_default_reasoning_effort_is_the_models_own():
+    [spec, *_] = plan_runs(_parse_args(["--reps", "1"]))
+
+    assert spec.settings.reasoning_effort == ""
+    assert spec.key()["upstream"] == ""
+
+
+@pytest.mark.parametrize(
+    ("argv", "message"),
+    [
+        (["--reasoning-effort", "extreme"], "unknown reasoning efforts"),
+        (["--reasoning-effort", "low"], "don't support --reasoning-effort"),
+        (["--provider", "deepinfra"], "don't support --reasoning-effort"),
+    ],
+)
+def test_invalid_routing_options_are_rejected_before_running(argv, message):
+    with pytest.raises(SystemExit, match=message):
+        main([*argv, "--dry-run"])  # the default model is an LM Studio one
